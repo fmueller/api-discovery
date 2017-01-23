@@ -39,12 +39,16 @@
 
   <script type="text/javascript">
     $(function () {
+
+      var apiSearchInputText = '';
+
       // this was there before, so it stays
       function log() {
         if ('console' in window) {
           console.log.apply(console, arguments);
         }
       }
+
       var url = window.location.search.match(/url=([^&]+)/);
       if (url && url.length > 1) {
         url = decodeURIComponent(url[1]);
@@ -144,7 +148,24 @@
         $select.append($option);
       });
 
-      $select.chosen({ search_contains: true });
+      $select.on('chosen:ready', function() {
+        $('.chosen-search input').keyup(function() {
+          apiSearchInputText = $('.chosen-search input').val();
+        });
+
+        $select.parent().click(function() {
+          $('.chosen-search input').val(apiSearchInputText)
+        });
+      });
+
+      $select.chosen(
+        {
+          search_contains: true,
+          no_results_text: 'No API found for'
+        }
+      ).change(function() {
+        $('.chosen-search input').val(apiSearchInputText);
+      });
     }
 
     function setOAuthHeader(xhr) {
