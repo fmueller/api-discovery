@@ -149,12 +149,13 @@
       });
 
       $select.on('chosen:ready', function() {
-        $('.chosen-search input').keyup(function() {
-          apiSearchInputText = $('.chosen-search input').val();
+        var $inputBox = $('.chosen-search input');
+        $inputBox.keyup(function() {
+          apiSearchInputText = $inputBox.val();
         });
 
         $select.parent().click(function() {
-          $('.chosen-search input').val(apiSearchInputText)
+          $inputBox.val(apiSearchInputText)
         });
       });
 
