@@ -39,6 +39,9 @@
 
   <script type="text/javascript">
     $(function () {
+
+      var apiSearchInputText = '';
+
       // this was there before, so it stays
       function log() {
         if ('console' in window) {
@@ -151,12 +154,25 @@
         $select.append($option);
       });
 
+      $select.on('chosen:ready', function() {
+        var $inputBox = $('.chosen-search input');
+        $inputBox.keyup(function() {
+          apiSearchInputText = $inputBox.val();
+        });
+
+        $select.parent().click(function() {
+          $inputBox.val(apiSearchInputText)
+        });
+      });
+
       $select.chosen(
         {
           search_contains: true,
-          no_results_text: 'No API found'
+          no_results_text: 'No API found for'
         }
-      );
+      ).change(function() {
+        $('.chosen-search input').val(apiSearchInputText);
+      });
     }
 
     function setOAuthHeader(xhr) {
