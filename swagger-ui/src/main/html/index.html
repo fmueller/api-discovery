@@ -56,48 +56,50 @@
         url = window.SUIENV_STORAGE_BASE_URL + '/api';
       }
 
-      window.OAuthProvider = new window['oauth2-client-js'].Provider({
-        id: 'swagger',
-        authorization_url: window.SUIENV_OAUTH_AUTH_URL
-      });
-
-      function requestToken() {
-        var request = new window['oauth2-client-js'].Request({
-          client_id: window.SUIENV_OAUTH_CLIENT_ID,
-          redirect_uri: window.SUIENV_OAUTH_REDIRECT_URL,
-          scopes: window.SUIENV_OAUTH_SCOPES
+      if (isOAuthEnabled()) {
+        window.OAuthProvider = new window['oauth2-client-js'].Provider({
+          id: 'swagger',
+          authorization_url: window.SUIENV_OAUTH_AUTH_URL
         });
-        OAuthProvider.remember(request);
-        window.location.href = OAuthProvider.requestToken(request);
-      }
 
-      // do we have a response from auth server?
-      // check if we can parse the url fragment
-      if (window.location.hash.length) {
-        var response;
-        try {
-          response = OAuthProvider.parse(window.location.hash);
-        } catch(err) {
-          if (response instanceof Error) {
-            return console.error(response);
+        function requestToken() {
+          var request = new window['oauth2-client-js'].Request({
+            client_id: window.SUIENV_OAUTH_CLIENT_ID,
+            redirect_uri: window.SUIENV_OAUTH_REDIRECT_URL,
+            scopes: window.SUIENV_OAUTH_SCOPES
+          });
+          OAuthProvider.remember(request);
+          window.location.href = OAuthProvider.requestToken(request);
+        }
+
+        // do we have a response from auth server?
+        // check if we can parse the url fragment
+        if (window.location.hash.length) {
+          var response;
+          try {
+            response = OAuthProvider.parse(window.location.hash);
+          } catch(err) {
+            if (response instanceof Error) {
+              return console.error(response);
+            }
           }
         }
-      }
 
-      if (!OAuthProvider.hasAccessToken()) {
-        requestToken();
-      }
-
-      // check validity of token
-      $.ajax({
-        url: '/tokeninfo?access_token=' + OAuthProvider.getAccessToken(),
-        type: 'GET',
-        dataType: 'json',
-        error: function() {
-          console.error(arguments);
-          requestToken(); // get new token if tokeninfo returns error
+        if (!OAuthProvider.hasAccessToken()) {
+          requestToken();
         }
-      });
+
+        // check validity of token
+        $.ajax({
+          url: '/tokeninfo?access_token=' + OAuthProvider.getAccessToken(),
+          type: 'GET',
+          dataType: 'json',
+          error: function() {
+            console.error(arguments);
+            requestToken(); // get new token if tokeninfo returns error
+          }
+        });
+      }
 
       // just wrap this part also in a function
       function initSwagger(url) {
@@ -106,12 +108,14 @@
           dom_id: "swagger-ui-container",
           supportedSubmitMethods: ['get', 'post', 'put', 'delete', 'patch'],
           onComplete: function(swaggerApi, swaggerUi){
-            if(typeof initOAuth == "function") {
-              initOAuth({
-                clientId: window.SUIENV_OAUTH_CLIENT_ID,
-                realm: window.SUIENV_OAUTH_REALM,
-                appName: 'swagger'
-              });
+            if (isOAuthEnabled()) {
+              if (typeof initOAuth == "function") {
+                initOAuth({
+                  clientId: window.SUIENV_OAUTH_CLIENT_ID,
+                  realm: window.SUIENV_OAUTH_REALM,
+                  appName: 'swagger'
+                });
+              }
             }
             $('pre code').each(function(i, e) {
               hljs.highlightBlock(e)
@@ -124,8 +128,10 @@
           sorter : "alpha"
         });
         window.swaggerUi.api = new SwaggerClient({ url: this.url });
-        window.swaggerUi.api.clientAuthorizations.add('myoauth2',
-            new SwaggerClient.ApiKeyAuthorization('Authorization', 'Bearer ' + OAuthProvider.getAccessToken(), 'header'));
+        if (isOAuthEnabled()) {
+          window.swaggerUi.api.clientAuthorizations.add('myoauth2',
+              new SwaggerClient.ApiKeyAuthorization('Authorization', 'Bearer ' + OAuthProvider.getAccessToken(), 'header'));
+        }
         window.swaggerUi.load();
       }
 
@@ -170,7 +176,13 @@
     }
 
     function setOAuthHeader(xhr) {
-      xhr.setRequestHeader('Authorization', 'Bearer ' + OAuthProvider.getAccessToken());
+      if (isOAuthEnabled()) {
+        xhr.setRequestHeader('Authorization', 'Bearer ' + OAuthProvider.getAccessToken());
+      }
+    }
+
+    function isOAuthEnabled() {
+      return window.SUIENV_OAUTH_ENABLED && window.SUIENV_OAUTH_ENABLED === 'true';
     }
 
     function initWithFirstOf(apis) {

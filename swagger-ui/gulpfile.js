@@ -41,7 +41,7 @@ gulp.task('clean', function() {
 /**
  * Starts node server
  */
-gulp.task('server', ['set-env-vars'], function() {
+gulp.task('server', function() {
   if (node) node.kill()
   node = spawn('node', ['server.js'], {stdio: 'inherit', cwd: 'www'})
   node.on('close', function (code) {
@@ -63,6 +63,7 @@ gulp.task('set-env-vars', function() {
  * Sets OAuth environment variables
  */
 gulp.task('set-oauth-env-vars', function() {
+  process.env.SUIENV_OAUTH_ENABLED = 'true';
   process.env.SUIENV_OAUTH_AUTH_URL = 'http://localhost:5002/auth';
   process.env.SUIENV_OAUTH_CLIENT_ID = 'swagger';
   process.env.SUIENV_OAUTH_REALM = 'realm';
@@ -181,7 +182,7 @@ gulp.task('copy', ['less'], function() {
  * Watch for changes and recompile
  */
 gulp.task('watch', function() {
-  return watch(['./src/**/*.{js,less,handlebars}', 'server/**/*.js'], function() {
+  return watch(['./src/**/*.{js,less,handlebars,html}', 'server/**/*.js'], function() {
     gulp.start('default');
   });
 });
@@ -202,5 +203,5 @@ function log(error) {
 
 
 gulp.task('default', ['dist', 'copy']);
-gulp.task('serve', ['watch', 'server']);
-gulp.task('serve-with-oauth', ['set-oauth-env-vars', 'watch', 'server']);
+gulp.task('serve', ['set-env-vars', 'watch', 'server']);
+gulp.task('serve-with-oauth', ['set-env-vars', 'set-oauth-env-vars', 'watch', 'server']);
