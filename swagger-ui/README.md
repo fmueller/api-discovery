@@ -23,7 +23,7 @@ gulp serve
 or, with OAuth integration:
 
 ```
-gulp serve serve-with-oauth
+gulp serve-with-oauth
 ```
 
 Now, you can access the frontend <http://localhost:8080>.
