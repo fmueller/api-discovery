@@ -8,18 +8,22 @@ docker_host=${1:-localhost}
 storage_base_url=${docker_host}:8010
 log_file=${script_path}/start-script.log
 
+# Preparations
+npm install gulp >> ${log_file} 2>&1
+
 # Build
 echo "Log file: ${log_file}"
 echo "Building storage service.."
-cd ${script_path}/storage && ./gradlew build > ${log_file} 2>&1
+cd ${script_path}/storage && ./gradlew build >> ${log_file} 2>&1
 echo "Building swagger-ui.."
-cd ${script_path}/swagger-ui/server && npm install > ${log_file} 2>&1
-cd ${script_path}/swagger-ui && gulp > ${log_file} 2>&1
+cd ${script_path}/swagger-ui && npm install >> ${log_file} 2>&1
+cd ${script_path}/swagger-ui/server && npm install >> ${log_file} 2>&1
+cd ${script_path}/swagger-ui && gulp >> ${log_file} 2>&1
 
 # Run docker-compose
 echo "Starting services with docker-compose.."
 export DOCKER_MACHINE_HOST=${docker_host}
-docker-compose up --build > ${log_file} 2>&1 &
+docker-compose up --build >> ${log_file} 2>&1 &
 
 # Load test data
 echo "Waiting for services to come up.."

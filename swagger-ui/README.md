@@ -9,6 +9,7 @@ It relies on the API definitions which are persisted in the [storage](../storage
 In order to start the application locally (e.g. for testing or development purposes) you should build and bundle the sources first:
 
 ```
+npm install
 cd server && npm install
 gulp
 ```
