@@ -6,7 +6,7 @@ set -e
 script_path=`realpath $(dirname $0)`
 docker_host=${1:-localhost}
 storage_base_url=${docker_host}:8010
-log_file=${script_path}/start.log
+log_file=${script_path}/start-script.log
 
 # Build
 echo "Log file: ${log_file}"

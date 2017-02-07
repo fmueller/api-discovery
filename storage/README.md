@@ -21,6 +21,13 @@ All of these lifecycle states of an API are accessible via the [storage api](src
 java -Dspring.profiles.active=dev -Dserver.port=8010 -jar build/libs/storage.jar
 ```
 
+### Test Data
+It's also possible to load some test data for testing purposes.
+
+```bash
+./load-test-data.sh
+```
+
 ## Configuration
 
 Configuration is provided via environment variables during start. Per default all endpoints are OAuth2 protected.
