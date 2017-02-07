@@ -15,6 +15,12 @@ All of these lifecycle states of an API are accessible via the [storage api](src
     $ ./gradlew build
 
 
+## Running locally
+
+```bash
+java -Dspring.profiles.active=dev -jar build/libs/storage.jar
+```
+
 ## Configuration
 
 Configuration is provided via environment variables during start. Per default all endpoints are OAuth2 protected.
