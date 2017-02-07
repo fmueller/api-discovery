@@ -91,9 +91,11 @@ SwaggerUi.Views.ParameterView = Backbone.View.extend({
         }
       } else {
         if (this.model.required) {
-          return Handlebars.templates.param_required;
+          // return Handlebars.templates.param_required;
+          return Handlebars.templates.param_readonly_required; // making fields read-only
         } else {
-          return Handlebars.templates.param;
+          // return Handlebars.templates.param;
+          return Handlebars.templates.param_readonly; // making fields read-only
         }
       }
     }

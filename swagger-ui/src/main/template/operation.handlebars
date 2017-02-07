@@ -24,22 +24,22 @@
         <h4>Implementation Notes</h4>
         <div class="markdown">{{{description}}}</div>
         {{/if}}
-        {{#oauth}}
-        <div class="auth">
-        <span class="api-ic ic-error"></span>{{/oauth}}
-        {{#each oauth}}
-          <div id="api_information_panel" style="top: 526px; left: 776px; display: none;">
-          {{#each this}}
-            <div title='{{{this.description}}}'>{{this.scope}}</div>
-          {{/each}}
-          </div>
-        {{/each}}
-        {{#oauth}}</div>{{/oauth}}
-        {{#oauth}}
-        <div class='access'>
-          <span class="api-ic ic-off" title="click to authenticate"></span>
-        </div>
-        {{/oauth}}
+        <!--{{#oauth}}-->
+        <!--<div class="auth">-->
+        <!--<span class="api-ic ic-error"></span>{{/oauth}}-->
+        <!--{{#each oauth}}-->
+          <!--<div id="api_information_panel" style="top: 526px; left: 776px; display: none;">-->
+          <!--{{#each this}}-->
+            <!--<div title='{{{this.description}}}'>{{this.scope}}</div>-->
+          <!--{{/each}}-->
+          <!--</div>-->
+        <!--{{/each}}-->
+        <!--{{#oauth}}</div>{{/oauth}}-->
+        <!--{{#oauth}}-->
+        <!--<div class='access'>-->
+          <!--<span class="api-ic ic-off" title="click to authenticate"></span>-->
+        <!--</div>-->
+        <!--{{/oauth}}-->
         {{#if type}}
           <h4>Response Class (Status {{successCode}})</h4>
           <p><span class="model-signature" /></p>
@@ -82,14 +82,14 @@
             </tbody>
           </table>
           {{/if}}
-          {{#if isReadOnly}}
-          {{else}}
-          <div class='sandbox_header'>
-            <input class='submit' type='button' value='Try it out!' />
-            <a href='#' class='response_hider' style='display:none'>Hide Response</a>
-            <span class='response_throbber' style='display:none'></span>
-          </div>
-          {{/if}}
+          <!--{{#if isReadOnly}}-->
+          <!--{{else}}-->
+          <!--<div class='sandbox_header'>-->
+            <!--<input class='submit' type='button' value='Try it out!' />-->
+            <!--<a href='#' class='response_hider' style='display:none'>Hide Response</a>-->
+            <!--<span class='response_throbber' style='display:none'></span>-->
+          <!--</div>-->
+          <!--{{/if}}-->
         </form>
         <div class='response' style='display:none'>
           <h4>Request URL</h4>
