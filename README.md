@@ -57,7 +57,7 @@ Please refer to individual installation instructions of sub-projects for more de
 
 ### Run locally
 
-You can start the whole stack (Swagger UI and Storage incl. PostgreSQL DB) locally by running:
+You can start the whole stack locally (Swagger UI and Storage incl. PostgreSQL DB and test data) by running:
 
 ```bash
 ./start.sh localhost
