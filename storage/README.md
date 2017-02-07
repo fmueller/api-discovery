@@ -18,7 +18,7 @@ All of these lifecycle states of an API are accessible via the [storage api](src
 ## Running locally
 
 ```bash
-java -Dspring.profiles.active=dev -jar build/libs/storage.jar
+java -Dspring.profiles.active=dev -Dserver.port=8010 -jar build/libs/storage.jar
 ```
 
 ## Configuration
