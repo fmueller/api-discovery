@@ -29,8 +29,8 @@ docker-compose up --build >> ${log_file} 2>&1 &
 
 # Load test data
 echo "Waiting for services to come up.."
-while ! printf "GET / HTTP/1.0\r\n\r\n" | nc ${docker_host} 8010; do sleep 5; done
-sleep 20
+while ! printf "GET / HTTP/1.0\r\n\r\n" | nc ${docker_host} 8010; do sleep 5s; done
+sleep 20s
 
 echo "Loading test data to the storage service.."
 /bin/bash ${script_path}/storage/load-test-data.sh ${storage_base_url} ${storage_project_path}
