@@ -1,0 +1,469 @@
+Building storage
+Step 1 : FROM registry.opensource.zalan.do/stups/openjdk:8-42
+ ---> 35ec05d4bd9a
+Step 2 : MAINTAINER Zalando SE
+ ---> Using cache
+ ---> 5e30f4750b2c
+Step 3 : ADD build/libs/storage.jar /
+ ---> 3c90263d17d1
+Removing intermediate container bf7b5f7545a5
+Step 4 : ADD scm-source.json /
+ ---> 607a6c6d2491
+Removing intermediate container 815ffd99549d
+Step 5 : EXPOSE 8080
+ ---> Running in 02c278de4c93
+ ---> 6c832aea8b5f
+Removing intermediate container 02c278de4c93
+Step 6 : ENV HTTP_PORT 8080
+ ---> Running in 991609a51493
+ ---> dd1a1b20db57
+Removing intermediate container 991609a51493
+Step 7 : CMD java -Xmx512m $(appdynamics-agent) -jar /storage.jar
+ ---> Running in ab16a480b9c3
+ ---> 18b72e755115
+Removing intermediate container ab16a480b9c3
+Successfully built 18b72e755115
+Building swagger-ui
+Step 1 : FROM registry.opensource.zalan.do/stups/node:0.12-20
+ ---> 1a1332a1ffff
+Step 2 : ADD /scm-source.json /scm-source.json
+ ---> Using cache
+ ---> af85c7e76243
+Step 3 : COPY ./www/ /www/
+ ---> Using cache
+ ---> 55a7696d34d9
+Step 4 : RUN touch /www/dist/env.js && chmod 0666 /www/dist/env.js
+ ---> Using cache
+ ---> a0084af3db8c
+Step 5 : WORKDIR /www/
+ ---> Using cache
+ ---> 8084f0ead512
+Step 6 : RUN npm install
+ ---> Using cache
+ ---> d13995912bb4
+Step 7 : CMD node server.js
+ ---> Using cache
+ ---> d0f14333f137
+Step 8 : EXPOSE 8080
+ ---> Using cache
+ ---> 60baa8b619d9
+Successfully built 60baa8b619d9
+apidiscovery_postgres_1 is up-to-date
+Recreating apidiscovery_storage_1
+Recreating apidiscovery_swagger-ui_1
+Attaching to apidiscovery_postgres_1, apidiscovery_storage_1, apidiscovery_swagger-ui_1
+[33mstorage_1     |[0m 
+[33mstorage_1     |[0m   .   ____          _            __ _ _
+[33mstorage_1     |[0m  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+[33mstorage_1     |[0m ( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+[33mstorage_1     |[0m  \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+[33mstorage_1     |[0m   '  |____| .__|_| |_|_| |_\__, | / / / /
+[33mstorage_1     |[0m  =========|_|==============|___/=/_/_/_/
+[33mstorage_1     |[0m  :: Spring Boot ::        (v1.4.3.RELEASE)
+[33mstorage_1     |[0m 
+[33mstorage_1     |[0m 2017-02-07 14:18:11.809  INFO 8 --- [           main] o.z.apidiscovery.storage.Application     : Starting Application on f62279ef2d48 with PID 8 (/storage.jar started by root in /)
+[33mstorage_1     |[0m 2017-02-07 14:18:11.815  INFO 8 --- [           main] o.z.apidiscovery.storage.Application     : The following profiles are active: docker-compose
+[33mstorage_1     |[0m 2017-02-07 14:18:11.942  INFO 8 --- [           main] ationConfigEmbeddedWebApplicationContext : Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@19e1023e: startup date [Tue Feb 07 14:18:11 UTC 2017]; root of context hierarchy
+[33mstorage_1     |[0m 2017-02-07 14:18:13.490  INFO 8 --- [           main] o.s.b.f.s.DefaultListableBeanFactory     : Overriding bean definition for bean 'ignoredPathsWebSecurityConfigurerAdapter' with a different definition: replacing [Root bean: class [null]; scope=; abstract=false; lazyInit=false; autowireMode=3; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=org.springframework.boot.autoconfigure.security.SpringBootWebSecurityConfiguration; factoryMethodName=ignoredPathsWebSecurityConfigurerAdapter; initMethodName=null; destroyMethodName=(inferred); defined in class path resource [org/springframework/boot/autoconfigure/security/SpringBootWebSecurityConfiguration.class]] with [Root bean: class [null]; scope=; abstract=false; lazyInit=false; autowireMode=3; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=org.springframework.boot.actuate.autoconfigure.ManagementWebSecurityAutoConfiguration; factoryMethodName=ignoredPathsWebSecurityConfigurerAdapter; initMethodName=null; destroyMethodName=(inferred); defined in class path resource [org/springframework/boot/actuate/autoconfigure/ManagementWebSecurityAutoConfiguration.class]]
+[33mstorage_1     |[0m 2017-02-07 14:18:14.731  INFO 8 --- [           main] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [class org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$e2c33955] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+[33mstorage_1     |[0m 2017-02-07 14:18:15.351  INFO 8 --- [           main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat initialized with port(s): 8080 (http)
+[33mstorage_1     |[0m 2017-02-07 14:18:15.369  INFO 8 --- [           main] o.apache.catalina.core.StandardService   : Starting service Tomcat
+[33mstorage_1     |[0m 2017-02-07 14:18:15.370  INFO 8 --- [           main] org.apache.catalina.core.StandardEngine  : Starting Servlet Engine: Apache Tomcat/8.5.6
+[33mstorage_1     |[0m 2017-02-07 14:18:15.514  INFO 8 --- [ost-startStop-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+[33mstorage_1     |[0m 2017-02-07 14:18:15.515  INFO 8 --- [ost-startStop-1] o.s.web.context.ContextLoader            : Root WebApplicationContext: initialization completed in 3576 ms
+[33mstorage_1     |[0m 2017-02-07 14:18:15.885  INFO 8 --- [ost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'metricsFilter' to: [/*]
+[33mstorage_1     |[0m 2017-02-07 14:18:15.885  INFO 8 --- [ost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'characterEncodingFilter' to: [/*]
+[33mstorage_1     |[0m 2017-02-07 14:18:15.886  INFO 8 --- [ost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+[33mstorage_1     |[0m 2017-02-07 14:18:15.886  INFO 8 --- [ost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'httpPutFormContentFilter' to: [/*]
+[33mstorage_1     |[0m 2017-02-07 14:18:15.886  INFO 8 --- [ost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'requestContextFilter' to: [/*]
+[33mstorage_1     |[0m 2017-02-07 14:18:15.888  INFO 8 --- [ost-startStop-1] .s.DelegatingFilterProxyRegistrationBean : Mapping filter: 'springSecurityFilterChain' to: [/*]
+[33mstorage_1     |[0m 2017-02-07 14:18:15.888  INFO 8 --- [ost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'webRequestLoggingFilter' to: [/*]
+[33mstorage_1     |[0m 2017-02-07 14:18:15.888  INFO 8 --- [ost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'applicationContextIdFilter' to: [/*]
+[33mstorage_1     |[0m 2017-02-07 14:18:15.888  INFO 8 --- [ost-startStop-1] o.s.b.w.servlet.ServletRegistrationBean  : Mapping servlet: 'dispatcherServlet' to [/]
+[33mstorage_1     |[0m 2017-02-07 14:18:16.195  INFO 8 --- [           main] o.f.core.internal.util.VersionPrinter    : Flyway 4.0.3 by Boxfuse
+[33mstorage_1     |[0m 2017-02-07 14:18:16.376  INFO 8 --- [           main] o.f.c.i.dbsupport.DbSupportFactory       : Database: jdbc:postgresql://postgres.local:5432/apis (PostgreSQL 9.6)
+[33mstorage_1     |[0m 2017-02-07 14:18:16.453  INFO 8 --- [           main] o.f.core.internal.command.DbValidate     : Successfully validated 6 migrations (execution time 00:00.020s)
+[33mstorage_1     |[0m 2017-02-07 14:18:16.478  INFO 8 --- [           main] o.f.core.internal.command.DbMigrate      : Current version of schema "public": 6
+[33mstorage_1     |[0m 2017-02-07 14:18:16.480  INFO 8 --- [           main] o.f.core.internal.command.DbMigrate      : Schema "public" is up to date. No migration necessary.
+[33mstorage_1     |[0m 2017-02-07 14:18:16.581  INFO 8 --- [           main] j.LocalContainerEntityManagerFactoryBean : Building JPA container EntityManagerFactory for persistence unit 'default'
+[33mstorage_1     |[0m 2017-02-07 14:18:16.612  INFO 8 --- [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [
+[33mstorage_1     |[0m 	name: default
+[33mstorage_1     |[0m 	...]
+[33mstorage_1     |[0m 2017-02-07 14:18:16.911  INFO 8 --- [           main] org.hibernate.Version                    : HHH000412: Hibernate Core {5.0.11.Final}
+[33mstorage_1     |[0m 2017-02-07 14:18:16.913  INFO 8 --- [           main] org.hibernate.cfg.Environment            : HHH000206: hibernate.properties not found
+[36mpostgres_1    |[0m The files belonging to this database system will be owned by user "postgres".
+[36mpostgres_1    |[0m This user must also own the server process.
+[33mstorage_1     |[0m 2017-02-07 14:18:16.916  INFO 8 --- [           main] org.hibernate.cfg.Environment            : HHH000021: Bytecode provider name : javassist
+[36mpostgres_1    |[0m 
+[36mpostgres_1    |[0m The database cluster will be initialized with locale "en_US.utf8".
+[36mpostgres_1    |[0m The default database encoding has accordingly been set to "UTF8".
+[36mpostgres_1    |[0m The default text search configuration will be set to "english".
+[36mpostgres_1    |[0m 
+[36mpostgres_1    |[0m Data page checksums are disabled.
+[33mstorage_1     |[0m 2017-02-07 14:18:16.976  INFO 8 --- [           main] o.hibernate.annotations.common.Version   : HCANN000001: Hibernate Commons Annotations {5.0.1.Final}
+[36mpostgres_1    |[0m 
+[36mpostgres_1    |[0m fixing permissions on existing directory /var/lib/postgresql/data ... ok
+[36mpostgres_1    |[0m creating subdirectories ... ok
+[36mpostgres_1    |[0m selecting default max_connections ... 100
+[36mpostgres_1    |[0m selecting default shared_buffers ... 128MB
+[36mpostgres_1    |[0m selecting dynamic shared memory implementation ... posix
+[36mpostgres_1    |[0m creating configuration files ... ok
+[36mpostgres_1    |[0m running bootstrap script ... ok
+[36mpostgres_1    |[0m performing post-bootstrap initialization ... ok
+[36mpostgres_1    |[0m syncing data to disk ... ok
+[36mpostgres_1    |[0m 
+[33mstorage_1     |[0m 2017-02-07 14:18:17.176  INFO 8 --- [           main] org.hibernate.dialect.Dialect            : HHH000400: Using dialect: org.hibernate.dialect.PostgreSQL94Dialect
+[36mpostgres_1    |[0m 
+[36mpostgres_1    |[0m WARNING: enabling "trust" authentication for local connections
+[36mpostgres_1    |[0m You can change this by editing pg_hba.conf or using the option -A, or
+[36mpostgres_1    |[0m --auth-local and --auth-host, the next time you run initdb.
+[36mpostgres_1    |[0m Success. You can now start the database server using:
+[33mstorage_1     |[0m 2017-02-07 14:18:17.372  INFO 8 --- [           main] o.h.e.j.e.i.LobCreatorBuilderImpl        : HHH000424: Disabling contextual LOB creation as createClob() method threw error : java.lang.reflect.InvocationTargetException
+[36mpostgres_1    |[0m 
+[36mpostgres_1    |[0m     pg_ctl -D /var/lib/postgresql/data -l logfile start
+[33mstorage_1     |[0m 2017-02-07 14:18:17.374  INFO 8 --- [           main] org.hibernate.type.BasicTypeRegistry     : HHH000270: Type registration [java.util.UUID] overrides previous : org.hibernate.type.UUIDBinaryType@69f1a286
+[36mpostgres_1    |[0m 
+[36mpostgres_1    |[0m waiting for server to start....LOG:  database system was shut down at 2017-02-07 12:58:56 UTC
+[36mpostgres_1    |[0m LOG:  MultiXact member wraparound protections are now enabled
+[36mpostgres_1    |[0m LOG:  database system is ready to accept connections
+[36mpostgres_1    |[0m LOG:  autovacuum launcher started
+[36mpostgres_1    |[0m  done
+[36mpostgres_1    |[0m server started
+[36mpostgres_1    |[0m CREATE DATABASE
+[33mstorage_1     |[0m 2017-02-07 14:18:17.808  INFO 8 --- [           main] o.h.tool.hbm2ddl.SchemaValidator         : HHH000229: Running schema validator
+[36mpostgres_1    |[0m 
+[36mpostgres_1    |[0m ALTER ROLE
+[36mpostgres_1    |[0m 
+[36mpostgres_1    |[0m 
+[36mpostgres_1    |[0m /docker-entrypoint.sh: ignoring /docker-entrypoint-initdb.d/*
+[36mpostgres_1    |[0m 
+[36mpostgres_1    |[0m LOG:  received fast shutdown request
+[33mstorage_1     |[0m 2017-02-07 14:18:17.886  INFO 8 --- [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+[36mpostgres_1    |[0m waiting for server to shut down....LOG:  aborting any active transactions
+[36mpostgres_1    |[0m LOG:  autovacuum launcher shutting down
+[36mpostgres_1    |[0m LOG:  shutting down
+[36mpostgres_1    |[0m LOG:  database system is shut down
+[36mpostgres_1    |[0m  done
+[36mpostgres_1    |[0m server stopped
+[36mpostgres_1    |[0m 
+[33mstorage_1     |[0m 2017-02-07 14:18:18.195  INFO 8 --- [           main] o.h.h.i.QueryTranslatorFactoryInitiator  : HHH000397: Using ASTQueryTranslatorFactory
+[36mpostgres_1    |[0m PostgreSQL init process complete; ready for start up.
+[33mstorage_1     |[0m 2017-02-07 14:18:18.965  INFO 8 --- [           main] s.w.s.m.m.a.RequestMappingHandlerAdapter : Looking for @ControllerAdvice: org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@19e1023e: startup date [Tue Feb 07 14:18:11 UTC 2017]; root of context hierarchy
+[36mpostgres_1    |[0m 
+[36mpostgres_1    |[0m LOG:  database system was shut down at 2017-02-07 12:58:58 UTC
+[36mpostgres_1    |[0m LOG:  MultiXact member wraparound protections are now enabled
+[33mstorage_1     |[0m 2017-02-07 14:18:19.073  INFO 8 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/apps/{applicationId}],methods=[GET]}" onto public org.springframework.http.ResponseEntity org.zalando.apidiscovery.storage.ApiDefinitionController.findOne(java.lang.String)
+[36mpostgres_1    |[0m LOG:  database system is ready to accept connections
+[36mpostgres_1    |[0m LOG:  autovacuum launcher started
+[36mpostgres_1    |[0m LOG:  received smart shutdown request
+[36mpostgres_1    |[0m LOG:  autovacuum launcher shutting down
+[36mpostgres_1    |[0m LOG:  shutting down
+[33mstorage_1     |[0m 2017-02-07 14:18:19.077  INFO 8 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/apps/{applicationId}/definition],methods=[GET]}" onto public org.springframework.http.ResponseEntity org.zalando.apidiscovery.storage.ApiDefinitionController.findDefinition(java.lang.String) throws java.io.IOException
+[36mpostgres_1    |[0m LOG:  database system is shut down
+[36mpostgres_1    |[0m LOG:  database system was shut down at 2017-02-07 13:00:10 UTC
+[36mpostgres_1    |[0m LOG:  MultiXact member wraparound protections are now enabled
+[36mpostgres_1    |[0m LOG:  database system is ready to accept connections
+[36mpostgres_1    |[0m LOG:  autovacuum launcher started
+[33mstorage_1     |[0m 2017-02-07 14:18:19.079  INFO 8 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/apps/{applicationId}],methods=[PUT]}" onto public org.springframework.http.ResponseEntity<java.lang.Void> org.zalando.apidiscovery.storage.ApiDefinitionController.persistOne(org.zalando.apidiscovery.storage.ApiDefinition,java.lang.String)
+[33mstorage_1     |[0m 2017-02-07 14:18:19.081  INFO 8 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/apps],methods=[GET]}" onto public java.util.List<org.zalando.apidiscovery.storage.ApiDefinitionListDto> org.zalando.apidiscovery.storage.ApiDefinitionController.listAll(java.lang.String)
+[33mstorage_1     |[0m 2017-02-07 14:18:19.084  INFO 8 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/.well-known/schema-discovery],methods=[GET],produces=[application/json]}" onto public org.zalando.twintip.spring.SchemaDiscovery org.zalando.twintip.spring.SchemaResource.discover(java.lang.String,java.lang.String,java.lang.String)
+[33mstorage_1     |[0m 2017-02-07 14:18:19.085  INFO 8 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/api],methods=[GET],produces=[application/json || */*]}" onto public org.springframework.http.ResponseEntity<java.lang.String> org.zalando.twintip.spring.SchemaResource.jsonSchema() throws com.fasterxml.jackson.core.JsonProcessingException
+[33mstorage_1     |[0m 2017-02-07 14:18:19.087  INFO 8 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/api],methods=[GET],produces=[application/yaml || application/x-yaml || text/yaml]}" onto public org.springframework.http.ResponseEntity<java.lang.String> org.zalando.twintip.spring.SchemaResource.yamlSchema() throws com.fasterxml.jackson.core.JsonProcessingException
+[33mstorage_1     |[0m 2017-02-07 14:18:19.090  INFO 8 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/error]}" onto public org.springframework.http.ResponseEntity<java.util.Map<java.lang.String, java.lang.Object>> org.springframework.boot.autoconfigure.web.BasicErrorController.error(javax.servlet.http.HttpServletRequest)
+[33mstorage_1     |[0m 2017-02-07 14:18:19.091  INFO 8 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/error],produces=[text/html]}" onto public org.springframework.web.servlet.ModelAndView org.springframework.boot.autoconfigure.web.BasicErrorController.errorHtml(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)
+[33mstorage_1     |[0m 2017-02-07 14:18:19.139  INFO 8 --- [           main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped URL path [/webjars/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+[33mstorage_1     |[0m 2017-02-07 14:18:19.140  INFO 8 --- [           main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped URL path [/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+[33mstorage_1     |[0m 2017-02-07 14:18:19.213  INFO 8 --- [           main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped URL path [/**/favicon.ico] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+[33mstorage_1     |[0m 2017-02-07 14:18:19.523  INFO 8 --- [           main] b.a.s.AuthenticationManagerConfiguration : 
+[33mstorage_1     |[0m 
+[33mstorage_1     |[0m Using default security password: 143bce2d-4a6a-4db5-86c4-875559f73685
+[33mstorage_1     |[0m 
+[33mstorage_1     |[0m 2017-02-07 14:18:19.616  INFO 8 --- [           main] o.s.s.web.DefaultSecurityFilterChain     : Creating filter chain: OrRequestMatcher [requestMatchers=[Ant [pattern='/css/**'], Ant [pattern='/js/**'], Ant [pattern='/images/**'], Ant [pattern='/webjars/**'], Ant [pattern='/**/favicon.ico'], Ant [pattern='/error']]], []
+[33mstorage_1     |[0m 2017-02-07 14:18:19.751  INFO 8 --- [           main] o.s.s.web.DefaultSecurityFilterChain     : Creating filter chain: org.springframework.boot.actuate.autoconfigure.ManagementWebSecurityAutoConfiguration$LazyEndpointPathRequestMatcher@7516e4e5, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@488eb7f2, org.springframework.security.web.context.SecurityContextPersistenceFilter@4212a0c8, org.springframework.security.web.header.HeaderWriterFilter@66b7550d, org.springframework.security.web.authentication.logout.LogoutFilter@655f7ea, org.springframework.security.web.authentication.www.BasicAuthenticationFilter@5a7005d, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@3b2c0e88, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@c1bd0be, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@5e81e5ac, org.springframework.security.web.session.SessionManagementFilter@7c541c15, org.springframework.security.web.access.ExceptionTranslationFilter@2a2c13a8, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@77a98a6a]
+[33mstorage_1     |[0m 2017-02-07 14:18:19.770  INFO 8 --- [           main] o.s.s.web.DefaultSecurityFilterChain     : Creating filter chain: org.springframework.boot.autoconfigure.security.SpringBootWebSecurityConfiguration$ApplicationNoWebSecurityConfigurerAdapter$1@686449f9, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@665df3c6, org.springframework.security.web.context.SecurityContextPersistenceFilter@478ee483, org.springframework.security.web.header.HeaderWriterFilter@3dd1dc90, org.springframework.security.web.csrf.CsrfFilter@6f0b0a5e, org.springframework.security.web.authentication.logout.LogoutFilter@58fe0499, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@1a7288a3, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@2974f221, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@68b6f0d6, org.springframework.security.web.session.SessionManagementFilter@abf688e, org.springframework.security.web.access.ExceptionTranslationFilter@320de594]
+[33mstorage_1     |[0m 2017-02-07 14:18:20.226  INFO 8 --- [           main] o.s.b.a.e.mvc.EndpointHandlerMapping     : Mapped "{[/health || /health.json],produces=[application/json]}" onto public java.lang.Object org.springframework.boot.actuate.endpoint.mvc.HealthMvcEndpoint.invoke(java.security.Principal)
+[33mstorage_1     |[0m 2017-02-07 14:18:20.230  INFO 8 --- [           main] o.s.b.a.e.mvc.EndpointHandlerMapping     : Mapped "{[/metrics/{name:.*}],methods=[GET],produces=[application/json]}" onto public java.lang.Object org.springframework.boot.actuate.endpoint.mvc.MetricsMvcEndpoint.value(java.lang.String)
+[33mstorage_1     |[0m 2017-02-07 14:18:20.230  INFO 8 --- [           main] o.s.b.a.e.mvc.EndpointHandlerMapping     : Mapped "{[/metrics || /metrics.json],methods=[GET],produces=[application/json]}" onto public java.lang.Object org.springframework.boot.actuate.endpoint.mvc.EndpointMvcAdapter.invoke()
+[33mstorage_1     |[0m 2017-02-07 14:18:20.411  INFO 8 --- [           main] o.s.j.e.a.AnnotationMBeanExporter        : Registering beans for JMX exposure on startup
+[33mstorage_1     |[0m 2017-02-07 14:18:20.425  INFO 8 --- [           main] o.s.c.support.DefaultLifecycleProcessor  : Starting beans in phase 0
+[33mstorage_1     |[0m 2017-02-07 14:18:20.475  INFO 8 --- [           main] s.a.ScheduledAnnotationBeanPostProcessor : No TaskScheduler/ScheduledExecutorService bean found for scheduled processing
+[33mstorage_1     |[0m 2017-02-07 14:18:20.553  INFO 8 --- [           main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat started on port(s): 8080 (http)
+[33mstorage_1     |[0m 2017-02-07 14:18:20.561  INFO 8 --- [           main] o.z.apidiscovery.storage.Application     : Started Application in 9.462 seconds (JVM running for 9.969)
+[32mswagger-ui_1  |[0m 2017-02-07T14:18:21.403Z - info: Successfully updated OAuth credentials.
+[33mstorage_1     |[0m 2017-02-07 14:18:27.938  INFO 8 --- [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring FrameworkServlet 'dispatcherServlet'
+[33mstorage_1     |[0m 2017-02-07 14:18:27.938  INFO 8 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : FrameworkServlet 'dispatcherServlet': initialization started
+[33mstorage_1     |[0m 2017-02-07 14:18:27.962  INFO 8 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : FrameworkServlet 'dispatcherServlet': initialization completed in 23 ms
+[33mstorage_1     |[0m 2017-02-07 14:18:28.108  INFO 8 --- [nio-8080-exec-1] o.z.a.storage.ApiDefinitionController    : Persisted api definition for petstore with status SUCCESS
+[33mstorage_1     |[0m 2017-02-07 14:18:28.168  INFO 8 --- [nio-8080-exec-3] o.z.a.storage.ApiDefinitionController    : Persisted api definition for uber with status SUCCESS
+[33mstorage_1     |[0m 2017-02-07 14:18:30.690  INFO 8 --- [nio-8080-exec-4] o.z.a.storage.ApiDefinitionController    : Retrieved all api definitions with lifecycle state active
+[33mstorage_1     |[0m 2017-02-07 14:18:30.790  INFO 8 --- [nio-8080-exec-5] o.z.a.storage.ApiDefinitionController    : Retrieve json of api definition for petstore
+[33mstorage_1     |[0m 2017-02-07 14:18:32.339  INFO 8 --- [nio-8080-exec-6] o.z.a.storage.ApiDefinitionController    : Retrieved all api definitions with lifecycle state active
+[33mstorage_1     |[0m 2017-02-07 14:18:32.421  INFO 8 --- [nio-8080-exec-7] o.z.a.storage.ApiDefinitionController    : Retrieve json of api definition for petstore
+[33mstorage_1     |[0m 2017-02-07 14:18:33.210  INFO 8 --- [nio-8080-exec-8] o.z.a.storage.ApiDefinitionController    : Retrieved all api definitions with lifecycle state active
+[33mstorage_1     |[0m 2017-02-07 14:18:33.288  INFO 8 --- [nio-8080-exec-9] o.z.a.storage.ApiDefinitionController    : Retrieve json of api definition for petstore
+[33mstorage_1     |[0m 2017-02-07 14:18:36.294  INFO 8 --- [io-8080-exec-10] o.z.a.storage.ApiDefinitionController    : Retrieve json of api definition for uber
+[33mstorage_1     |[0m 2017-02-07 14:18:38.256  INFO 8 --- [nio-8080-exec-1] o.z.a.storage.ApiDefinitionController    : Retrieved all api definitions with lifecycle state active
+[33mstorage_1     |[0m 2017-02-07 14:18:38.343  INFO 8 --- [nio-8080-exec-2] o.z.a.storage.ApiDefinitionController    : Retrieve json of api definition for petstore
+[33mapidiscovery_storage_1 exited with code 137
+[0m[35mstorage_1     |[0m 
+[35mstorage_1     |[0m   .   ____          _            __ _ _
+[35mstorage_1     |[0m  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+[35mstorage_1     |[0m ( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+[35mstorage_1     |[0m  \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+[35mstorage_1     |[0m   '  |____| .__|_| |_|_| |_\__, | / / / /
+[35mstorage_1     |[0m  =========|_|==============|___/=/_/_/_/
+[35mstorage_1     |[0m  :: Spring Boot ::        (v1.4.3.RELEASE)
+[35mstorage_1     |[0m 
+[35mstorage_1     |[0m 2017-02-07 14:22:28.230  INFO 7 --- [           main] o.z.apidiscovery.storage.Application     : Starting Application on 65ef4ab87c6e with PID 7 (/storage.jar started by root in /)
+[35mstorage_1     |[0m 2017-02-07 14:22:28.234  INFO 7 --- [           main] o.z.apidiscovery.storage.Application     : The following profiles are active: docker-compose
+[35mstorage_1     |[0m 2017-02-07 14:22:28.340  INFO 7 --- [           main] ationConfigEmbeddedWebApplicationContext : Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@19e1023e: startup date [Tue Feb 07 14:22:28 UTC 2017]; root of context hierarchy
+[35mstorage_1     |[0m 2017-02-07 14:22:29.924  INFO 7 --- [           main] o.s.b.f.s.DefaultListableBeanFactory     : Overriding bean definition for bean 'ignoredPathsWebSecurityConfigurerAdapter' with a different definition: replacing [Root bean: class [null]; scope=; abstract=false; lazyInit=false; autowireMode=3; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=org.springframework.boot.autoconfigure.security.SpringBootWebSecurityConfiguration; factoryMethodName=ignoredPathsWebSecurityConfigurerAdapter; initMethodName=null; destroyMethodName=(inferred); defined in class path resource [org/springframework/boot/autoconfigure/security/SpringBootWebSecurityConfiguration.class]] with [Root bean: class [null]; scope=; abstract=false; lazyInit=false; autowireMode=3; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=org.springframework.boot.actuate.autoconfigure.ManagementWebSecurityAutoConfiguration; factoryMethodName=ignoredPathsWebSecurityConfigurerAdapter; initMethodName=null; destroyMethodName=(inferred); defined in class path resource [org/springframework/boot/actuate/autoconfigure/ManagementWebSecurityAutoConfiguration.class]]
+[35mstorage_1     |[0m 2017-02-07 14:22:30.963  INFO 7 --- [           main] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [class org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$140e9ac6] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+[35mstorage_1     |[0m 2017-02-07 14:22:31.492  INFO 7 --- [           main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat initialized with port(s): 8080 (http)
+[35mstorage_1     |[0m 2017-02-07 14:22:31.510  INFO 7 --- [           main] o.apache.catalina.core.StandardService   : Starting service Tomcat
+[35mstorage_1     |[0m 2017-02-07 14:22:31.512  INFO 7 --- [           main] org.apache.catalina.core.StandardEngine  : Starting Servlet Engine: Apache Tomcat/8.5.6
+[35mstorage_1     |[0m 2017-02-07 14:22:31.617  INFO 7 --- [ost-startStop-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+[35mstorage_1     |[0m 2017-02-07 14:22:31.617  INFO 7 --- [ost-startStop-1] o.s.web.context.ContextLoader            : Root WebApplicationContext: initialization completed in 3281 ms
+[35mstorage_1     |[0m 2017-02-07 14:22:32.069  INFO 7 --- [ost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'metricsFilter' to: [/*]
+[35mstorage_1     |[0m 2017-02-07 14:22:32.070  INFO 7 --- [ost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'characterEncodingFilter' to: [/*]
+[35mstorage_1     |[0m 2017-02-07 14:22:32.070  INFO 7 --- [ost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+[35mstorage_1     |[0m 2017-02-07 14:22:32.070  INFO 7 --- [ost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'httpPutFormContentFilter' to: [/*]
+[35mstorage_1     |[0m 2017-02-07 14:22:32.070  INFO 7 --- [ost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'requestContextFilter' to: [/*]
+[35mstorage_1     |[0m 2017-02-07 14:22:32.071  INFO 7 --- [ost-startStop-1] .s.DelegatingFilterProxyRegistrationBean : Mapping filter: 'springSecurityFilterChain' to: [/*]
+[35mstorage_1     |[0m 2017-02-07 14:22:32.072  INFO 7 --- [ost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'webRequestLoggingFilter' to: [/*]
+[35mstorage_1     |[0m 2017-02-07 14:22:32.072  INFO 7 --- [ost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'applicationContextIdFilter' to: [/*]
+[35mstorage_1     |[0m 2017-02-07 14:22:32.072  INFO 7 --- [ost-startStop-1] o.s.b.w.servlet.ServletRegistrationBean  : Mapping servlet: 'dispatcherServlet' to [/]
+[35mstorage_1     |[0m 2017-02-07 14:22:32.328  INFO 7 --- [           main] o.f.core.internal.util.VersionPrinter    : Flyway 4.0.3 by Boxfuse
+[35mstorage_1     |[0m 2017-02-07 14:22:32.520  INFO 7 --- [           main] o.f.c.i.dbsupport.DbSupportFactory       : Database: jdbc:postgresql://postgres.local:5432/apis (PostgreSQL 9.6)
+[35mstorage_1     |[0m 2017-02-07 14:22:32.631  INFO 7 --- [           main] o.f.core.internal.command.DbValidate     : Successfully validated 6 migrations (execution time 00:00.026s)
+[35mstorage_1     |[0m 2017-02-07 14:22:32.670  INFO 7 --- [           main] o.f.core.internal.command.DbMigrate      : Current version of schema "public": 6
+[35mstorage_1     |[0m 2017-02-07 14:22:32.672  INFO 7 --- [           main] o.f.core.internal.command.DbMigrate      : Schema "public" is up to date. No migration necessary.
+[35mstorage_1     |[0m 2017-02-07 14:22:32.766  INFO 7 --- [           main] j.LocalContainerEntityManagerFactoryBean : Building JPA container EntityManagerFactory for persistence unit 'default'
+[35mstorage_1     |[0m 2017-02-07 14:22:32.785  INFO 7 --- [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [
+[35mstorage_1     |[0m 	name: default
+[35mstorage_1     |[0m 	...]
+[35mstorage_1     |[0m 2017-02-07 14:22:33.027  INFO 7 --- [           main] org.hibernate.Version                    : HHH000412: Hibernate Core {5.0.11.Final}
+[35mstorage_1     |[0m 2017-02-07 14:22:33.029  INFO 7 --- [           main] org.hibernate.cfg.Environment            : HHH000206: hibernate.properties not found
+[35mstorage_1     |[0m 2017-02-07 14:22:33.030  INFO 7 --- [           main] org.hibernate.cfg.Environment            : HHH000021: Bytecode provider name : javassist
+[35mstorage_1     |[0m 2017-02-07 14:22:33.070  INFO 7 --- [           main] o.hibernate.annotations.common.Version   : HCANN000001: Hibernate Commons Annotations {5.0.1.Final}
+[35mstorage_1     |[0m 2017-02-07 14:22:33.258  INFO 7 --- [           main] org.hibernate.dialect.Dialect            : HHH000400: Using dialect: org.hibernate.dialect.PostgreSQL94Dialect
+[35mstorage_1     |[0m 2017-02-07 14:22:33.405  INFO 7 --- [           main] o.h.e.j.e.i.LobCreatorBuilderImpl        : HHH000424: Disabling contextual LOB creation as createClob() method threw error : java.lang.reflect.InvocationTargetException
+[35mstorage_1     |[0m 2017-02-07 14:22:33.406  INFO 7 --- [           main] org.hibernate.type.BasicTypeRegistry     : HHH000270: Type registration [java.util.UUID] overrides previous : org.hibernate.type.UUIDBinaryType@7922d892
+[35mstorage_1     |[0m 2017-02-07 14:22:33.801  INFO 7 --- [           main] o.h.tool.hbm2ddl.SchemaValidator         : HHH000229: Running schema validator
+[35mstorage_1     |[0m 2017-02-07 14:22:33.879  INFO 7 --- [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+[35mstorage_1     |[0m 2017-02-07 14:22:34.235  INFO 7 --- [           main] o.h.h.i.QueryTranslatorFactoryInitiator  : HHH000397: Using ASTQueryTranslatorFactory
+[35mstorage_1     |[0m 2017-02-07 14:22:34.953  INFO 7 --- [           main] s.w.s.m.m.a.RequestMappingHandlerAdapter : Looking for @ControllerAdvice: org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@19e1023e: startup date [Tue Feb 07 14:22:28 UTC 2017]; root of context hierarchy
+[35mstorage_1     |[0m 2017-02-07 14:22:35.038  INFO 7 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/apps/{applicationId}],methods=[GET]}" onto public org.springframework.http.ResponseEntity org.zalando.apidiscovery.storage.ApiDefinitionController.findOne(java.lang.String)
+[35mstorage_1     |[0m 2017-02-07 14:22:35.040  INFO 7 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/apps],methods=[GET]}" onto public java.util.List<org.zalando.apidiscovery.storage.ApiDefinitionListDto> org.zalando.apidiscovery.storage.ApiDefinitionController.listAll(java.lang.String)
+[35mstorage_1     |[0m 2017-02-07 14:22:35.041  INFO 7 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/apps/{applicationId}/definition],methods=[GET]}" onto public org.springframework.http.ResponseEntity org.zalando.apidiscovery.storage.ApiDefinitionController.findDefinition(java.lang.String) throws java.io.IOException
+[35mstorage_1     |[0m 2017-02-07 14:22:35.042  INFO 7 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/apps/{applicationId}],methods=[PUT]}" onto public org.springframework.http.ResponseEntity<java.lang.Void> org.zalando.apidiscovery.storage.ApiDefinitionController.persistOne(org.zalando.apidiscovery.storage.ApiDefinition,java.lang.String)
+[35mstorage_1     |[0m 2017-02-07 14:22:35.043  INFO 7 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/.well-known/schema-discovery],methods=[GET],produces=[application/json]}" onto public org.zalando.twintip.spring.SchemaDiscovery org.zalando.twintip.spring.SchemaResource.discover(java.lang.String,java.lang.String,java.lang.String)
+[35mstorage_1     |[0m 2017-02-07 14:22:35.044  INFO 7 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/api],methods=[GET],produces=[application/json || */*]}" onto public org.springframework.http.ResponseEntity<java.lang.String> org.zalando.twintip.spring.SchemaResource.jsonSchema() throws com.fasterxml.jackson.core.JsonProcessingException
+[35mstorage_1     |[0m 2017-02-07 14:22:35.045  INFO 7 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/api],methods=[GET],produces=[application/yaml || application/x-yaml || text/yaml]}" onto public org.springframework.http.ResponseEntity<java.lang.String> org.zalando.twintip.spring.SchemaResource.yamlSchema() throws com.fasterxml.jackson.core.JsonProcessingException
+[35mstorage_1     |[0m 2017-02-07 14:22:35.047  INFO 7 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/error],produces=[text/html]}" onto public org.springframework.web.servlet.ModelAndView org.springframework.boot.autoconfigure.web.BasicErrorController.errorHtml(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)
+[35mstorage_1     |[0m 2017-02-07 14:22:35.047  INFO 7 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/error]}" onto public org.springframework.http.ResponseEntity<java.util.Map<java.lang.String, java.lang.Object>> org.springframework.boot.autoconfigure.web.BasicErrorController.error(javax.servlet.http.HttpServletRequest)
+[35mstorage_1     |[0m 2017-02-07 14:22:35.080  INFO 7 --- [           main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped URL path [/webjars/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+[35mstorage_1     |[0m 2017-02-07 14:22:35.080  INFO 7 --- [           main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped URL path [/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+[35mstorage_1     |[0m 2017-02-07 14:22:35.136  INFO 7 --- [           main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped URL path [/**/favicon.ico] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+[35mstorage_1     |[0m 2017-02-07 14:22:35.370  INFO 7 --- [           main] b.a.s.AuthenticationManagerConfiguration : 
+[35mstorage_1     |[0m 
+[35mstorage_1     |[0m Using default security password: 8db013e6-5ba4-43b5-881a-1826121c53be
+[35mstorage_1     |[0m 
+[35mstorage_1     |[0m 2017-02-07 14:22:35.439  INFO 7 --- [           main] o.s.s.web.DefaultSecurityFilterChain     : Creating filter chain: OrRequestMatcher [requestMatchers=[Ant [pattern='/css/**'], Ant [pattern='/js/**'], Ant [pattern='/images/**'], Ant [pattern='/webjars/**'], Ant [pattern='/**/favicon.ico'], Ant [pattern='/error']]], []
+[35mstorage_1     |[0m 2017-02-07 14:22:35.573  INFO 7 --- [           main] o.s.s.web.DefaultSecurityFilterChain     : Creating filter chain: org.springframework.boot.actuate.autoconfigure.ManagementWebSecurityAutoConfiguration$LazyEndpointPathRequestMatcher@5e81e5ac, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@4189d70b, org.springframework.security.web.context.SecurityContextPersistenceFilter@3b2c0e88, org.springframework.security.web.header.HeaderWriterFilter@7c541c15, org.springframework.security.web.authentication.logout.LogoutFilter@4b3a45f1, org.springframework.security.web.authentication.www.BasicAuthenticationFilter@1021f6c9, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@c1bd0be, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@1c6804cd, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@3fa2213, org.springframework.security.web.session.SessionManagementFilter@698122b2, org.springframework.security.web.access.ExceptionTranslationFilter@6b44435b, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@3e10dc6]
+[35mstorage_1     |[0m 2017-02-07 14:22:35.599  INFO 7 --- [           main] o.s.s.web.DefaultSecurityFilterChain     : Creating filter chain: org.springframework.boot.autoconfigure.security.SpringBootWebSecurityConfiguration$ApplicationNoWebSecurityConfigurerAdapter$1@68b6f0d6, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@4044fb95, org.springframework.security.web.context.SecurityContextPersistenceFilter@2974f221, org.springframework.security.web.header.HeaderWriterFilter@478ee483, org.springframework.security.web.csrf.CsrfFilter@320de594, org.springframework.security.web.authentication.logout.LogoutFilter@665df3c6, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@58fe0499, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@686449f9, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@aa549e5, org.springframework.security.web.session.SessionManagementFilter@1a7288a3, org.springframework.security.web.access.ExceptionTranslationFilter@abf688e]
+[35mstorage_1     |[0m 2017-02-07 14:22:36.079  INFO 7 --- [           main] o.s.b.a.e.mvc.EndpointHandlerMapping     : Mapped "{[/health || /health.json],produces=[application/json]}" onto public java.lang.Object org.springframework.boot.actuate.endpoint.mvc.HealthMvcEndpoint.invoke(java.security.Principal)
+[35mstorage_1     |[0m 2017-02-07 14:22:36.082  INFO 7 --- [           main] o.s.b.a.e.mvc.EndpointHandlerMapping     : Mapped "{[/metrics/{name:.*}],methods=[GET],produces=[application/json]}" onto public java.lang.Object org.springframework.boot.actuate.endpoint.mvc.MetricsMvcEndpoint.value(java.lang.String)
+[35mstorage_1     |[0m 2017-02-07 14:22:36.082  INFO 7 --- [           main] o.s.b.a.e.mvc.EndpointHandlerMapping     : Mapped "{[/metrics || /metrics.json],methods=[GET],produces=[application/json]}" onto public java.lang.Object org.springframework.boot.actuate.endpoint.mvc.EndpointMvcAdapter.invoke()
+[35mstorage_1     |[0m 2017-02-07 14:22:36.304  INFO 7 --- [           main] o.s.j.e.a.AnnotationMBeanExporter        : Registering beans for JMX exposure on startup
+[35mstorage_1     |[0m 2017-02-07 14:22:36.322  INFO 7 --- [           main] o.s.c.support.DefaultLifecycleProcessor  : Starting beans in phase 0
+[35mstorage_1     |[0m 2017-02-07 14:22:36.381  INFO 7 --- [           main] s.a.ScheduledAnnotationBeanPostProcessor : No TaskScheduler/ScheduledExecutorService bean found for scheduled processing
+[35mstorage_1     |[0m 2017-02-07 14:22:36.459  INFO 7 --- [           main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat started on port(s): 8080 (http)
+[35mstorage_1     |[0m 2017-02-07 14:22:36.490  INFO 7 --- [           main] o.z.apidiscovery.storage.Application     : Started Application in 8.92 seconds (JVM running for 9.385)
+[32mapidiscovery_swagger-ui_1 exited with code 137
+[0m[31mswagger-ui_1  |[0m 2017-02-07T14:22:37.847Z - info: Successfully updated OAuth credentials.
+[35mstorage_1     |[0m 2017-02-07 14:22:44.382  INFO 7 --- [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring FrameworkServlet 'dispatcherServlet'
+[35mstorage_1     |[0m 2017-02-07 14:22:44.382  INFO 7 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : FrameworkServlet 'dispatcherServlet': initialization started
+[35mstorage_1     |[0m 2017-02-07 14:22:44.407  INFO 7 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : FrameworkServlet 'dispatcherServlet': initialization completed in 25 ms
+[35mstorage_1     |[0m 2017-02-07 14:22:44.605  INFO 7 --- [nio-8080-exec-1] o.z.a.storage.ApiDefinitionController    : Persisted api definition for petstore with status SUCCESS
+[35mstorage_1     |[0m 2017-02-07 14:22:44.670  INFO 7 --- [nio-8080-exec-2] o.z.a.storage.ApiDefinitionController    : Persisted api definition for uber with status SUCCESS
+[35mstorage_1     |[0m 2017-02-07 14:22:50.849  INFO 7 --- [nio-8080-exec-3] o.z.a.storage.ApiDefinitionController    : Retrieved all api definitions with lifecycle state active
+[35mstorage_1     |[0m 2017-02-07 14:22:50.938  INFO 7 --- [nio-8080-exec-4] o.z.a.storage.ApiDefinitionController    : Retrieve json of api definition for petstore
+[35mstorage_1     |[0m 2017-02-07 14:22:53.330  INFO 7 --- [nio-8080-exec-5] o.z.a.storage.ApiDefinitionController    : Retrieve json of api definition for uber
+[35mstorage_1     |[0m 2017-02-07 14:22:55.051  INFO 7 --- [nio-8080-exec-6] o.z.a.storage.ApiDefinitionController    : Retrieve json of api definition for petstore
+[35mstorage_1     |[0m 2017-02-07 14:22:56.738  INFO 7 --- [nio-8080-exec-7] o.z.a.storage.ApiDefinitionController    : Retrieve json of api definition for uber
+[35mapidiscovery_storage_1 exited with code 137
+[0m[34mstorage_1     |[0m 
+[34mstorage_1     |[0m   .   ____          _            __ _ _
+[34mstorage_1     |[0m  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+[34mstorage_1     |[0m ( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+[34mstorage_1     |[0m  \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+[34mstorage_1     |[0m   '  |____| .__|_| |_|_| |_\__, | / / / /
+[34mstorage_1     |[0m  =========|_|==============|___/=/_/_/_/
+[34mstorage_1     |[0m  :: Spring Boot ::        (v1.4.3.RELEASE)
+[34mstorage_1     |[0m 
+[34mstorage_1     |[0m 2017-02-07 14:26:22.568  INFO 8 --- [           main] o.z.apidiscovery.storage.Application     : Starting Application on da131e091053 with PID 8 (/storage.jar started by root in /)
+[34mstorage_1     |[0m 2017-02-07 14:26:22.574  INFO 8 --- [           main] o.z.apidiscovery.storage.Application     : The following profiles are active: docker-compose
+[34mstorage_1     |[0m 2017-02-07 14:26:22.709  INFO 8 --- [           main] ationConfigEmbeddedWebApplicationContext : Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@19e1023e: startup date [Tue Feb 07 14:26:22 UTC 2017]; root of context hierarchy
+[34mstorage_1     |[0m 2017-02-07 14:26:24.474  INFO 8 --- [           main] o.s.b.f.s.DefaultListableBeanFactory     : Overriding bean definition for bean 'ignoredPathsWebSecurityConfigurerAdapter' with a different definition: replacing [Root bean: class [null]; scope=; abstract=false; lazyInit=false; autowireMode=3; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=org.springframework.boot.autoconfigure.security.SpringBootWebSecurityConfiguration; factoryMethodName=ignoredPathsWebSecurityConfigurerAdapter; initMethodName=null; destroyMethodName=(inferred); defined in class path resource [org/springframework/boot/autoconfigure/security/SpringBootWebSecurityConfiguration.class]] with [Root bean: class [null]; scope=; abstract=false; lazyInit=false; autowireMode=3; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=org.springframework.boot.actuate.autoconfigure.ManagementWebSecurityAutoConfiguration; factoryMethodName=ignoredPathsWebSecurityConfigurerAdapter; initMethodName=null; destroyMethodName=(inferred); defined in class path resource [org/springframework/boot/actuate/autoconfigure/ManagementWebSecurityAutoConfiguration.class]]
+[34mstorage_1     |[0m 2017-02-07 14:26:25.516  INFO 8 --- [           main] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [class org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$c7f9dc83] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+[34mstorage_1     |[0m 2017-02-07 14:26:26.157  INFO 8 --- [           main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat initialized with port(s): 8080 (http)
+[34mstorage_1     |[0m 2017-02-07 14:26:26.178  INFO 8 --- [           main] o.apache.catalina.core.StandardService   : Starting service Tomcat
+[34mstorage_1     |[0m 2017-02-07 14:26:26.180  INFO 8 --- [           main] org.apache.catalina.core.StandardEngine  : Starting Servlet Engine: Apache Tomcat/8.5.6
+[34mstorage_1     |[0m 2017-02-07 14:26:26.299  INFO 8 --- [ost-startStop-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+[34mstorage_1     |[0m 2017-02-07 14:26:26.299  INFO 8 --- [ost-startStop-1] o.s.web.context.ContextLoader            : Root WebApplicationContext: initialization completed in 3593 ms
+[34mstorage_1     |[0m 2017-02-07 14:26:26.707  INFO 8 --- [ost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'metricsFilter' to: [/*]
+[34mstorage_1     |[0m 2017-02-07 14:26:26.708  INFO 8 --- [ost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'characterEncodingFilter' to: [/*]
+[34mstorage_1     |[0m 2017-02-07 14:26:26.708  INFO 8 --- [ost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+[34mstorage_1     |[0m 2017-02-07 14:26:26.708  INFO 8 --- [ost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'httpPutFormContentFilter' to: [/*]
+[34mstorage_1     |[0m 2017-02-07 14:26:26.708  INFO 8 --- [ost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'requestContextFilter' to: [/*]
+[34mstorage_1     |[0m 2017-02-07 14:26:26.710  INFO 8 --- [ost-startStop-1] .s.DelegatingFilterProxyRegistrationBean : Mapping filter: 'springSecurityFilterChain' to: [/*]
+[34mstorage_1     |[0m 2017-02-07 14:26:26.710  INFO 8 --- [ost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'webRequestLoggingFilter' to: [/*]
+[34mstorage_1     |[0m 2017-02-07 14:26:26.710  INFO 8 --- [ost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'applicationContextIdFilter' to: [/*]
+[34mstorage_1     |[0m 2017-02-07 14:26:26.711  INFO 8 --- [ost-startStop-1] o.s.b.w.servlet.ServletRegistrationBean  : Mapping servlet: 'dispatcherServlet' to [/]
+[34mstorage_1     |[0m 2017-02-07 14:26:26.980  INFO 8 --- [           main] o.f.core.internal.util.VersionPrinter    : Flyway 4.0.3 by Boxfuse
+[34mstorage_1     |[0m 2017-02-07 14:26:27.142  INFO 8 --- [           main] o.f.c.i.dbsupport.DbSupportFactory       : Database: jdbc:postgresql://postgres.local:5432/apis (PostgreSQL 9.6)
+[34mstorage_1     |[0m 2017-02-07 14:26:27.196  INFO 8 --- [           main] o.f.core.internal.command.DbValidate     : Successfully validated 6 migrations (execution time 00:00.015s)
+[34mstorage_1     |[0m 2017-02-07 14:26:27.217  INFO 8 --- [           main] o.f.core.internal.command.DbMigrate      : Current version of schema "public": 6
+[34mstorage_1     |[0m 2017-02-07 14:26:27.219  INFO 8 --- [           main] o.f.core.internal.command.DbMigrate      : Schema "public" is up to date. No migration necessary.
+[34mstorage_1     |[0m 2017-02-07 14:26:27.297  INFO 8 --- [           main] j.LocalContainerEntityManagerFactoryBean : Building JPA container EntityManagerFactory for persistence unit 'default'
+[34mstorage_1     |[0m 2017-02-07 14:26:27.321  INFO 8 --- [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [
+[34mstorage_1     |[0m 	name: default
+[34mstorage_1     |[0m 	...]
+[34mstorage_1     |[0m 2017-02-07 14:26:27.562  INFO 8 --- [           main] org.hibernate.Version                    : HHH000412: Hibernate Core {5.0.11.Final}
+[34mstorage_1     |[0m 2017-02-07 14:26:27.564  INFO 8 --- [           main] org.hibernate.cfg.Environment            : HHH000206: hibernate.properties not found
+[34mstorage_1     |[0m 2017-02-07 14:26:27.567  INFO 8 --- [           main] org.hibernate.cfg.Environment            : HHH000021: Bytecode provider name : javassist
+[34mstorage_1     |[0m 2017-02-07 14:26:27.629  INFO 8 --- [           main] o.hibernate.annotations.common.Version   : HCANN000001: Hibernate Commons Annotations {5.0.1.Final}
+[34mstorage_1     |[0m 2017-02-07 14:26:27.823  INFO 8 --- [           main] org.hibernate.dialect.Dialect            : HHH000400: Using dialect: org.hibernate.dialect.PostgreSQL94Dialect
+[34mstorage_1     |[0m 2017-02-07 14:26:28.000  INFO 8 --- [           main] o.h.e.j.e.i.LobCreatorBuilderImpl        : HHH000424: Disabling contextual LOB creation as createClob() method threw error : java.lang.reflect.InvocationTargetException
+[34mstorage_1     |[0m 2017-02-07 14:26:28.002  INFO 8 --- [           main] org.hibernate.type.BasicTypeRegistry     : HHH000270: Type registration [java.util.UUID] overrides previous : org.hibernate.type.UUIDBinaryType@457c9034
+[34mstorage_1     |[0m 2017-02-07 14:26:28.364  INFO 8 --- [           main] o.h.tool.hbm2ddl.SchemaValidator         : HHH000229: Running schema validator
+[34mstorage_1     |[0m 2017-02-07 14:26:28.439  INFO 8 --- [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+[34mstorage_1     |[0m 2017-02-07 14:26:28.706  INFO 8 --- [           main] o.h.h.i.QueryTranslatorFactoryInitiator  : HHH000397: Using ASTQueryTranslatorFactory
+[34mstorage_1     |[0m 2017-02-07 14:26:29.420  INFO 8 --- [           main] s.w.s.m.m.a.RequestMappingHandlerAdapter : Looking for @ControllerAdvice: org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@19e1023e: startup date [Tue Feb 07 14:26:22 UTC 2017]; root of context hierarchy
+[34mstorage_1     |[0m 2017-02-07 14:26:29.533  INFO 8 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/apps/{applicationId}],methods=[GET]}" onto public org.springframework.http.ResponseEntity org.zalando.apidiscovery.storage.ApiDefinitionController.findOne(java.lang.String)
+[34mstorage_1     |[0m 2017-02-07 14:26:29.537  INFO 8 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/apps/{applicationId}/definition],methods=[GET]}" onto public org.springframework.http.ResponseEntity org.zalando.apidiscovery.storage.ApiDefinitionController.findDefinition(java.lang.String) throws java.io.IOException
+[34mstorage_1     |[0m 2017-02-07 14:26:29.537  INFO 8 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/apps/{applicationId}],methods=[PUT]}" onto public org.springframework.http.ResponseEntity<java.lang.Void> org.zalando.apidiscovery.storage.ApiDefinitionController.persistOne(org.zalando.apidiscovery.storage.ApiDefinition,java.lang.String)
+[34mstorage_1     |[0m 2017-02-07 14:26:29.538  INFO 8 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/apps],methods=[GET]}" onto public java.util.List<org.zalando.apidiscovery.storage.ApiDefinitionListDto> org.zalando.apidiscovery.storage.ApiDefinitionController.listAll(java.lang.String)
+[34mstorage_1     |[0m 2017-02-07 14:26:29.540  INFO 8 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/.well-known/schema-discovery],methods=[GET],produces=[application/json]}" onto public org.zalando.twintip.spring.SchemaDiscovery org.zalando.twintip.spring.SchemaResource.discover(java.lang.String,java.lang.String,java.lang.String)
+[34mstorage_1     |[0m 2017-02-07 14:26:29.541  INFO 8 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/api],methods=[GET],produces=[application/json || */*]}" onto public org.springframework.http.ResponseEntity<java.lang.String> org.zalando.twintip.spring.SchemaResource.jsonSchema() throws com.fasterxml.jackson.core.JsonProcessingException
+[34mstorage_1     |[0m 2017-02-07 14:26:29.541  INFO 8 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/api],methods=[GET],produces=[application/yaml || application/x-yaml || text/yaml]}" onto public org.springframework.http.ResponseEntity<java.lang.String> org.zalando.twintip.spring.SchemaResource.yamlSchema() throws com.fasterxml.jackson.core.JsonProcessingException
+[34mstorage_1     |[0m 2017-02-07 14:26:29.543  INFO 8 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/error],produces=[text/html]}" onto public org.springframework.web.servlet.ModelAndView org.springframework.boot.autoconfigure.web.BasicErrorController.errorHtml(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)
+[34mstorage_1     |[0m 2017-02-07 14:26:29.544  INFO 8 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/error]}" onto public org.springframework.http.ResponseEntity<java.util.Map<java.lang.String, java.lang.Object>> org.springframework.boot.autoconfigure.web.BasicErrorController.error(javax.servlet.http.HttpServletRequest)
+[34mstorage_1     |[0m 2017-02-07 14:26:29.598  INFO 8 --- [           main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped URL path [/webjars/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+[34mstorage_1     |[0m 2017-02-07 14:26:29.598  INFO 8 --- [           main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped URL path [/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+[34mstorage_1     |[0m 2017-02-07 14:26:29.674  INFO 8 --- [           main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped URL path [/**/favicon.ico] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+[34mstorage_1     |[0m 2017-02-07 14:26:29.946  INFO 8 --- [           main] b.a.s.AuthenticationManagerConfiguration : 
+[34mstorage_1     |[0m 
+[34mstorage_1     |[0m Using default security password: 90e3f295-f70c-441e-90eb-5998352c67ef
+[34mstorage_1     |[0m 
+[34mstorage_1     |[0m 2017-02-07 14:26:30.008  INFO 8 --- [           main] o.s.s.web.DefaultSecurityFilterChain     : Creating filter chain: OrRequestMatcher [requestMatchers=[Ant [pattern='/css/**'], Ant [pattern='/js/**'], Ant [pattern='/images/**'], Ant [pattern='/webjars/**'], Ant [pattern='/**/favicon.ico'], Ant [pattern='/error']]], []
+[34mstorage_1     |[0m 2017-02-07 14:26:30.119  INFO 8 --- [           main] o.s.s.web.DefaultSecurityFilterChain     : Creating filter chain: org.springframework.boot.actuate.autoconfigure.ManagementWebSecurityAutoConfiguration$LazyEndpointPathRequestMatcher@4189d70b, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@3fa2213, org.springframework.security.web.context.SecurityContextPersistenceFilter@5bd82fed, org.springframework.security.web.header.HeaderWriterFilter@3542162a, org.springframework.security.web.authentication.logout.LogoutFilter@17a87e37, org.springframework.security.web.authentication.www.BasicAuthenticationFilter@7516e4e5, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@476b0ae6, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@655f7ea, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@3e7634b9, org.springframework.security.web.session.SessionManagementFilter@4212a0c8, org.springframework.security.web.access.ExceptionTranslationFilter@2ccca26f, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@7e22550a]
+[34mstorage_1     |[0m 2017-02-07 14:26:30.136  INFO 8 --- [           main] o.s.s.web.DefaultSecurityFilterChain     : Creating filter chain: org.springframework.boot.autoconfigure.security.SpringBootWebSecurityConfiguration$ApplicationNoWebSecurityConfigurerAdapter$1@4044fb95, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@aa549e5, org.springframework.security.web.context.SecurityContextPersistenceFilter@58fe0499, org.springframework.security.web.header.HeaderWriterFilter@1a7288a3, org.springframework.security.web.csrf.CsrfFilter@3dd1dc90, org.springframework.security.web.authentication.logout.LogoutFilter@68b6f0d6, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@686449f9, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@665df3c6, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@36f48b4, org.springframework.security.web.session.SessionManagementFilter@2974f221, org.springframework.security.web.access.ExceptionTranslationFilter@478ee483]
+[34mstorage_1     |[0m 2017-02-07 14:26:30.592  INFO 8 --- [           main] o.s.b.a.e.mvc.EndpointHandlerMapping     : Mapped "{[/metrics/{name:.*}],methods=[GET],produces=[application/json]}" onto public java.lang.Object org.springframework.boot.actuate.endpoint.mvc.MetricsMvcEndpoint.value(java.lang.String)
+[34mstorage_1     |[0m 2017-02-07 14:26:30.594  INFO 8 --- [           main] o.s.b.a.e.mvc.EndpointHandlerMapping     : Mapped "{[/metrics || /metrics.json],methods=[GET],produces=[application/json]}" onto public java.lang.Object org.springframework.boot.actuate.endpoint.mvc.EndpointMvcAdapter.invoke()
+[34mstorage_1     |[0m 2017-02-07 14:26:30.595  INFO 8 --- [           main] o.s.b.a.e.mvc.EndpointHandlerMapping     : Mapped "{[/health || /health.json],produces=[application/json]}" onto public java.lang.Object org.springframework.boot.actuate.endpoint.mvc.HealthMvcEndpoint.invoke(java.security.Principal)
+[34mstorage_1     |[0m 2017-02-07 14:26:30.772  INFO 8 --- [           main] o.s.j.e.a.AnnotationMBeanExporter        : Registering beans for JMX exposure on startup
+[34mstorage_1     |[0m 2017-02-07 14:26:30.785  INFO 8 --- [           main] o.s.c.support.DefaultLifecycleProcessor  : Starting beans in phase 0
+[34mstorage_1     |[0m 2017-02-07 14:26:30.827  INFO 8 --- [           main] s.a.ScheduledAnnotationBeanPostProcessor : No TaskScheduler/ScheduledExecutorService bean found for scheduled processing
+[34mstorage_1     |[0m 2017-02-07 14:26:30.893  INFO 8 --- [           main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat started on port(s): 8080 (http)
+[34mstorage_1     |[0m 2017-02-07 14:26:30.908  INFO 8 --- [           main] o.z.apidiscovery.storage.Application     : Started Application in 8.965 seconds (JVM running for 9.462)
+[31mapidiscovery_swagger-ui_1 exited with code 137
+[0m[36;1mswagger-ui_1  |[0m 2017-02-07T14:26:32.182Z - info: Successfully updated OAuth credentials.
+[34mstorage_1     |[0m 2017-02-07 14:26:38.790  INFO 8 --- [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring FrameworkServlet 'dispatcherServlet'
+[34mstorage_1     |[0m 2017-02-07 14:26:38.790  INFO 8 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : FrameworkServlet 'dispatcherServlet': initialization started
+[34mstorage_1     |[0m 2017-02-07 14:26:38.812  INFO 8 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : FrameworkServlet 'dispatcherServlet': initialization completed in 21 ms
+[34mstorage_1     |[0m 2017-02-07 14:26:39.006  INFO 8 --- [nio-8080-exec-1] o.z.a.storage.ApiDefinitionController    : Persisted api definition for petstore with status SUCCESS
+[34mstorage_1     |[0m 2017-02-07 14:26:39.067  INFO 8 --- [nio-8080-exec-2] o.z.a.storage.ApiDefinitionController    : Persisted api definition for uber with status SUCCESS
+[34mstorage_1     |[0m 2017-02-07 14:27:08.858  INFO 8 --- [nio-8080-exec-3] o.z.a.storage.ApiDefinitionController    : Retrieved all api definitions with lifecycle state active
+[34mstorage_1     |[0m 2017-02-07 14:27:08.940  INFO 8 --- [nio-8080-exec-4] o.z.a.storage.ApiDefinitionController    : Retrieve json of api definition for petstore
+[34mstorage_1     |[0m 2017-02-07 14:27:11.486  INFO 8 --- [nio-8080-exec-5] o.z.a.storage.ApiDefinitionController    : Retrieve json of api definition for uber
+[34mstorage_1     |[0m 2017-02-07 14:27:13.530  INFO 8 --- [nio-8080-exec-6] o.z.a.storage.ApiDefinitionController    : Retrieve json of api definition for petstore
+[34mapidiscovery_storage_1 exited with code 137
+[0m[33;1mstorage_1     |[0m 
+[33;1mstorage_1     |[0m   .   ____          _            __ _ _
+[33;1mstorage_1     |[0m  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+[33;1mstorage_1     |[0m ( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+[33;1mstorage_1     |[0m  \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+[33;1mstorage_1     |[0m   '  |____| .__|_| |_|_| |_\__, | / / / /
+[33;1mstorage_1     |[0m  =========|_|==============|___/=/_/_/_/
+[33;1mstorage_1     |[0m  :: Spring Boot ::        (v1.4.3.RELEASE)
+[33;1mstorage_1     |[0m 
+[33;1mstorage_1     |[0m 2017-02-07 14:29:42.685  INFO 7 --- [           main] o.z.apidiscovery.storage.Application     : Starting Application on 75fa22245ace with PID 7 (/storage.jar started by root in /)
+[33;1mstorage_1     |[0m 2017-02-07 14:29:42.693  INFO 7 --- [           main] o.z.apidiscovery.storage.Application     : The following profiles are active: docker-compose
+[33;1mstorage_1     |[0m 2017-02-07 14:29:42.848  INFO 7 --- [           main] ationConfigEmbeddedWebApplicationContext : Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@19e1023e: startup date [Tue Feb 07 14:29:42 UTC 2017]; root of context hierarchy
+[33;1mstorage_1     |[0m 2017-02-07 14:29:44.874  INFO 7 --- [           main] o.s.b.f.s.DefaultListableBeanFactory     : Overriding bean definition for bean 'ignoredPathsWebSecurityConfigurerAdapter' with a different definition: replacing [Root bean: class [null]; scope=; abstract=false; lazyInit=false; autowireMode=3; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=org.springframework.boot.autoconfigure.security.SpringBootWebSecurityConfiguration; factoryMethodName=ignoredPathsWebSecurityConfigurerAdapter; initMethodName=null; destroyMethodName=(inferred); defined in class path resource [org/springframework/boot/autoconfigure/security/SpringBootWebSecurityConfiguration.class]] with [Root bean: class [null]; scope=; abstract=false; lazyInit=false; autowireMode=3; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=org.springframework.boot.actuate.autoconfigure.ManagementWebSecurityAutoConfiguration; factoryMethodName=ignoredPathsWebSecurityConfigurerAdapter; initMethodName=null; destroyMethodName=(inferred); defined in class path resource [org/springframework/boot/actuate/autoconfigure/ManagementWebSecurityAutoConfiguration.class]]
+[33;1mstorage_1     |[0m 2017-02-07 14:29:45.970  INFO 7 --- [           main] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [class org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$e2c33955] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+[33;1mstorage_1     |[0m 2017-02-07 14:29:46.661  INFO 7 --- [           main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat initialized with port(s): 8080 (http)
+[33;1mstorage_1     |[0m 2017-02-07 14:29:46.681  INFO 7 --- [           main] o.apache.catalina.core.StandardService   : Starting service Tomcat
+[33;1mstorage_1     |[0m 2017-02-07 14:29:46.683  INFO 7 --- [           main] org.apache.catalina.core.StandardEngine  : Starting Servlet Engine: Apache Tomcat/8.5.6
+[33;1mstorage_1     |[0m 2017-02-07 14:29:46.811  INFO 7 --- [ost-startStop-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+[33;1mstorage_1     |[0m 2017-02-07 14:29:46.812  INFO 7 --- [ost-startStop-1] o.s.web.context.ContextLoader            : Root WebApplicationContext: initialization completed in 3968 ms
+[33;1mstorage_1     |[0m 2017-02-07 14:29:47.235  INFO 7 --- [ost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'metricsFilter' to: [/*]
+[33;1mstorage_1     |[0m 2017-02-07 14:29:47.237  INFO 7 --- [ost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'characterEncodingFilter' to: [/*]
+[33;1mstorage_1     |[0m 2017-02-07 14:29:47.237  INFO 7 --- [ost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+[33;1mstorage_1     |[0m 2017-02-07 14:29:47.237  INFO 7 --- [ost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'httpPutFormContentFilter' to: [/*]
+[33;1mstorage_1     |[0m 2017-02-07 14:29:47.238  INFO 7 --- [ost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'requestContextFilter' to: [/*]
+[33;1mstorage_1     |[0m 2017-02-07 14:29:47.240  INFO 7 --- [ost-startStop-1] .s.DelegatingFilterProxyRegistrationBean : Mapping filter: 'springSecurityFilterChain' to: [/*]
+[33;1mstorage_1     |[0m 2017-02-07 14:29:47.241  INFO 7 --- [ost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'webRequestLoggingFilter' to: [/*]
+[33;1mstorage_1     |[0m 2017-02-07 14:29:47.242  INFO 7 --- [ost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'applicationContextIdFilter' to: [/*]
+[33;1mstorage_1     |[0m 2017-02-07 14:29:47.242  INFO 7 --- [ost-startStop-1] o.s.b.w.servlet.ServletRegistrationBean  : Mapping servlet: 'dispatcherServlet' to [/]
+[33;1mstorage_1     |[0m 2017-02-07 14:29:47.502  INFO 7 --- [           main] o.f.core.internal.util.VersionPrinter    : Flyway 4.0.3 by Boxfuse
+[33;1mstorage_1     |[0m 2017-02-07 14:29:47.701  INFO 7 --- [           main] o.f.c.i.dbsupport.DbSupportFactory       : Database: jdbc:postgresql://postgres.local:5432/apis (PostgreSQL 9.6)
+[33;1mstorage_1     |[0m 2017-02-07 14:29:47.801  INFO 7 --- [           main] o.f.core.internal.command.DbValidate     : Successfully validated 6 migrations (execution time 00:00.023s)
+[33;1mstorage_1     |[0m 2017-02-07 14:29:47.840  INFO 7 --- [           main] o.f.core.internal.command.DbMigrate      : Current version of schema "public": 6
+[33;1mstorage_1     |[0m 2017-02-07 14:29:47.845  INFO 7 --- [           main] o.f.core.internal.command.DbMigrate      : Schema "public" is up to date. No migration necessary.
+[33;1mstorage_1     |[0m 2017-02-07 14:29:47.960  INFO 7 --- [           main] j.LocalContainerEntityManagerFactoryBean : Building JPA container EntityManagerFactory for persistence unit 'default'
+[33;1mstorage_1     |[0m 2017-02-07 14:29:47.985  INFO 7 --- [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [
+[33;1mstorage_1     |[0m 	name: default
+[33;1mstorage_1     |[0m 	...]
+[33;1mstorage_1     |[0m 2017-02-07 14:29:48.257  INFO 7 --- [           main] org.hibernate.Version                    : HHH000412: Hibernate Core {5.0.11.Final}
+[33;1mstorage_1     |[0m 2017-02-07 14:29:48.258  INFO 7 --- [           main] org.hibernate.cfg.Environment            : HHH000206: hibernate.properties not found
+[33;1mstorage_1     |[0m 2017-02-07 14:29:48.260  INFO 7 --- [           main] org.hibernate.cfg.Environment            : HHH000021: Bytecode provider name : javassist
+[33;1mstorage_1     |[0m 2017-02-07 14:29:48.304  INFO 7 --- [           main] o.hibernate.annotations.common.Version   : HCANN000001: Hibernate Commons Annotations {5.0.1.Final}
+[33;1mstorage_1     |[0m 2017-02-07 14:29:48.512  INFO 7 --- [           main] org.hibernate.dialect.Dialect            : HHH000400: Using dialect: org.hibernate.dialect.PostgreSQL94Dialect
+[33;1mstorage_1     |[0m 2017-02-07 14:29:48.709  INFO 7 --- [           main] o.h.e.j.e.i.LobCreatorBuilderImpl        : HHH000424: Disabling contextual LOB creation as createClob() method threw error : java.lang.reflect.InvocationTargetException
+[33;1mstorage_1     |[0m 2017-02-07 14:29:48.711  INFO 7 --- [           main] org.hibernate.type.BasicTypeRegistry     : HHH000270: Type registration [java.util.UUID] overrides previous : org.hibernate.type.UUIDBinaryType@69f1a286
+[33;1mstorage_1     |[0m 2017-02-07 14:29:49.076  INFO 7 --- [           main] o.h.tool.hbm2ddl.SchemaValidator         : HHH000229: Running schema validator
+[33;1mstorage_1     |[0m 2017-02-07 14:29:49.146  INFO 7 --- [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+[33;1mstorage_1     |[0m 2017-02-07 14:29:49.468  INFO 7 --- [           main] o.h.h.i.QueryTranslatorFactoryInitiator  : HHH000397: Using ASTQueryTranslatorFactory
+[33;1mstorage_1     |[0m 2017-02-07 14:29:50.113  INFO 7 --- [           main] s.w.s.m.m.a.RequestMappingHandlerAdapter : Looking for @ControllerAdvice: org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@19e1023e: startup date [Tue Feb 07 14:29:42 UTC 2017]; root of context hierarchy
+[33;1mstorage_1     |[0m 2017-02-07 14:29:50.193  INFO 7 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/apps/{applicationId}],methods=[GET]}" onto public org.springframework.http.ResponseEntity org.zalando.apidiscovery.storage.ApiDefinitionController.findOne(java.lang.String)
+[33;1mstorage_1     |[0m 2017-02-07 14:29:50.196  INFO 7 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/apps/{applicationId}/definition],methods=[GET]}" onto public org.springframework.http.ResponseEntity org.zalando.apidiscovery.storage.ApiDefinitionController.findDefinition(java.lang.String) throws java.io.IOException
+[33;1mstorage_1     |[0m 2017-02-07 14:29:50.197  INFO 7 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/apps/{applicationId}],methods=[PUT]}" onto public org.springframework.http.ResponseEntity<java.lang.Void> org.zalando.apidiscovery.storage.ApiDefinitionController.persistOne(org.zalando.apidiscovery.storage.ApiDefinition,java.lang.String)
+[33;1mstorage_1     |[0m 2017-02-07 14:29:50.200  INFO 7 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/apps],methods=[GET]}" onto public java.util.List<org.zalando.apidiscovery.storage.ApiDefinitionListDto> org.zalando.apidiscovery.storage.ApiDefinitionController.listAll(java.lang.String)
+[33;1mstorage_1     |[0m 2017-02-07 14:29:50.203  INFO 7 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/api],methods=[GET],produces=[application/json || */*]}" onto public org.springframework.http.ResponseEntity<java.lang.String> org.zalando.twintip.spring.SchemaResource.jsonSchema() throws com.fasterxml.jackson.core.JsonProcessingException
+[33;1mstorage_1     |[0m 2017-02-07 14:29:50.205  INFO 7 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/api],methods=[GET],produces=[application/yaml || application/x-yaml || text/yaml]}" onto public org.springframework.http.ResponseEntity<java.lang.String> org.zalando.twintip.spring.SchemaResource.yamlSchema() throws com.fasterxml.jackson.core.JsonProcessingException
+[33;1mstorage_1     |[0m 2017-02-07 14:29:50.207  INFO 7 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/.well-known/schema-discovery],methods=[GET],produces=[application/json]}" onto public org.zalando.twintip.spring.SchemaDiscovery org.zalando.twintip.spring.SchemaResource.discover(java.lang.String,java.lang.String,java.lang.String)
+[33;1mstorage_1     |[0m 2017-02-07 14:29:50.211  INFO 7 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/error],produces=[text/html]}" onto public org.springframework.web.servlet.ModelAndView org.springframework.boot.autoconfigure.web.BasicErrorController.errorHtml(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)
+[33;1mstorage_1     |[0m 2017-02-07 14:29:50.212  INFO 7 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/error]}" onto public org.springframework.http.ResponseEntity<java.util.Map<java.lang.String, java.lang.Object>> org.springframework.boot.autoconfigure.web.BasicErrorController.error(javax.servlet.http.HttpServletRequest)
+[33;1mstorage_1     |[0m 2017-02-07 14:29:50.249  INFO 7 --- [           main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped URL path [/webjars/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+[33;1mstorage_1     |[0m 2017-02-07 14:29:50.250  INFO 7 --- [           main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped URL path [/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+[33;1mstorage_1     |[0m 2017-02-07 14:29:50.304  INFO 7 --- [           main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped URL path [/**/favicon.ico] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+[33;1mstorage_1     |[0m 2017-02-07 14:29:50.607  INFO 7 --- [           main] b.a.s.AuthenticationManagerConfiguration : 
+[33;1mstorage_1     |[0m 
+[33;1mstorage_1     |[0m Using default security password: 48c1eace-9e8f-4ef1-9442-373f22eadbe3
+[33;1mstorage_1     |[0m 
+[33;1mstorage_1     |[0m 2017-02-07 14:29:50.678  INFO 7 --- [           main] o.s.s.web.DefaultSecurityFilterChain     : Creating filter chain: OrRequestMatcher [requestMatchers=[Ant [pattern='/css/**'], Ant [pattern='/js/**'], Ant [pattern='/images/**'], Ant [pattern='/webjars/**'], Ant [pattern='/**/favicon.ico'], Ant [pattern='/error']]], []
+[33;1mstorage_1     |[0m 2017-02-07 14:29:50.783  INFO 7 --- [           main] o.s.s.web.DefaultSecurityFilterChain     : Creating filter chain: org.springframework.boot.actuate.autoconfigure.ManagementWebSecurityAutoConfiguration$LazyEndpointPathRequestMatcher@488eb7f2, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@5e81e5ac, org.springframework.security.web.context.SecurityContextPersistenceFilter@1e7aa82b, org.springframework.security.web.header.HeaderWriterFilter@3543df7d, org.springframework.security.web.authentication.logout.LogoutFilter@549949be, org.springframework.security.web.authentication.www.BasicAuthenticationFilter@5bc9ba1d, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@5bd82fed, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@476b0ae6, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@4189d70b, org.springframework.security.web.session.SessionManagementFilter@3542162a, org.springframework.security.web.access.ExceptionTranslationFilter@b6b1987, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@78fbff54]
+[33;1mstorage_1     |[0m 2017-02-07 14:29:50.834  INFO 7 --- [           main] o.s.s.web.DefaultSecurityFilterChain     : Creating filter chain: org.springframework.boot.autoconfigure.security.SpringBootWebSecurityConfiguration$ApplicationNoWebSecurityConfigurerAdapter$1@665df3c6, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@68b6f0d6, org.springframework.security.web.context.SecurityContextPersistenceFilter@1a7288a3, org.springframework.security.web.header.HeaderWriterFilter@abf688e, org.springframework.security.web.csrf.CsrfFilter@6035b93b, org.springframework.security.web.authentication.logout.LogoutFilter@686449f9, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@2974f221, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@58fe0499, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@4044fb95, org.springframework.security.web.session.SessionManagementFilter@478ee483, org.springframework.security.web.access.ExceptionTranslationFilter@3dd1dc90]
+[33;1mstorage_1     |[0m 2017-02-07 14:29:51.286  INFO 7 --- [           main] o.s.b.a.e.mvc.EndpointHandlerMapping     : Mapped "{[/health || /health.json],produces=[application/json]}" onto public java.lang.Object org.springframework.boot.actuate.endpoint.mvc.HealthMvcEndpoint.invoke(java.security.Principal)
+[33;1mstorage_1     |[0m 2017-02-07 14:29:51.290  INFO 7 --- [           main] o.s.b.a.e.mvc.EndpointHandlerMapping     : Mapped "{[/metrics/{name:.*}],methods=[GET],produces=[application/json]}" onto public java.lang.Object org.springframework.boot.actuate.endpoint.mvc.MetricsMvcEndpoint.value(java.lang.String)
+[33;1mstorage_1     |[0m 2017-02-07 14:29:51.290  INFO 7 --- [           main] o.s.b.a.e.mvc.EndpointHandlerMapping     : Mapped "{[/metrics || /metrics.json],methods=[GET],produces=[application/json]}" onto public java.lang.Object org.springframework.boot.actuate.endpoint.mvc.EndpointMvcAdapter.invoke()
+[36;1mapidiscovery_swagger-ui_1 exited with code 137
+[0m[33;1mstorage_1     |[0m 2017-02-07 14:29:51.619  INFO 7 --- [           main] o.s.j.e.a.AnnotationMBeanExporter        : Registering beans for JMX exposure on startup
+[33;1mstorage_1     |[0m 2017-02-07 14:29:51.645  INFO 7 --- [           main] o.s.c.support.DefaultLifecycleProcessor  : Starting beans in phase 0
+[33;1mstorage_1     |[0m 2017-02-07 14:29:51.736  INFO 7 --- [           main] s.a.ScheduledAnnotationBeanPostProcessor : No TaskScheduler/ScheduledExecutorService bean found for scheduled processing
+[33;1mstorage_1     |[0m 2017-02-07 14:29:51.899  INFO 7 --- [           main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat started on port(s): 8080 (http)
+[33;1mstorage_1     |[0m 2017-02-07 14:29:51.919  INFO 7 --- [           main] o.z.apidiscovery.storage.Application     : Started Application in 10.089 seconds (JVM running for 10.649)
+[32;1mswagger-ui_1  |[0m 2017-02-07T14:29:52.474Z - info: Successfully updated OAuth credentials.
+[33;1mstorage_1     |[0m 2017-02-07 14:29:58.631  INFO 7 --- [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring FrameworkServlet 'dispatcherServlet'
+[33;1mstorage_1     |[0m 2017-02-07 14:29:58.631  INFO 7 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : FrameworkServlet 'dispatcherServlet': initialization started
+[33;1mstorage_1     |[0m 2017-02-07 14:29:58.651  INFO 7 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : FrameworkServlet 'dispatcherServlet': initialization completed in 19 ms
+[33;1mstorage_1     |[0m 2017-02-07 14:29:58.818  INFO 7 --- [nio-8080-exec-1] o.z.a.storage.ApiDefinitionController    : Persisted api definition for petstore with status SUCCESS
+[33;1mstorage_1     |[0m 2017-02-07 14:29:58.875  INFO 7 --- [nio-8080-exec-3] o.z.a.storage.ApiDefinitionController    : Persisted api definition for uber with status SUCCESS
+[33;1mstorage_1     |[0m 2017-02-07 14:30:09.782  INFO 7 --- [nio-8080-exec-4] o.z.a.storage.ApiDefinitionController    : Retrieved all api definitions with lifecycle state active
+[33;1mstorage_1     |[0m 2017-02-07 14:30:09.851  INFO 7 --- [nio-8080-exec-5] o.z.a.storage.ApiDefinitionController    : Retrieve json of api definition for petstore
+[33;1mstorage_1     |[0m 2017-02-07 14:31:53.002  INFO 7 --- [nio-8080-exec-2] o.z.a.storage.ApiDefinitionController    : Retrieved all api definitions with lifecycle state active
+[33;1mstorage_1     |[0m 2017-02-07 14:31:59.673  INFO 7 --- [nio-8080-exec-8] o.z.a.storage.ApiDefinitionController    : Retrieved all api definitions with lifecycle state active
+[33;1mstorage_1     |[0m 2017-02-07 14:31:59.758  INFO 7 --- [io-8080-exec-10] o.z.a.storage.ApiDefinitionController    : Retrieve json of api definition for petstore

@@ -57,19 +57,19 @@ Please refer to individual installation instructions of sub-projects for more de
 
 ### Run locally
 
-You can start the whole stack (Swagger UI and Storage incl. PostgreSQL DB) locally by building the respective sub-projects and running:
-```
-docker-compose up --build
+You can start the whole stack locally (Swagger UI and Storage incl. PostgreSQL DB and test data) by running:
+
+```bash
+./start.sh localhost
 ```
 
-Swagger UI is accessible on <http://localhost:8080>. You can also access Storage API <http://localhost:8010/apps> and PostgreSQL database <postgresql://localhost:54321/apis> directly.
+If your docker host is not your localhost (e.g. MacOS), replace localhost in the link with the docker machine host name or IP address:
 
-If your docker host is not your localhost (e.g. MacOS), replace localhost in the link with the docker machine IP address:
 ```bash
 docker-machine ip ${machine_name}
 ```
 
-- TODO add build script to automatically build projects, docker images and start docker compose (see [#8](https://github.com/zalando-incubator/api-discovery/issues/8))
+Swagger UI is accessible on <http://localhost:8080>. You can also access Storage API <http://localhost:8010/apps> and PostgreSQL database <postgresql://localhost:54321/apis> directly.
 
 
 ### Contributing
