@@ -7,6 +7,8 @@ SwaggerUi.Views.HeaderView = Backbone.View.extend({
     'change #input_baseUrl'         : 'loadDefinition'
   },
 
+  oauthProvider: null,
+
   initialize: function(){
   },
 
@@ -24,8 +26,25 @@ SwaggerUi.Views.HeaderView = Backbone.View.extend({
 
   loadDefinition: function(e) {
     var app_id = $(e.target).children(':selected').val();
-    this.trigger('update-swagger-ui', {
-      url: window.SUIENV_STORAGE_BASE_URL + '/apps/' + app_id + '/definition'
+    var that = this;
+    $.ajax({
+      url: window.SUIENV_STORAGE_BASE_URL + '/apps/' + app_id,
+      type: 'GET',
+      dataType: 'json',
+      beforeSend: function(xhr){
+        if (that.oauthProvider){xhr.setRequestHeader('Authorization', 'Bearer ' + that.oauthProvider.getAccessToken());}
+      },
+      error: function(){
+        that.trigger('update-swagger-ui', {
+          url: window.SUIENV_STORAGE_BASE_URL + '/apps/' + app_id + '/definition'
+        });
+      },
+      success: function(metaData) {
+        that.trigger('update-swagger-ui', {
+          url: window.SUIENV_STORAGE_BASE_URL + '/apps/' + app_id + '/definition',
+          metaData: metaData
+        });
+      }
     });
   },
 

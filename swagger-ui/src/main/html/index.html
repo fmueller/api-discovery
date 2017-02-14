@@ -104,7 +104,7 @@
       // just wrap this part also in a function
       function initSwagger(url) {
         window.swaggerUi = new SwaggerUi({
-          url: url,
+          url: url + '/definition',
           dom_id: "swagger-ui-container",
           supportedSubmitMethods: ['get', 'post', 'put', 'delete', 'patch'],
           onComplete: function(swaggerApi, swaggerUi){
@@ -115,6 +115,7 @@
                   realm: window.SUIENV_OAUTH_REALM,
                   appName: 'swagger'
                 });
+                swaggerUi.headerView.oauthProvider = OAuthProvider;
               }
             }
             $('pre code').each(function(i, e) {
@@ -189,7 +190,7 @@
       if (!apis.length) {
         return initSwagger(window.SUIENV_STORAGE_BASE_URL + '/api');
       } else {
-        return initSwagger(window.SUIENV_STORAGE_BASE_URL + '/apps/' + apis[0].application_id + '/definition');
+        return initSwagger(window.SUIENV_STORAGE_BASE_URL + '/apps/' + apis[0].application_id);
       }
     }
 

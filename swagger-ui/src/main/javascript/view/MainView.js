@@ -53,6 +53,8 @@ SwaggerUi.Views.MainView = Backbone.View.extend({
         value: value
       });
     }
+
+    this.model.metaData = opts.swaggerOptions.metaData;
   },
 
   render: function(){
