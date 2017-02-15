@@ -101,7 +101,6 @@
         });
       }
 
-      // just wrap this part also in a function
       function initSwagger(url) {
         window.swaggerUi = new SwaggerUi({
           url: url + '/definition',
@@ -134,6 +133,22 @@
               new SwaggerClient.ApiKeyAuthorization('Authorization', 'Bearer ' + OAuthProvider.getAccessToken(), 'header'));
         }
         window.swaggerUi.load();
+
+        // try to update detail view with metaData
+        $.ajax({
+          url: url,
+          type: 'GET',
+          dataType: 'json',
+          beforeSend: function(xhr){
+            setOAuthHeader(xhr);
+          },
+          success: function(metaData) {
+            window.swaggerUi.headerView.trigger('update-swagger-ui', {
+              url: url + '/definition',
+              metaData: metaData
+            });
+          }
+        });
       }
 
       function addApiKeyAuthorization(){
