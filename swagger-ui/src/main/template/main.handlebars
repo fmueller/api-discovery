@@ -2,6 +2,9 @@
   {{#if info}}
   <div class="info_title">{{info.title}}</div>
   <div class="info_description markdown">{{{info.description}}}</div>
+  {{#if metaData}}
+  <div class="info_description">Service URL: <a href="{{{metaData.service_url}}}">{{{metaData.service_url}}}</a></div>
+  {{/if}}
   {{#if externalDocs}}
   <h5>More documentations</h5>
   <p>{{externalDocs.description}}</p>

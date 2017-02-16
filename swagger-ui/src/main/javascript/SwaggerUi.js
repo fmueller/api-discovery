@@ -76,6 +76,7 @@ window.SwaggerUi = Backbone.Router.extend({
   // Event handler for when url/key is received from user
   updateSwaggerUi: function(data){
     this.options.url = data.url;
+    this.options.metaData = data.metaData;
     this.load();
   },
 

@@ -101,10 +101,9 @@
         });
       }
 
-      // just wrap this part also in a function
       function initSwagger(url) {
         window.swaggerUi = new SwaggerUi({
-          url: url,
+          url: url + '/definition',
           dom_id: "swagger-ui-container",
           supportedSubmitMethods: ['get', 'post', 'put', 'delete', 'patch'],
           onComplete: function(swaggerApi, swaggerUi){
@@ -115,6 +114,7 @@
                   realm: window.SUIENV_OAUTH_REALM,
                   appName: 'swagger'
                 });
+                swaggerUi.headerView.oauthProvider = OAuthProvider;
               }
             }
             $('pre code').each(function(i, e) {
@@ -133,6 +133,22 @@
               new SwaggerClient.ApiKeyAuthorization('Authorization', 'Bearer ' + OAuthProvider.getAccessToken(), 'header'));
         }
         window.swaggerUi.load();
+
+        // try to update detail view with metaData
+        $.ajax({
+          url: url,
+          type: 'GET',
+          dataType: 'json',
+          beforeSend: function(xhr){
+            setOAuthHeader(xhr);
+          },
+          success: function(metaData) {
+            window.swaggerUi.headerView.trigger('update-swagger-ui', {
+              url: url + '/definition',
+              metaData: metaData
+            });
+          }
+        });
       }
 
       function addApiKeyAuthorization(){
@@ -189,7 +205,7 @@
       if (!apis.length) {
         return initSwagger(window.SUIENV_STORAGE_BASE_URL + '/api');
       } else {
-        return initSwagger(window.SUIENV_STORAGE_BASE_URL + '/apps/' + apis[0].application_id + '/definition');
+        return initSwagger(window.SUIENV_STORAGE_BASE_URL + '/apps/' + apis[0].application_id);
       }
     }
 
