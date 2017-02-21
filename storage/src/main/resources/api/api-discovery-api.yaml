@@ -1,0 +1,173 @@
+swagger: '2.0'
+
+info:
+  title: API Discovery Storage API
+  version: '0.2'
+  description: This is the storage API of API Discovery Solution which crawls all available APIs.
+
+externalDocs:
+  description: API Discovery Documentation
+  url: https://github.com/zalando-incubator/api-discovery
+
+basePath: /
+produces:
+- application/json
+consumes:
+- application/json
+
+security:
+  - oauth2: [uid, application.write_all]
+
+paths:
+
+  '/apis':
+    get:
+      summary: list crawled APIs
+      description: |
+        Lists all crawled APIs.
+      tags:
+        - APIs
+      operationId: 'org.zalando.apidiscovery.storage.api/read-apis'
+      security:
+        - oauth2:
+          - uid
+      parameters:
+        - name: lifecycle_state
+          in: query
+          description: "Filter APIs by lifecycle state: active, inactive or decommissioned"
+          required: false
+          type: string
+      responses:
+        200:
+          description: List of all APIs
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/API'
+        default:
+          $ref: '#/responses/Error'
+
+    post:
+      summary: create or update API
+      description: |
+        Creates or updates an API.
+      tags:
+      - APIs
+      operationId: "org.zalando.apidiscovery.storage.api/create-or-update-api!"
+      security:
+        - oauth2:
+          - uid
+          - application.write_all
+      parameters:
+      - name: apidef
+        in: body
+        description: API details that will be saved.
+        schema:
+          $ref: '#/definitions/UpdateAPI'
+        required: true
+      responses:
+        201:
+          description: API was saved.
+        default:
+          $ref: '#/responses/Error'
+
+  '/{api_id}':
+    get:
+      summary: read API
+      description: |
+        Returns details about one API
+      tags:
+      - APIs
+      operationId: 'org.zalando.apidiscovery.storage.api/read-api'
+      security:
+        - oauth2:
+          - uid
+      parameters:
+      - name: api_id
+        in: path
+        type: string
+        description: ID of the API
+        required: true
+      responses:
+        200:
+          description: Details of one API
+          schema:
+            $ref: '#/definitions/API'
+        404:
+          description: Not found
+        default:
+          $ref: '#/responses/Error'
+
+responses:
+  Error:
+    description: An error occured.
+    schema:
+      $ref: '#/definitions/Error'
+
+definitions:
+  UpdateAPI:
+    type: object
+    properties:
+      status:
+        type: string
+        description: The current status of the crawling
+        example: SUCCESS
+      type:
+        type: string
+        description: Type of API definition
+        example: SWAGGER-2.0
+      name:
+        type: string
+        description: Name of the API
+        example: Kio API
+      version:
+        type: string
+        description: Version of the API
+        example: "1.0"
+      service_url:
+        type: string
+        description: URL pointing to the service who is providing the API
+        example: https://kio.example.com
+      url:
+        type: string
+        description: URL pointing to the API definition file
+        example: https://kio.example.com/swagger.json
+      ui:
+        type: string
+        description: URL pointing to the UI for browsing the API
+        example: https://kio.example.com/ui/
+      definition:
+        type: string
+        description: The API definition
+        example: |
+          {"swagger": "2.0"
+           "foo": "bar"}
+    required:
+      - status
+
+  API:
+    type: object
+    properties:
+      api_id:
+        type: string
+        description: unique ID of the API
+        example: api-discovery-api
+      name:
+        type: string
+        description: human readable name of the API
+        example: API Discovery Storage API
+
+  Error:
+    type: object
+    properties:
+      message:
+        type: string
+
+securityDefinitions:
+  oauth2:
+    type: oauth2
+    flow: implicit
+    authorizationUrl: https://example.com/oauth2/dialog
+    scopes:
+      uid: Unique identifier of the user accessing the service.
+      application.write_all: Scope allowing the user to write API definitions.
