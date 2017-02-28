@@ -17,6 +17,7 @@ endpoints:
     enabled: true
   metrics:
     enabled: true
+    sensitive: false
 
 security:
   basic:

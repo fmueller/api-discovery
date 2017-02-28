@@ -4,7 +4,7 @@
 
 set -e
 
-base_url=${1:-localhost:8010}
+base_url=${1:-localhost:8080}
 storage_project_path=${2:-.}
 
 curl -H "Content-Type: application/json" -X PUT --data @${storage_project_path}/src/test/resources/petstore-full.json ${base_url}/apps/petstore
