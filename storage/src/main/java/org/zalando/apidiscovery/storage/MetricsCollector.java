@@ -17,7 +17,7 @@ public class MetricsCollector {
         this.repository = repository;
     }
 
-    @Scheduled(fixedDelay = 1000L)
+    @Scheduled(fixedDelayString = "${metrics-collecting.delay}")
     public void collectMetrics() {
         repository.countStatus().forEach(c ->
                 metricServices.submit("gauge.apis.crawled." + c.getStatus().toLowerCase(), c.getCount()));

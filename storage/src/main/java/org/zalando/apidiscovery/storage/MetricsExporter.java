@@ -27,6 +27,6 @@ public class MetricsExporter implements ApplicationListener<ApplicationReadyEven
                 .convertRatesTo(TimeUnit.SECONDS)
                 .convertDurationsTo(TimeUnit.MILLISECONDS)
                 .build();
-        reporter.start(5, TimeUnit.SECONDS);
+        reporter.start(5, TimeUnit.MINUTES);
     }
 }

@@ -32,6 +32,9 @@ public class RestApiIntegrationTest {
     @Autowired
     private ApiDefinitionRepository repository;
 
+    @Autowired
+    private MetricsCollector metricsCollector;
+
     private ApiDefinition apiDefinition;
 
     private final TestRestTemplate restTemplate = new TestRestTemplate();
@@ -188,7 +191,7 @@ public class RestApiIntegrationTest {
     @Test
     public void retrieveMetricsAboutDifferentApiStates() throws InterruptedException {
         saveApiDefinition();
-        Thread.sleep(1500L);
+        metricsCollector.collectMetrics();
 
         ResponseEntity<JsonNode> metricsResponse = restTemplate.getForEntity("http://localhost:" + port + "/metrics", JsonNode.class);
         assertThat(metricsResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
