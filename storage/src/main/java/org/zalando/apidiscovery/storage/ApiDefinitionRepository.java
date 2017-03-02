@@ -18,4 +18,10 @@ interface ApiDefinitionRepository extends CrudRepository<ApiDefinition, String> 
     List<ApiDefinition> findNotUpdatedSinceAndInactive(DateTime olderThan);
 
     List<ApiDefinition> findByLifecycleState(String lifecycleState);
+
+    @Query("select new org.zalando.apidiscovery.storage.ApiDefinitionStatusStatistics(a.status, count(a)) from ApiDefinition a group by a.status")
+    List<ApiDefinitionStatusStatistics> countStatus();
+
+    @Query("select new org.zalando.apidiscovery.storage.ApiDefinitionStatusStatistics(a.lifecycleState, count(a)) from ApiDefinition a group by a.lifecycleState")
+    List<ApiDefinitionStatusStatistics> countLifecycleStates();
 }
