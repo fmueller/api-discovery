@@ -34,3 +34,18 @@ Handlebars.registerHelper('renderTextParam', function(param) {
     }
     return new Handlebars.SafeString(result);
 });
+
+Handlebars.registerHelper('prettifyDate', function(timestamp) {
+    var date = new Date(timestamp);
+    return date.ddmmyyyy();
+});
+
+Date.prototype.ddmmyyyy = function() {
+  var mm = this.getMonth() + 1; // getMonth() is zero-based
+  var dd = this.getDate();
+
+  return [(dd>9 ? '' : '0') + dd,
+          (mm>9 ? '' : '0') + mm,
+          this.getFullYear()
+         ].join('-');
+};

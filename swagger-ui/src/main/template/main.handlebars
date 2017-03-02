@@ -4,6 +4,9 @@
   <div class="info_description markdown">{{{info.description}}}</div>
   {{#if metaData}}
   <div class="info_description">Service URL: <a href="{{{metaData.service_url}}}">{{{metaData.service_url}}}</a></div>
+  <div class="info_description">Created: <a href="{{{metaData.created}}}">{{{prettifyDate metaData.created}}}</a></div>
+  <div class="info_description">Last changed: <a href="{{{metaData.last_changed}}}">{{{prettifyDate metaData.last_changed}}}</a></div>
+  <div class="info_description">Last crawled: <a href="{{{metaData.last_persisted}}}">{{{prettifyDate metaData.last_persisted}}}</a></div>
   {{/if}}
   {{#if externalDocs}}
   <h5>More documentations</h5>
