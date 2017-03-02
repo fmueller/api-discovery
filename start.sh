@@ -16,11 +16,13 @@ npm install gulp >> ${log_file} 2>&1
 echo "Log file: ${log_file}"
 echo "Building storage service.."
 cd ${script_path}/storage && ./gradlew build >> ${log_file} 2>&1
+scm-source
 
 echo "Building swagger-ui.."
 cd ${script_path}/swagger-ui && npm install >> ${log_file} 2>&1
 cd ${script_path}/swagger-ui/server && npm install >> ${log_file} 2>&1
 cd ${script_path}/swagger-ui && gulp >> ${log_file} 2>&1
+scm-source
 
 # Run docker-compose
 echo "Starting services with docker-compose.."

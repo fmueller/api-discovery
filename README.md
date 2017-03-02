@@ -58,6 +58,10 @@ Please refer to individual installation instructions of sub-projects for more de
 
 ### Run locally
 
+Preparation install 
+
+```pip install --upgrade scm-source```
+
 You can start the whole stack locally (Swagger UI and Storage incl. PostgreSQL DB and test data) by running:
 
 ```bash
