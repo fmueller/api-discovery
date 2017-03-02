@@ -64,7 +64,7 @@ As prerequisite the [Python SCM Source Generator](https://github.com/zalando-stu
 You can start the whole stack locally (Swagger UI and Storage incl. PostgreSQL DB and test data) by running:
 
 ```bash
-./start.sh localhoste
+./start.sh localhost
 ```
 
 If your docker host is not your localhost (e.g. MacOS), replace localhost in the link with the docker machine host name or IP address:
