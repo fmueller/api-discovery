@@ -3,10 +3,12 @@ swagger: '2.0'
 info:
   title: API Discovery Storage API
   version: '0.2'
-  description: This is the storage API of API Discovery Solution which crawls all available APIs.
+  description: |
+    Storage API of the API Discovery Solution (a.k.a Meta-API) is currently used to manage versions and deployments of
+    APIs. Later, it will be also used to manage API's meta inforamtion like documentation and user manuals.
 
 externalDocs:
-  description: API Discovery Documentation
+  description: API Discovery Solution Documentation
   url: https://github.com/zalando-incubator/api-discovery
 
 basePath: /
@@ -16,27 +18,25 @@ consumes:
 - application/json
 
 security:
-  - oauth2: [uid, application.write_all]
+- oauth2: [uid, application.write_all]
 
 paths:
-
   '/apis':
     get:
-      summary: list crawled APIs
-      description: |
-        Lists all crawled APIs.
-      tags:
-        - APIs
+      summary: list all APIs
+      description: Lists of all APIs
       operationId: 'org.zalando.apidiscovery.storage.api/read-apis'
+      tags:
+      - APIs
       security:
-        - oauth2:
-          - uid
+      - oauth2:
+        - uid
       parameters:
-        - name: lifecycle_state
-          in: query
-          description: "Filter APIs by lifecycle state: active, inactive or decommissioned"
-          required: false
-          type: string
+      - name: lifecycle_state
+        in: query
+        type: string
+        description: Filter APIs by lifecycle state
+        required: false
       responses:
         200:
           description: List of all APIs
@@ -47,41 +47,16 @@ paths:
         default:
           $ref: '#/responses/Error'
 
-    post:
-      summary: create or update API
-      description: |
-        Creates or updates an API.
-      tags:
-      - APIs
-      operationId: "org.zalando.apidiscovery.storage.api/create-or-update-api!"
-      security:
-        - oauth2:
-          - uid
-          - application.write_all
-      parameters:
-      - name: apidef
-        in: body
-        description: API details that will be saved.
-        schema:
-          $ref: '#/definitions/UpdateAPI'
-        required: true
-      responses:
-        201:
-          description: API was saved.
-        default:
-          $ref: '#/responses/Error'
-
-  '/{api_id}':
+  '/apis/{api_id}':
     get:
       summary: read API
-      description: |
-        Returns details about one API
+      description: Returns details about the API
+      operationId: 'org.zalando.apidiscovery.storage.api/read-api'
       tags:
       - APIs
-      operationId: 'org.zalando.apidiscovery.storage.api/read-api'
       security:
-        - oauth2:
-          - uid
+      - oauth2:
+        - uid
       parameters:
       - name: api_id
         in: path
@@ -90,22 +65,49 @@ paths:
         required: true
       responses:
         200:
-          description: Details of one API
+          description: API's details
           schema:
             $ref: '#/definitions/API'
         404:
           description: Not found
         default:
           $ref: '#/responses/Error'
+    post:
+      summary: creates an API definition
+      description: Creates an API definition
+      operationId: "org.zalando.apidiscovery.storage.api/create-api-definition!"
+      tags:
+      - APIs
+      security:
+      - oauth2:
+        - uid
+        - application.write_all
+      parameters:
+      - name: api_id
+        in: path
+        type: string
+        description: ID of the API
+        required: true
+      - name: APIDefinition
+        in: body
+        description: API definition details that will be saved
+        schema:
+          $ref: '#/definitions/APIDefinition'
+        required: true
+      responses:
+        201:
+          description: API has been saved
+        default:
+          $ref: '#/responses/Error'
 
 responses:
   Error:
-    description: An error occured.
+    description: The occured error
     schema:
       $ref: '#/definitions/Error'
 
 definitions:
-  UpdateAPI:
+  APIDefinition:
     type: object
     properties:
       status:
@@ -126,16 +128,16 @@ definitions:
         example: "1.0"
       service_url:
         type: string
-        description: URL pointing to the service who is providing the API
+        description: URL pointing to the deployment which is providing the API
         example: https://kio.example.com
       url:
         type: string
-        description: URL pointing to the API definition file
-        example: https://kio.example.com/swagger.json
+        description: Path to the API definition file
+        example: /swagger/api.json
       ui:
         type: string
-        description: URL pointing to the UI for browsing the API
-        example: https://kio.example.com/ui/
+        description: Path to the UI for browsing the API
+        example: /swagger-ui
       definition:
         type: string
         description: The API definition
@@ -143,25 +145,91 @@ definitions:
           {"swagger": "2.0"
            "foo": "bar"}
     required:
-      - status
+    - status
 
   API:
     type: object
     properties:
-      api_id:
-        type: string
-        description: unique ID of the API
-        example: api-discovery-api
       name:
         type: string
-        description: human readable name of the API
+        description: Human readable name of the API
         example: API Discovery Storage API
+      lifecycle_state:
+        $ref: '#/definitions/LifecycleState'
+      deployments:
+        type: array
+        items:
+          $ref: '#/definitions/Deployment'
+      versions:
+        type: array
+        items:
+          $ref: '#/definitions/Version'
+
+  Deployment:
+    type: object
+    description: A deployed instance of the API (e.g. an application)
+    properties:
+      name:
+        type: string
+        description: Deployment name (e.g. application and/or environment name)
+        example: sales-orders-app
+      service_url:
+        type: string
+        description: URL of the deployment
+        example: sales-orders.api.zalando.com
+      ui:
+        type: string
+        description: Path to the UI for browsing the API
+        example: /swagger-ui
+      url:
+        type: string
+        description: Path to the API definition
+        example: /swagger/api.json
+      lifecycle_state:
+        $ref: '#/definitions/LifecycleState'
+      versions:
+        type: array
+        items:
+          $ref: '#/definitions/Version'
+
+  Version:
+    type: object
+    description: A version of one particular API
+    properties:
+      name:
+        type: string
+        description: Version of the API
+        example: 1.0.0
+      type:
+        type: string
+        description: Type of the API definition
+        example: swagger-2.0
+      definition:
+        type: string
+        description: Formal definition of the API
+        example: |
+          {"swagger": "2.0"
+           "foo": "bar"}
+      lifecycle_state:
+        $ref: '#/definitions/LifecycleState'
+      deployments:
+        type: array
+        items:
+          $ref: '#/definitions/Deployment'
+
+  LifecycleState:
+    type: string
+    enum:
+    - ACTIVE
+    - INACTIVE
+    - DECOMMISSIONED
 
   Error:
     type: object
     properties:
       message:
         type: string
+        description: Human readable error message
 
 securityDefinitions:
   oauth2:
