@@ -37,15 +37,6 @@ Handlebars.registerHelper('renderTextParam', function(param) {
 
 Handlebars.registerHelper('prettifyDate', function(timestamp) {
     var date = new Date(timestamp);
-    return date.ddmmyyyy();
+    var options = { year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit'};
+    return date.toLocaleDateString('en-US', options);
 });
-
-Date.prototype.ddmmyyyy = function() {
-  var mm = this.getMonth() + 1; // getMonth() is zero-based
-  var dd = this.getDate();
-
-  return [(dd>9 ? '' : '0') + dd,
-          (mm>9 ? '' : '0') + mm,
-          this.getFullYear()
-         ].join('-');
-};
