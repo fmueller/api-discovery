@@ -34,3 +34,9 @@ Handlebars.registerHelper('renderTextParam', function(param) {
     }
     return new Handlebars.SafeString(result);
 });
+
+Handlebars.registerHelper('prettifyDate', function(timestamp) {
+    var date = new Date(timestamp);
+    var options = { year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit'};
+    return date.toLocaleDateString('en-US', options);
+});

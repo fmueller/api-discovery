@@ -3,7 +3,13 @@
   <div class="info_title">{{info.title}}</div>
   <div class="info_description markdown">{{{info.description}}}</div>
   {{#if metaData}}
-  <div class="info_description">Service URL: <a href="{{{metaData.service_url}}}">{{{metaData.service_url}}}</a></div>
+  <div class="meta_info">
+    <div class="info_description">Api URL: <a href="{{{metaData.service_url}}}{{{basePath}}}">{{{metaData.service_url}}}{{{basePath}}}</a></div>
+    {{#if info.version}}<div class="info_description">Api version: {{info.version}}</div>{{/if}}
+    <div class="info_description">Created: {{{prettifyDate metaData.created}}}</div>
+    <div class="info_description">Last changed: {{{prettifyDate metaData.last_changed}}}</div>
+    <div class="info_description">Last crawled: {{{prettifyDate metaData.last_persisted}}}</div>
+  </div>
   {{/if}}
   {{#if externalDocs}}
   <h5>More documentations</h5>
@@ -19,12 +25,4 @@
 </div>
 <div class='container' id='resources_container'>
   <ul id='resources'></ul>
-
-  <div class="footer">
-    <h4 style="color: #999">[ <span style="font-variant: small-caps">base url</span>: {{basePath}}
-    {{#if info.version}}
-    , <span style="font-variant: small-caps">api version</span>: {{info.version}}
-    {{/if}}]
-    </h4>
-    </div>
 </div>
