@@ -1,5 +1,8 @@
 package org.zalando.apidiscovery.storage;
 
+import java.io.IOException;
+
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.joda.time.DateTime;
 import org.junit.Before;
@@ -12,8 +15,6 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -30,6 +31,9 @@ public class RestApiIntegrationTest {
 
     @Autowired
     private ApiDefinitionRepository repository;
+
+    @Autowired
+    private MetricsCollector metricsCollector;
 
     private ApiDefinition apiDefinition;
 
@@ -182,6 +186,17 @@ public class RestApiIntegrationTest {
         assertThat(lastPersisted)
                 .isNotNull()
                 .isNotEqualTo(retrieveApiDefinition().getLastPersisted());
+    }
+
+    @Test
+    public void retrieveMetricsAboutDifferentApiStates() throws InterruptedException {
+        saveApiDefinition();
+        metricsCollector.collectMetrics();
+
+        ResponseEntity<JsonNode> metricsResponse = restTemplate.getForEntity("http://localhost:" + port + "/metrics", JsonNode.class);
+        assertThat(metricsResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+        JsonNode rootObject = metricsResponse.getBody();
+        assertThat(rootObject.has("gauge.apis.crawled.success")).isTrue();
     }
 
     private ApiDefinition retrieveApiDefinition() {

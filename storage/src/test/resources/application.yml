@@ -17,12 +17,14 @@ endpoints:
     enabled: true
   metrics:
     enabled: true
+    sensitive: false
 
 security:
   basic:
     enabled: false
 
 lifecycle-check.delay: 300000
+metrics-collecting.delay: 30000
 
 inactive.time: 600
 decommissioned.time: 3600
