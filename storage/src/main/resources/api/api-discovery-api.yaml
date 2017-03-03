@@ -5,7 +5,15 @@ info:
   version: '0.2'
   description: |
     Storage API of the API Discovery Solution (a.k.a Meta-API) is currently used to manage versions and Applications of
-    APIs. Later, it will be also used to manage API's meta inforamtion like documentation and user manuals.
+    APIs. Later, it will be also used to manage API's meta information like documentation and user manuals.
+
+    API resource represents an abstract API. One particular API has one or more Versions which can be deployed in
+    multiple Applications. An application can implement multiple APIs.
+
+    APIs, Applications and Versions have a defined lifecycle. Version's lifecycle is based on the usage of the given
+    Version in one or more deployed applications. Application's lifecycle depends on when the application was last seen
+    online. API's lifecycle is an aggregated view on the lifecycles of the linked Versions and Applications (e.g. API
+    is ACTIVE if there is a Version which is deployed in a Application).
 
 externalDocs:
   description: API Discovery Solution Documentation
@@ -37,29 +45,13 @@ paths:
         type: string
         description: Filter APIs by lifecycle state
         required: false
-      - name: limit
-        in: query
-        type: integer
-        description: Maximal number of results
-        required: false
-      - name: cursor
-        in: query
-        type: string
-        description: Cursor
-        required: false
       responses:
         200:
           description: List of APIs and Cursors for pagination
           schema:
-            type: object
-            description: List of all APIs
-            properties:
-              apis:
-                type: array
-                items:
-                  $ref: '#/definitions/APIMetadata'
-              cursors:
-                $ref: '#/definitions/Cursors'
+            type: array
+            items:
+              $ref: '#/definitions/APIMetadata'
         default:
           $ref: '#/responses/Error'
 
@@ -149,11 +141,11 @@ paths:
         default:
           $ref: '#/responses/Error'
 
-  '/apis/{api_id}/Applications':
+  '/apis/{api_id}/applications':
     get:
       summary: reads all Applications of an API
       description: List of all Applications of an API
-      operationId: "org.zalando.apidiscovery.storage.api/get-api-Applications!"
+      operationId: "org.zalando.apidiscovery.storage.api/get-api-applications!"
       tags:
       - APIs
       - Applications
@@ -181,11 +173,11 @@ paths:
         default:
           $ref: '#/responses/Error'
 
-  '/apis/{api_id}/Applications/{Application_name}':
+  '/apis/{api_id}/applications/{application_name}':
     get:
       summary: reads a Application of an API
       description: Specific Application of an API
-      operationId: "org.zalando.apidiscovery.storage.api/get-api-Application!"
+      operationId: "org.zalando.apidiscovery.storage.api/get-api-application!"
       tags:
       - APIs
       - Applications
@@ -198,10 +190,10 @@ paths:
         type: string
         description: ID of the API
         required: true
-      - name: Application_name
+      - name: application_name
         in: path
         type: string
-        description: Application name
+        description: application name
         required: true
       responses:
         200:
@@ -314,12 +306,6 @@ definitions:
         example: API Discovery Storage API
       lifecycle_state:
         $ref: '#/definitions/LifecycleState'
-      applications_count:
-        type: integer
-        description: Number of applications whe the API is deployed
-      versions_count:
-        type: integer
-        description: Number of API versions
 
   Application:
     type: object
@@ -400,17 +386,6 @@ definitions:
       message:
         type: string
         description: Human readable error message
-
-  Cursors:
-    type: object
-    description: Cursor object
-    properties:
-      next:
-        type: string
-        description: Cursor to the next set of resources
-      previous:
-        type: string
-        description: Cursor to the previous set of resources
 
 securityDefinitions:
   oauth2:
