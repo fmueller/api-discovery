@@ -4,7 +4,7 @@ info:
   title: API Discovery Storage API
   version: '0.2'
   description: |
-    Storage API of the API Discovery Solution (a.k.a Meta-API) is currently used to manage versions and deployments of
+    Storage API of the API Discovery Solution (a.k.a Meta-API) is currently used to manage versions and Applications of
     APIs. Later, it will be also used to manage API's meta inforamtion like documentation and user manuals.
 
 externalDocs:
@@ -18,7 +18,7 @@ consumes:
 - application/json
 
 security:
-- oauth2: [uid, application.write_all]
+- oauth2: [uid, overarching.api_definition.write]
 
 paths:
   '/apis':
@@ -37,13 +37,29 @@ paths:
         type: string
         description: Filter APIs by lifecycle state
         required: false
+      - name: limit
+        in: query
+        type: integer
+        description: Maximal number of results
+        required: false
+      - name: cursor
+        in: query
+        type: string
+        description: Cursor
+        required: false
       responses:
         200:
-          description: List of all APIs
+          description: List of APIs and Cursors for pagination
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/API'
+            type: object
+            description: List of all APIs
+            properties:
+              apis:
+                type: array
+                items:
+                  $ref: '#/definitions/APIMetadata'
+              cursors:
+                $ref: '#/definitions/Cursors'
         default:
           $ref: '#/responses/Error'
 
@@ -68,8 +84,6 @@ paths:
           description: API's details
           schema:
             $ref: '#/definitions/API'
-        404:
-          description: Not found
         default:
           $ref: '#/responses/Error'
 
@@ -132,19 +146,17 @@ paths:
           description: Version of the API
           schema:
             $ref: '#/definitions/Version'
-        404:
-          description: Not found
         default:
           $ref: '#/responses/Error'
 
-  '/apis/{api_id}/deployments':
+  '/apis/{api_id}/Applications':
     get:
-      summary: reads all deployments of an API
-      description: List of all deployments of an API
-      operationId: "org.zalando.apidiscovery.storage.api/get-api-deployments!"
+      summary: reads all Applications of an API
+      description: List of all Applications of an API
+      operationId: "org.zalando.apidiscovery.storage.api/get-api-Applications!"
       tags:
       - APIs
-      - Deployments
+      - Applications
       security:
       - oauth2:
         - uid
@@ -157,26 +169,26 @@ paths:
       - name: lifecycle_state
         in: query
         type: string
-        description: Filter deployments by lifecycle state
+        description: Filter Applications by lifecycle state
         required: false
       responses:
         200:
-          description: List of API's deployments
+          description: List of API's Applications
           schema:
             type: array
             items:
-              $ref: '#/definitions/Deployment'
+              $ref: '#/definitions/Application'
         default:
           $ref: '#/responses/Error'
 
-  '/apis/{api_id}/deployments/{deployment_name}':
+  '/apis/{api_id}/Applications/{Application_name}':
     get:
-      summary: reads a deployment of an API
-      description: Specific deployment of an API
-      operationId: "org.zalando.apidiscovery.storage.api/get-api-deployment!"
+      summary: reads a Application of an API
+      description: Specific Application of an API
+      operationId: "org.zalando.apidiscovery.storage.api/get-api-Application!"
       tags:
       - APIs
-      - Deployments
+      - Applications
       security:
       - oauth2:
         - uid
@@ -186,18 +198,16 @@ paths:
         type: string
         description: ID of the API
         required: true
-      - name: deployment_name
+      - name: Application_name
         in: path
         type: string
-        description: Deployment name
+        description: Application name
         required: true
       responses:
         200:
-          description: Deployment of the API
+          description: Application of the API
           schema:
-            $ref: '#/definitions/Deployment'
-        404:
-          description: Not found
+            $ref: '#/definitions/Application'
         default:
           $ref: '#/responses/Error'
 
@@ -211,7 +221,7 @@ paths:
       security:
       - oauth2:
         - uid
-        - application.write_all
+        - overarching.api_definition.write
       parameters:
       - name: api_definition_id
         in: path
@@ -258,7 +268,7 @@ definitions:
         example: "1.0"
       service_url:
         type: string
-        description: URL pointing to the deployment which is providing the API
+        description: URL pointing to the Application which is providing the API
         example: https://kio.example.com
       url:
         type: string
@@ -286,26 +296,42 @@ definitions:
         example: API Discovery Storage API
       lifecycle_state:
         $ref: '#/definitions/LifecycleState'
-      deployments:
+      applications:
         type: array
         items:
-          $ref: '#/definitions/Deployment'
+          $ref: '#/definitions/Application'
       versions:
         type: array
         items:
           $ref: '#/definitions/Version'
 
-  Deployment:
+  APIMetadata:
     type: object
-    description: A deployed instance of the API (e.g. an application)
     properties:
       name:
         type: string
-        description: Deployment name (e.g. application and/or environment name)
+        description: Human readable name of the API
+        example: API Discovery Storage API
+      lifecycle_state:
+        $ref: '#/definitions/LifecycleState'
+      applications_count:
+        type: integer
+        description: Number of applications whe the API is deployed
+      versions_count:
+        type: integer
+        description: Number of API versions
+
+  Application:
+    type: object
+    description: A deployed instance of the API (an application)
+    properties:
+      name:
+        type: string
+        description: Application name (e.g. application and/or environment name)
         example: sales-orders-app
       service_url:
         type: string
-        description: URL of the deployment
+        description: URL of the Application
         example: sales-orders.api.zalando.com
       ui:
         type: string
@@ -342,14 +368,14 @@ definitions:
            "foo": "bar"}
       lifecycle_state:
         $ref: '#/definitions/LifecycleState'
-      deployments:
+      applications:
         type: array
         items:
           $ref: '#/definitions/Link'
 
   LifecycleState:
     type: string
-    enum:
+    x-extensible-enum:
     - ACTIVE
     - INACTIVE
     - DECOMMISSIONED
@@ -357,11 +383,15 @@ definitions:
   Link:
     type: object
     properties:
+      name:
+        type: string
+        example: api-discovery-production
       href:
         type: string
         format: uri
-        example: https://meta.api.example.com/apis/sales-orders/versions/1.0.0
+        example: https://meta.api.example.com/apis/sales-orders/applications/api-discovery-production
     required:
+    - name
     - href
 
   Error:
@@ -371,6 +401,17 @@ definitions:
         type: string
         description: Human readable error message
 
+  Cursors:
+    type: object
+    description: Cursor object
+    properties:
+      next:
+        type: string
+        description: Cursor to the next set of resources
+      previous:
+        type: string
+        description: Cursor to the previous set of resources
+
 securityDefinitions:
   oauth2:
     type: oauth2
@@ -378,4 +419,4 @@ securityDefinitions:
     authorizationUrl: https://example.com/oauth2/dialog
     scopes:
       uid: Unique identifier of the user accessing the service.
-      application.write_all: Scope allowing the user to write API definitions.
+      overarching.api_definition.write: Scope allowing the user to write API definitions.
