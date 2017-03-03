@@ -4,7 +4,7 @@
   <div class="info_description markdown">{{{info.description}}}</div>
   {{#if metaData}}
   <div class="meta_info">
-    <div class="info_description">Service URL: <a href="{{{metaData.service_url}}}">{{{metaData.service_url}}}</a></div>
+    <div class="info_description">Api URL: <a href="{{{metaData.service_url}}}{{{basePath}}}">{{{metaData.service_url}}}{{{basePath}}}</a></div>
     {{#if info.version}}<div class="info_description">Api version: {{info.version}}</div>{{/if}}
     <div class="info_description">Created: {{{prettifyDate metaData.created}}}</div>
     <div class="info_description">Last changed: {{{prettifyDate metaData.last_changed}}}</div>
