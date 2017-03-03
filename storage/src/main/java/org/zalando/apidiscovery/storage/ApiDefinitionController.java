@@ -1,5 +1,9 @@
 package org.zalando.apidiscovery.storage;
 
+import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,10 +17,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
 
 @CrossOrigin
 @RestController
@@ -59,7 +59,15 @@ class ApiDefinitionController {
         }
 
         LOG.info("Retrieve api definition for {}", applicationId);
-        return ResponseEntity.ok(apiDefinition);
+        return ResponseEntity.ok(stripOffTrailingSlashesInServiceUrl(apiDefinition));
+    }
+
+    private ApiDefinition stripOffTrailingSlashesInServiceUrl(ApiDefinition apiDefinition) {
+        final String serviceUrl = apiDefinition.getServiceUrl();
+        if (serviceUrl != null && serviceUrl.endsWith("/")) {
+            apiDefinition.setServiceUrl(serviceUrl.substring(0, serviceUrl.length() - 1));
+        }
+        return apiDefinition;
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/{applicationId}/definition")

@@ -101,6 +101,17 @@ public class RestApiIntegrationTest {
     }
 
     @Test
+    public void stripOffTrainlingSlashesInServiceUrl() throws IOException {
+        apiDefinition.setServiceUrl("http://my.service/");
+        saveApiDefinition();
+
+        ResponseEntity<String> responseEntity = restTemplate.getForEntity(getUrl() + "/apps/" + serviceId, String.class);
+
+        ObjectMapper mapper = new ObjectMapper();
+        assertThat(mapper.readTree(responseEntity.getBody()).get("service_url").textValue()).isEqualTo("http://my.service");
+    }
+
+    @Test
     public void shouldListOnlyActiveApis() throws IOException {
         repository.save(createBasicApiDefinition());
         repository.save(createInactiveApiDefinition());
