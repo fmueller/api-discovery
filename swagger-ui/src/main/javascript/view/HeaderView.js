@@ -25,23 +25,34 @@ SwaggerUi.Views.HeaderView = Backbone.View.extend({
   },
 
   loadDefinition: function(e) {
-    var app_id = $(e.target).children(':selected').val();
+    var selectedEntry = $(e.target).children(':selected').val();
+    var api_id = selectedEntry.match(/#!\/apis\/([a-z0-9-]+)/);
+    if (api_id && api_id.length > 1) {
+      api_id = decodeURIComponent(api_id[1]);
+      window.location.hash = selectedEntry;
+    } else {
+      console.error('Invalid api_id provided!');
+      return;
+    }
+
     var that = this;
     $.ajax({
-      url: window.SUIENV_STORAGE_BASE_URL + '/apps/' + app_id,
+      url: window.SUIENV_STORAGE_BASE_URL + '/apps/' + api_id,
       type: 'GET',
       dataType: 'json',
-      beforeSend: function(xhr){
-        if (that.oauthProvider){xhr.setRequestHeader('Authorization', 'Bearer ' + that.oauthProvider.getAccessToken());}
+      beforeSend: function(xhr) {
+        if (that.oauthProvider) {
+          xhr.setRequestHeader('Authorization', 'Bearer ' + that.oauthProvider.getAccessToken());
+        }
       },
-      error: function(){
+      error: function() {
         that.trigger('update-swagger-ui', {
-          url: window.SUIENV_STORAGE_BASE_URL + '/apps/' + app_id + '/definition'
+          url: window.SUIENV_STORAGE_BASE_URL + '/apps/' + api_id + '/definition'
         });
       },
       success: function(metaData) {
         that.trigger('update-swagger-ui', {
-          url: window.SUIENV_STORAGE_BASE_URL + '/apps/' + app_id + '/definition',
+          url: window.SUIENV_STORAGE_BASE_URL + '/apps/' + api_id + '/definition',
           metaData: metaData
         });
       }
