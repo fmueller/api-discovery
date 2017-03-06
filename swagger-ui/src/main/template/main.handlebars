@@ -1,7 +1,6 @@
 <div class='info' id='api_info'>
   {{#if info}}
   <div class="info_title">{{info.title}}</div>
-  <div class="info_description markdown">{{{info.description}}}</div>
   {{#if metaData}}
   <div class="meta_info">
     <div class="info_description">Api URL: <a href="{{{metaData.service_url}}}{{{basePath}}}">{{{metaData.service_url}}}{{{basePath}}}</a></div>
@@ -11,6 +10,7 @@
     <div class="info_description">Last crawled: {{{prettifyDate metaData.last_persisted}}}</div>
   </div>
   {{/if}}
+  <div class="info_description markdown">{{{info.description}}}</div>
   {{#if externalDocs}}
   <h5>More documentations</h5>
   <p>{{externalDocs.description}}</p>

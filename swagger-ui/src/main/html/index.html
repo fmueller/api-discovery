@@ -49,13 +49,6 @@
         }
       }
 
-      var url = window.location.search.match(/url=([^&]+)/);
-      if (url && url.length > 1) {
-        url = decodeURIComponent(url[1]);
-      } else {
-        url = window.SUIENV_STORAGE_BASE_URL + '/api';
-      }
-
       if (isOAuthEnabled()) {
         window.OAuthProvider = new window['oauth2-client-js'].Provider({
           id: 'swagger',
