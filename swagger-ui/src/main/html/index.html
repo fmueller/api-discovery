@@ -153,13 +153,16 @@
         }
       }
 
-    function populateApisInSelectbox(apis) {
+    function populateApisInSelectbox(apis, selected_api) {
       var $select = $('#input_baseUrl');
 
       apis.forEach(function(api) {
         var $option = $('<option />');
-        $option.attr('value', api.application_id);
+        $option.attr('value', '#!/apis/' + api.application_id);
         $option.text(api.name + ' (' + api.application_id + ')');
+        if (selected_api && api.application_id === selected_api) {
+          $option.attr('selected', 'selected');
+        }
         $select.append($option);
       });
 
@@ -194,14 +197,6 @@
       return window.SUIENV_OAUTH_ENABLED && window.SUIENV_OAUTH_ENABLED === 'true';
     }
 
-    function initWithFirstOf(apis) {
-      if (!apis.length) {
-        return initSwagger(window.SUIENV_STORAGE_BASE_URL + '/api');
-      } else {
-        return initSwagger(window.SUIENV_STORAGE_BASE_URL + '/apps/' + apis[0].application_id);
-      }
-    }
-
     $.ajax({
       url: window.SUIENV_STORAGE_BASE_URL + '/apps?lifecycle_state=active',
       type: 'GET',
@@ -220,8 +215,21 @@
                                   bn < an ? 1 :
                                     0;
                         });
-        populateApisInSelectbox(usableApis);
-        initWithFirstOf(usableApis);
+
+        var api_id = window.location.hash.match(/#!\/apis\/([a-z0-9-]+)/);
+        if (api_id && api_id.length > 1) {
+          api_id = decodeURIComponent(api_id[1]);
+        }
+
+        populateApisInSelectbox(usableApis, api_id);
+
+        if (!apis.length) {
+          return initSwagger(window.SUIENV_STORAGE_BASE_URL + '/api');
+        } else if (!api_id) {
+          return initSwagger(window.SUIENV_STORAGE_BASE_URL + '/apps/' + apis[0].application_id);
+        } else {
+          return initSwagger(window.SUIENV_STORAGE_BASE_URL + '/apps/' + api_id);
+        }
       }
     });
   });
