@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +53,7 @@ class ApiDefinitionController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/{applicationId}")
-    public ResponseEntity findOne(@PathVariable String applicationId) {
+    public ResponseEntity findOne(@PathVariable String applicationId) throws IOException {
         ApiDefinition apiDefinition = repository.findOne(applicationId);
         if (apiDefinition == null) {
             LOG.info("Not found api definition for {}", applicationId);
@@ -59,7 +61,25 @@ class ApiDefinitionController {
         }
 
         LOG.info("Retrieve api definition for {}", applicationId);
-        return ResponseEntity.ok(stripOffTrailingSlashesInServiceUrl(apiDefinition));
+        return ResponseEntity.ok(addSchemeToServiceUrl(stripOffTrailingSlashesInServiceUrl(apiDefinition)));
+    }
+
+    private ApiDefinition addSchemeToServiceUrl(ApiDefinition apiDefinition) throws IOException {
+        final String serviceUrl = apiDefinition.getServiceUrl();
+        if (serviceUrl != null) {
+            final JsonNode definition = mapper.readTree(apiDefinition.getDefinition());
+            if (definition.has("schemes")) {
+                if (definition.get("schemes").isArray()) {
+                    final ArrayNode schemes = (ArrayNode) definition.get("schemes");
+                    if (schemes.size() >= 1) {
+                        apiDefinition.setServiceUrl(schemes.get(0).asText() + "://" + serviceUrl);
+                    }
+                } else {
+                    apiDefinition.setServiceUrl(definition.get("schemes").asText() + "://" + serviceUrl);
+                }
+            }
+        }
+        return apiDefinition;
     }
 
     private ApiDefinition stripOffTrailingSlashesInServiceUrl(ApiDefinition apiDefinition) {

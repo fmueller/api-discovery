@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,6 +38,7 @@ public class RestApiIntegrationTest {
 
     private ApiDefinition apiDefinition;
 
+    private final ObjectMapper mapper = new ObjectMapper();
     private final TestRestTemplate restTemplate = new TestRestTemplate();
     private final String serviceId = "some-service";
 
@@ -96,18 +98,42 @@ public class RestApiIntegrationTest {
         ResponseEntity<String> responseEntity = restTemplate.getForEntity(getUrl() + "/apps/" + serviceId + "/definition", String.class);
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-        ObjectMapper mapper = new ObjectMapper();
         assertThat(mapper.readTree(apiDefinition.getDefinition())).isEqualTo(mapper.readTree(responseEntity.getBody()));
     }
 
     @Test
     public void stripOffTrainlingSlashesInServiceUrl() throws IOException {
-        apiDefinition.setServiceUrl("http://my.service/");
+        apiDefinition.setServiceUrl("my.service/");
         saveApiDefinition();
 
         ResponseEntity<String> responseEntity = restTemplate.getForEntity(getUrl() + "/apps/" + serviceId, String.class);
 
-        ObjectMapper mapper = new ObjectMapper();
+        assertThat(mapper.readTree(responseEntity.getBody()).get("service_url").textValue()).isEqualTo("my.service");
+    }
+
+    @Test
+    public void addProtocolToServiceUrl() throws IOException {
+        final ObjectNode definition = mapper.createObjectNode();
+        definition.putArray("schemes").add("https");
+
+        apiDefinition.setServiceUrl("my.service");
+        apiDefinition.setDefinition(definition.toString());
+        saveApiDefinition();
+
+        ResponseEntity<String> responseEntity = restTemplate.getForEntity(getUrl() + "/apps/" + serviceId, String.class);
+        assertThat(mapper.readTree(responseEntity.getBody()).get("service_url").textValue()).isEqualTo("https://my.service");
+    }
+
+    @Test
+    public void chooseFirstProtocolInSchemesArray() throws IOException {
+        final ObjectNode definition = mapper.createObjectNode();
+        definition.putArray("schemes").add("http").add("https").add("ws");
+
+        apiDefinition.setServiceUrl("my.service");
+        apiDefinition.setDefinition(definition.toString());
+        saveApiDefinition();
+
+        ResponseEntity<String> responseEntity = restTemplate.getForEntity(getUrl() + "/apps/" + serviceId, String.class);
         assertThat(mapper.readTree(responseEntity.getBody()).get("service_url").textValue()).isEqualTo("http://my.service");
     }
 
