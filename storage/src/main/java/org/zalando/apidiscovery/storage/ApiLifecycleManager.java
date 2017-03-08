@@ -19,9 +19,9 @@ import java.util.List;
 @Component
 class ApiLifecycleManager {
 
-    static final String ACTIVE = "ACTIVE";
-    static final String INACTIVE = "INACTIVE";
-    static final String DECOMMISSIONED = "DECOMMISSIONED";
+    public static final String ACTIVE = "ACTIVE";
+    public static final String INACTIVE = "INACTIVE";
+    public static final String DECOMMISSIONED = "DECOMMISSIONED";
 
     private final ApiDefinitionRepository repository;
     private final int markAsInactiveTime;
@@ -37,14 +37,14 @@ class ApiLifecycleManager {
     }
 
     @Scheduled(fixedDelayString = "${lifecycle-check.delay}")
-    void checkLifecycleStates() {
+    public void checkLifecycleStates() {
         final DateTime now = DateTime.now();
         inactivateApis(now);
         decomissionApis(now);
     }
 
     @Transactional
-    void inactivateApis(DateTime now) {
+    public void inactivateApis(DateTime now) {
         final DateTime toOldApis = now.minusSeconds(markAsInactiveTime);
 
         List<ApiDefinition> inactivatedApis = repository.findOlderThanAndUnsuccessful(toOldApis);
@@ -55,7 +55,7 @@ class ApiLifecycleManager {
     }
 
     @Transactional
-    void decomissionApis(DateTime now) {
+    public void decomissionApis(DateTime now) {
         List<ApiDefinition> decommissionedApis = repository.findNotUpdatedSinceAndInactive(now.minusSeconds(markAsDecommissionedTime));
         decommissionedApis.forEach(a -> a.setLifecycleState(DECOMMISSIONED));
         repository.save(decommissionedApis);

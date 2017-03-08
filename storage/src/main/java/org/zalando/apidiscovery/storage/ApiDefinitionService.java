@@ -17,7 +17,7 @@ class ApiDefinitionService {
     }
 
     @Transactional
-    void persistWithMetadata(ApiDefinition apiDefinition) {
+    public void persistWithMetadata(ApiDefinition apiDefinition) {
         final ApiDefinition persistedDefinition = repository.findOne(apiDefinition.getApplicationId());
         final DateTime now = DateTime.now();
 
