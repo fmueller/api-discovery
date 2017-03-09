@@ -1,7 +1,7 @@
 swagger: '2.0'
 
 info:
-  title: API Discovery Storage API
+  title: API Repository API
   version: '0.2'
   description: |
     Storage API of the API Discovery Solution (a.k.a Meta-API) is currently used to manage versions and Applications of
@@ -10,13 +10,14 @@ info:
     API resource represents an abstract API. One particular API has one or more Versions which can be deployed in
     multiple Applications. An application can implement multiple APIs.
 
-    APIs, Applications and Versions have a defined lifecycle. Version's lifecycle is based on the usage of the given
-    Version in one or more deployed applications. Application's lifecycle depends on when the application was last seen
-    online. API's lifecycle is an aggregated view on the lifecycles of the linked Versions and Applications (e.g. API
-    is ACTIVE if there is a Version which is deployed in a Application).
+    APIs, Applications, and Versions have a defined lifecycle. An Application is ACTIVE if it has been crawled recently.
+    An Application gets INACTIVE or DECOMMISSIONED if it wasn't available for a long period of time. The Application
+    lifecycle state gets lifted to the lifecycle state of the API Version: a Version is ACTIVE if there is an ACTIVE
+    Application which implements the given Version of the API. API lifecycle aggregates the lifecycle statuses of its
+    Versions: an API is ACTIVE if there is at least one ACTIVE Version.
 
 externalDocs:
-  description: API Discovery Solution Documentation
+  description: API Repository Solution Documentation
   url: https://github.com/zalando-incubator/api-discovery
 
 basePath: /
@@ -26,7 +27,7 @@ consumes:
 - application/json
 
 security:
-- oauth2: [uid, overarching.api_definition.write]
+- oauth2: [uid, api-is.api-repository.api-definition.write]
 
 paths:
   '/apis':
@@ -47,7 +48,7 @@ paths:
         required: false
       responses:
         200:
-          description: List of APIs and Cursors for pagination
+          description: List of APIs
           schema:
             type: array
             items:
@@ -111,7 +112,7 @@ paths:
         default:
           $ref: '#/responses/Error'
 
-  '/apis/{api_id}/versions/{version_name}':
+  '/apis/{api_id}/versions/{version_id}':
     get:
       summary: reads a version of an API
       description: Specific version of an API
@@ -128,16 +129,47 @@ paths:
         type: string
         description: ID of the API
         required: true
-      - name: version_name
+      - name: version_id
         in: path
         type: string
-        description: Version name
+        description: Version ID
         required: true
       responses:
         200:
           description: Version of the API
           schema:
             $ref: '#/definitions/Version'
+        default:
+          $ref: '#/responses/Error'
+
+  '/apis/{api_id}/versions/{version_id}/definition':
+    get:
+      summary: reads a definition of an API versions
+      description: Definition of an API versions
+      operationId: "org.zalando.apidiscovery.storage.api/get-api-version-definition!"
+      tags:
+      - APIs
+      - Versions
+      - Definitions
+      security:
+      - oauth2:
+        - uid
+      parameters:
+      - name: api_id
+        in: path
+        type: string
+        description: ID of the API
+        required: true
+      - name: version_id
+        in: path
+        type: string
+        description: Version ID
+        required: true
+      responses:
+        200:
+          description: Swagger Definition of the API
+          schema:
+            $ref: '#/definitions/SwaggerDefinition'
         default:
           $ref: '#/responses/Error'
 
@@ -209,11 +241,11 @@ paths:
       description: Creates an API definition
       operationId: "org.zalando.apidiscovery.storage.api/create-api-definition!"
       tags:
-      - APIs
+      - Definitions
       security:
       - oauth2:
         - uid
-        - overarching.api_definition.write
+        - api-is.api-repository.api-definition.write
       parameters:
       - name: api_definition_id
         in: path
@@ -280,22 +312,19 @@ definitions:
     - status
 
   API:
-    type: object
-    properties:
-      name:
-        type: string
-        description: Human readable name of the API
-        example: API Discovery Storage API
-      lifecycle_state:
-        $ref: '#/definitions/LifecycleState'
-      applications:
-        type: array
-        items:
-          $ref: '#/definitions/Application'
-      versions:
-        type: array
-        items:
-          $ref: '#/definitions/Version'
+    description: A representation of an abstract API
+    allOf:
+    - $ref: '#/definitions/APIMetadata'
+    - type: object
+      properties:
+        applications:
+          type: array
+          items:
+            $ref: '#/definitions/Application'
+        versions:
+          type: array
+          items:
+            $ref: '#/definitions/Version'
 
   APIMetadata:
     type: object
@@ -309,7 +338,7 @@ definitions:
 
   Application:
     type: object
-    description: A deployed instance of the API (an application)
+    description: A deployed instance of the API
     properties:
       name:
         type: string
@@ -332,16 +361,24 @@ definitions:
       versions:
         type: array
         items:
-          $ref: '#/definitions/Link'
+          $ref: '#/definitions/VersionLink'
 
   Version:
     type: object
     description: A version of one particular API
     properties:
-      name:
+      id:
         type: string
-        description: Version of the API
+        description: opaque id of the version
+        example: 123e4567-e89b-12d3-a456-426655440000
+      swagger_version:
+        type: string
+        description: Version from the Swagger definition
         example: 1.0.0
+      last_crawled:
+        type: integer
+        description: Last time crawled
+        example: 1489072334
       type:
         type: string
         description: Type of the API definition
@@ -357,7 +394,7 @@ definitions:
       applications:
         type: array
         items:
-          $ref: '#/definitions/Link'
+          $ref: '#/definitions/ApplicationLink'
 
   LifecycleState:
     type: string
@@ -366,18 +403,58 @@ definitions:
     - INACTIVE
     - DECOMMISSIONED
 
-  Link:
+  SwaggerDefinition:
+    type: object
+    description: Swagger definition in JSON format
+
+  VersionLink:
     type: object
     properties:
-      name:
+      version_id:
         type: string
-        example: api-discovery-production
+        example: 123e4567-e89b-12d3-a456-426655440000
+        description: opaque id of the version
+      created:
+        type: integer
+        description: first time crawled
+        example: 1489072334
+      last_crawled:
+        type: integer
+        description: last time crawled
+        example: 1489072334
+      lifecycle_state:
+        $ref: '#/definitions/LifecycleState'
       href:
         type: string
         format: uri
-        example: https://meta.api.example.com/apis/sales-orders/applications/api-discovery-production
+        example: https://meta.api.example.com/apis/sales-orders/versions/123e4567-e89b-12d3-a456-426655440000
     required:
-    - name
+    - version_id
+    - href
+
+  ApplicationLink:
+    type: object
+    properties:
+      application_name:
+        type: string
+        example: kio-app
+        description: unique application name
+      created:
+        type: integer
+        description: first time crawled
+        example: 1489072334
+      last_crawled:
+        type: integer
+        description: last time crawled
+        example: 1489072334
+      lifecycle_state:
+        $ref: '#/definitions/LifecycleState'
+      href:
+        type: string
+        format: uri
+        example: https://meta.api.example.com/apis/sales-orders/applicatons/kio-app
+    required:
+    - application_name
     - href
 
   Error:
@@ -394,4 +471,4 @@ securityDefinitions:
     authorizationUrl: https://example.com/oauth2/dialog
     scopes:
       uid: Unique identifier of the user accessing the service.
-      overarching.api_definition.write: Scope allowing the user to write API definitions.
+      api-is.api-repository.api-definition.write: Scope allowing the user to write API definitions.
