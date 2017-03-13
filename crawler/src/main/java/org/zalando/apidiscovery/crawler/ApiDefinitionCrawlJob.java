@@ -1,5 +1,10 @@
 package org.zalando.apidiscovery.crawler;
 
+import java.io.IOException;
+import java.net.UnknownHostException;
+import java.util.Optional;
+import java.util.concurrent.Callable;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
@@ -11,25 +16,20 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.ResourceAccessException;
-import org.springframework.web.client.RestOperations;
-import org.zalando.stups.clients.kio.ApplicationBase;
+import org.springframework.web.client.RestTemplate;
 import org.zalando.apidiscovery.crawler.storage.ApiDefinition;
 import org.zalando.apidiscovery.crawler.storage.ApiDiscoveryStorageClient;
-
-import java.io.IOException;
-import java.net.UnknownHostException;
-import java.util.Optional;
-import java.util.concurrent.Callable;
+import org.zalando.stups.clients.kio.ApplicationBase;
 
 class ApiDefinitionCrawlJob implements Callable<Void> {
 
     private static final Logger LOG = LoggerFactory.getLogger(ApiDefinitionCrawlJob.class);
 
     private final ApiDiscoveryStorageClient storageClient;
-    private final RestOperations schemaClient;
+    private final RestTemplate schemaClient;
     private final ApplicationBase app;
 
-    ApiDefinitionCrawlJob(ApiDiscoveryStorageClient storageClient, RestOperations schemaClient, ApplicationBase app) {
+    ApiDefinitionCrawlJob(ApiDiscoveryStorageClient storageClient, RestTemplate schemaClient, ApplicationBase app) {
         this.storageClient = storageClient;
         this.schemaClient = schemaClient;
         this.app = app;

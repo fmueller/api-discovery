@@ -1,17 +1,5 @@
 package org.zalando.apidiscovery.crawler;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-import org.springframework.web.client.RestOperations;
-import org.zalando.apidiscovery.crawler.storage.ApiDiscoveryStorageClient;
-import org.zalando.stups.clients.kio.ApplicationBase;
-import org.zalando.stups.clients.kio.KioOperations;
-
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -20,6 +8,18 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+import org.springframework.web.client.RestTemplate;
+import org.zalando.apidiscovery.crawler.storage.ApiDiscoveryStorageClient;
+import org.zalando.stups.clients.kio.ApplicationBase;
+import org.zalando.stups.clients.kio.KioOperations;
+
 @Component
 public class ApiDiscoveryCrawler {
 
@@ -27,13 +27,13 @@ public class ApiDiscoveryCrawler {
 
     private final KioOperations kioClient;
     private final ApiDiscoveryStorageClient storageClient;
-    private final RestOperations schemaClient;
+    private final RestTemplate schemaClient;
     private final ExecutorService fixedPool;
 
     @Autowired
     public ApiDiscoveryCrawler(KioOperations kioClient,
                                ApiDiscoveryStorageClient storageClient,
-                               RestOperations schemaClient,
+                               RestTemplate schemaClient,
                                @Value("${crawler.jobs.pool}") int jobsPoolSize) {
         this.kioClient = kioClient;
         this.storageClient = storageClient;
