@@ -1,9 +1,9 @@
-FROM registry.opensource.zalan.do/stups/openjdk:8-42
+FROM registry.opensource.zalan.do/stups/openjdk:latest
 
 MAINTAINER Zalando SE
 
-ADD build/libs/crawler.jar /
-ADD scm-source.json /scm-source.json
+COPY build/libs/crawler.jar /
+COPY scm-source.json /scm-source.json
 
 EXPOSE 8080
 
