@@ -194,7 +194,7 @@
     }
 
     function isOAuthEnabled() {
-      return window.SUIENV_OAUTH_ENABLED && window.SUIENV_OAUTH_ENABLED === 'true';
+      return window.SUIENV_OAUTH_ENABLED && (window.SUIENV_OAUTH_ENABLED === 'true' || window.SUIENV_OAUTH_ENABLED === 'True');
     }
 
     $.ajax({
