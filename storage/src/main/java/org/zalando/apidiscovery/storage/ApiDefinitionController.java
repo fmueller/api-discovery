@@ -66,7 +66,7 @@ class ApiDefinitionController {
 
     private ApiDefinition addSchemeToServiceUrl(ApiDefinition apiDefinition) throws IOException {
         final String serviceUrl = apiDefinition.getServiceUrl();
-        if (serviceUrl != null) {
+        if (serviceUrl != null && !serviceUrl.contains("://")) {
             final JsonNode definition = mapper.readTree(apiDefinition.getDefinition());
             if (definition.has("schemes")) {
                 if (definition.get("schemes").isArray()) {

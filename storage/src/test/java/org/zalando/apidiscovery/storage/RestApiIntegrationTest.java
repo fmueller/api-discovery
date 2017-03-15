@@ -125,6 +125,19 @@ public class RestApiIntegrationTest {
     }
 
     @Test
+    public void addProtocolToServiceUrlOnlyIfItsNotAlreadyThere() throws IOException {
+        final ObjectNode definition = mapper.createObjectNode();
+        definition.putArray("schemes").add("https");
+
+        apiDefinition.setServiceUrl("https://my.service");
+        apiDefinition.setDefinition(definition.toString());
+        saveApiDefinition();
+
+        ResponseEntity<String> responseEntity = restTemplate.getForEntity(getUrl() + "/apps/" + serviceId, String.class);
+        assertThat(mapper.readTree(responseEntity.getBody()).get("service_url").textValue()).isEqualTo("https://my.service");
+    }
+
+    @Test
     public void chooseFirstProtocolInSchemesArray() throws IOException {
         final ObjectNode definition = mapper.createObjectNode();
         definition.putArray("schemes").add("http").add("https").add("ws");
