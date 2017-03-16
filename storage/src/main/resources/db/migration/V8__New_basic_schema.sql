@@ -2,7 +2,7 @@ CREATE TABLE application (
   name                TEXT PRIMARY KEY,
   service_url         TEXT,
   last_crawled        TIMESTAMP,
-  crawled_state      TEXT,
+  crawled_state       TEXT,
   created             TIMESTAMP
 );
 
@@ -12,7 +12,7 @@ CREATE TABLE api_version (
   api_name            TEXT NOT NULL,
   api_version         TEXT,
   definition          TEXT,
-  lifecycle_state    TEXT,
+  lifecycle_state     TEXT,
   url                 TEXT,
   ui                  TEXT,
   last_content_change TIMESTAMP,
