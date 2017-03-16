@@ -276,8 +276,9 @@ definitions:
     properties:
       status:
         type: string
+        x-extensible-enum: [SUCCESSFUL, UNSUCCESSFUL]
         description: The current status of the crawling
-        example: SUCCESS
+        example: SUCCESSFUL
       type:
         type: string
         description: Type of API definition
