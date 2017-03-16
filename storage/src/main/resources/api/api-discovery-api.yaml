@@ -8,9 +8,9 @@ info:
     APIs. Later, it will be also used to manage API's meta information like documentation and user manuals.
 
     API resource represents an abstract API. One particular API has one or more Versions which can be deployed in
-    multiple Applications. An application can implement multiple APIs.
+    multiple Applications. An Application can implement multiple APIs.
 
-    APIs, Applications, and Versions have a defined lifecycle. An Application is ACTIVE if it has been crawled recently.
+    APIs, Applications, and Versions have defined lifecycles. An Application is ACTIVE if it has been crawled recently.
     An Application gets INACTIVE or DECOMMISSIONED if it wasn't available for a long period of time. The Application
     lifecycle state gets lifted to the lifecycle state of the API Version: a Version is ACTIVE if there is an ACTIVE
     Application which implements the given Version of the API. API lifecycle aggregates the lifecycle statuses of its
