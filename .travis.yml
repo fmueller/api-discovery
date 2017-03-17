@@ -5,6 +5,13 @@ language: node_js
 node_js:
   - '0.12'
 
+before_install:
+  # Codacy coverage
+  - curl -sL https://github.com/jpm4j/jpm4j.installers/raw/master/dist/biz.aQute.jpm.run.jar >jpm4j.jar
+  - java -jar jpm4j.jar -u init
+  - ~/jpm/bin/jpm install com.codacy:codacy-coverage-reporter:assembly
+  # / Codacy coverage
+
 addons:
   apt:
     packages:
@@ -17,6 +24,10 @@ script:
   - npm i -g jshint
   - npm install
   - cd ../storage
-  - gradle test --info
+  - ./gradlew build --info
   - cd ../crawler
-  - gradle test --info
+  - ./gradlew build --info
+
+after_success:
+  - ~/jpm/bin/codacy-coverage-reporter --language Java --coverageReport crawler/build/reports/jacoco/test/jacocoTestReport.xml -t $CODACY_PROJECT_TOKEN
+  - ~/jpm/bin/codacy-coverage-reporter --language Java --coverageReport storage/build/reports/jacoco/test/jacocoTestReport.xml -t $CODACY_PROJECT_TOKEN

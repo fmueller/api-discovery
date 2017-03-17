@@ -1,3 +1,7 @@
+def versions = [
+        jacoco: '0.7.9',
+]
+
 buildscript {
     repositories {
         mavenCentral()
@@ -12,6 +16,7 @@ buildscript {
 }
 
 apply plugin: 'java'
+apply plugin: 'jacoco'
 apply plugin: 'spring-boot'
 apply plugin: 'com.github.ben-manes.versions'
 
@@ -40,3 +45,15 @@ dependencies {
     testCompile('org.springframework.boot:spring-boot-starter-test')
     testCompile('org.assertj:assertj-core:3.6.1')
 }
+
+jacoco {
+    toolVersion = versions.jacoco
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+    }
+}
+
+check.dependsOn jacocoTestReport
