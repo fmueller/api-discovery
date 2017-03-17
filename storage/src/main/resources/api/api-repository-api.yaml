@@ -319,6 +319,8 @@ definitions:
            "foo": "bar"}
     required:
     - status
+    - api_name
+    - app_name
 
   API:
     description: A representation of an abstract API
