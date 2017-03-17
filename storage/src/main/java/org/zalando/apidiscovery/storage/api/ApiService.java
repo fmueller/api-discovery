@@ -23,11 +23,11 @@ public class ApiService {
                 .collect(groupingBy(ApiEntity::getApiName))
                 .entrySet()
                 .stream()
-                .map(entry -> new Api(entry.getKey(), aggregateApplicationLifecylceState(entry.getValue())))
+                .map(entry -> new Api(entry.getKey(), aggregateApplicationLifecycleState(entry.getValue())))
                 .collect(toList());
     }
 
-    private ApiLifecycleState aggregateApplicationLifecylceState(List<ApiEntity> apis) {
+    private ApiLifecycleState aggregateApplicationLifecycleState(List<ApiEntity> apis) {
         if (apis.stream()
                 .filter(apiEntity -> ACTIVE.equals(apiEntity.getLifecycleState())).count() > 0) {
             return ACTIVE;
