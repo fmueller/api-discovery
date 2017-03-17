@@ -287,7 +287,7 @@ definitions:
         type: string
         description: Type of API definition
         example: SWAGGER-2.0
-      name:
+      api_name:
         type: string
         description: Name of the API
         example: Kio API
@@ -295,6 +295,10 @@ definitions:
         type: string
         description: Version of the API
         example: "1.0"
+      app_name:
+        type: string
+        description: Name of the application this API is deployed on
+        example: kio
       service_url:
         type: string
         description: URL pointing to the Application which is providing the API
