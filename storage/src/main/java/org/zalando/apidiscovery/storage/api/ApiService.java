@@ -7,9 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 
+import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toList;
 import static org.zalando.apidiscovery.storage.api.ApiLifecycleState.ACTIVE;
 import static org.zalando.apidiscovery.storage.api.ApiLifecycleState.INACTIVE;
 
@@ -36,6 +37,12 @@ public class ApiService {
 
         }
         return apiList;
+    }
+
+    public List<Api> getAllApis(ApiLifecycleState filterByLifecycleState) {
+        return getAllApis().stream()
+                .filter(api -> filterByLifecycleState.equals(api.getApiMetaData().getLifecycleState()))
+                .collect(toList());
     }
 
 }
