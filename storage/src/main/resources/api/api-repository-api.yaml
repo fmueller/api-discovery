@@ -17,7 +17,7 @@ info:
     Versions: an API is ACTIVE if there is at least one ACTIVE Version.
 
 externalDocs:
-  description: API Repository Solution Documentation
+  description: API Infrastructure Documentation
   url: https://github.com/zalando-incubator/api-discovery
 
 basePath: /
@@ -50,9 +50,12 @@ paths:
         200:
           description: List of APIs
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/APIMetadata'
+            type: object
+            properties:
+              apis:
+                type: array
+                items:
+                  $ref: '#/definitions/APIMetadata'
         default:
           $ref: '#/responses/Error'
 
@@ -106,9 +109,12 @@ paths:
         200:
           description: List of API's versions
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/Version'
+            type: object
+            properties:
+              versions:
+                type: array
+                items:
+                  $ref: '#/definitions/Version'
         default:
           $ref: '#/responses/Error'
 
@@ -199,9 +205,12 @@ paths:
         200:
           description: List of API's Applications
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/Application'
+            type: object
+            properties:
+              applications:
+                type: array
+                items:
+                  $ref: '#/definitions/Application'
         default:
           $ref: '#/responses/Error'
 
