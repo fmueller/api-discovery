@@ -152,7 +152,6 @@ public class ApiResourceIntegrationTest {
         assertThat(responseEntity.getBody())
                 .containsOnlyOnce("anotherApi")
                 .contains(INACTIVE)
-                .doesNotContain("\"" + ApiLifecycleManager.ACTIVE + "\""); // necessary, otherwise INACTIVE would also match this;
+                .doesNotContain("\"" + ACTIVE + "\""); // necessary, otherwise INACTIVE would also match this;
     }
-
 }
