@@ -19,6 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.zalando.apidiscovery.storage.ApiLifecycleManager.ACTIVE;
 import static org.zalando.apidiscovery.storage.ApiLifecycleManager.INACTIVE;
+import static org.zalando.apidiscovery.storage.ApiLifecycleManager.DECOMMISSIONED;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT)
@@ -58,14 +59,14 @@ public class ApiResourceIntegrationTest {
                 .lifecycleState(ApiLifecycleState.ACTIVE)
                 .application(app1)
                 .build();
-        ApiEntity anotherAPi101 = ApiEntity.builder().apiName("anotherApi")
+        ApiEntity anotherAPi100 = ApiEntity.builder().apiName("anotherApi")
                 .apiVersion("1.0.0")
                 .lifecycleState(ApiLifecycleState.INACTIVE)
                 .application(app2)
                 .build();
 
         app1.setApiEntities(asList(testAPi100, testAPi101));
-        app2.setApiEntities(asList(anotherAPi101));
+        app2.setApiEntities(asList(anotherAPi100));
 
         applicationRepository.save(asList(app1, app2));
 
@@ -97,14 +98,14 @@ public class ApiResourceIntegrationTest {
                 .lifecycleState(ApiLifecycleState.ACTIVE)
                 .application(app1)
                 .build();
-        ApiEntity anotherAPi101 = ApiEntity.builder().apiName("anotherApi")
+        ApiEntity anotherAPi100 = ApiEntity.builder().apiName("anotherApi")
                 .apiVersion("1.0.0")
                 .lifecycleState(ApiLifecycleState.INACTIVE)
                 .application(app2)
                 .build();
 
         app1.setApiEntities(asList(testAPi100));
-        app2.setApiEntities(asList(anotherAPi101));
+        app2.setApiEntities(asList(anotherAPi100));
 
         applicationRepository.save(asList(app1, app2));
 
@@ -132,17 +133,22 @@ public class ApiResourceIntegrationTest {
 
         ApiEntity testAPi100 = ApiEntity.builder().apiName("testAPi")
                 .apiVersion("1.0.0")
+                .lifecycleState(ApiLifecycleState.DECOMMISSIONED)
+                .application(app1)
+                .build();
+        ApiEntity testAPi101 = ApiEntity.builder().apiName("testAPi")
+                .apiVersion("1.0.1")
                 .lifecycleState(ApiLifecycleState.ACTIVE)
                 .application(app1)
                 .build();
-        ApiEntity anotherAPi101 = ApiEntity.builder().apiName("anotherApi")
+        ApiEntity anotherAPi100 = ApiEntity.builder().apiName("anotherApi")
                 .apiVersion("1.0.0")
                 .lifecycleState(ApiLifecycleState.INACTIVE)
                 .application(app2)
                 .build();
 
-        app1.setApiEntities(asList(testAPi100));
-        app2.setApiEntities(asList(anotherAPi101));
+        app1.setApiEntities(asList(testAPi100, testAPi101));
+        app2.setApiEntities(asList(anotherAPi100));
 
         applicationRepository.save(asList(app1, app2));
 
@@ -152,6 +158,48 @@ public class ApiResourceIntegrationTest {
         assertThat(responseEntity.getBody())
                 .containsOnlyOnce("anotherApi")
                 .contains(INACTIVE)
+                .doesNotContain(DECOMMISSIONED)
                 .doesNotContain("\"" + ACTIVE + "\""); // necessary, otherwise INACTIVE would also match this;
     }
+
+
+    @Test
+    public void shouldReturnAllDecommissionedApis() throws Exception {
+        ApplicationEntity app1 = ApplicationEntity.builder().name("testApp")
+                .lastCrawled(now())
+                .created(now())
+                .crawledState("SUCCESSFUL")
+                .build();
+        ApplicationEntity app2 = ApplicationEntity.builder().name("testApp2")
+                .lastCrawled(now())
+                .created(now())
+                .crawledState("SUCCESSFUL")
+                .build();
+
+        ApiEntity testAPi100 = ApiEntity.builder().apiName("testAPi")
+                .apiVersion("1.0.0")
+                .lifecycleState(ApiLifecycleState.ACTIVE)
+                .application(app1)
+                .build();
+        ApiEntity anotherAPi100 = ApiEntity.builder().apiName("anotherApi")
+                .apiVersion("1.0.0")
+                .lifecycleState(ApiLifecycleState.DECOMMISSIONED)
+                .application(app2)
+                .build();
+
+        app1.setApiEntities(asList(testAPi100));
+        app2.setApiEntities(asList(anotherAPi100));
+
+        applicationRepository.save(asList(app1, app2));
+
+        ResponseEntity<String> responseEntity = restTemplate.getForEntity(
+                "/apis?lifecycle_state=DECOMMISSIONED", String.class);
+
+        assertThat(responseEntity.getBody())
+                .containsOnlyOnce("anotherApi")
+                .contains(DECOMMISSIONED)
+                .doesNotContain("\"" + ACTIVE + "\""); // necessary, otherwise INACTIVE would also match this;
+    }
+
+
 }
