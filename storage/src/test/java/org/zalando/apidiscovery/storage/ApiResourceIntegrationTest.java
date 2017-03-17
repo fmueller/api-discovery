@@ -7,7 +7,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.zalando.apidiscovery.storage.api.*;
+import org.zalando.apidiscovery.storage.api.ApiEntity;
+import org.zalando.apidiscovery.storage.api.ApiLifecycleState;
+import org.zalando.apidiscovery.storage.api.ApplicationEntity;
+import org.zalando.apidiscovery.storage.api.ApplicationRepository;
 
 import static java.time.LocalDateTime.now;
 import static java.util.Arrays.asList;
