@@ -3,15 +3,11 @@ package org.zalando.apidiscovery.storage.api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
-import static org.zalando.apidiscovery.storage.api.ApiLifecycleState.ACTIVE;
-import static org.zalando.apidiscovery.storage.api.ApiLifecycleState.INACTIVE;
+import static org.zalando.apidiscovery.storage.api.ApiLifecycleState.*;
 
 @Service
 public class ApiService {
@@ -22,20 +18,24 @@ public class ApiService {
     public List<Api> getAllApis() {
         List<ApiEntity> apiEntities = apiRepository.findAll();
 
-        Map<String, List<ApiEntity>> apisGroupedByNameMap = apiEntities
+        return apiEntities
                 .stream()
-                .collect(groupingBy(ApiEntity::getApiName));
+                .collect(groupingBy(ApiEntity::getApiName))
+                .entrySet()
+                .stream()
+                .map(entry -> new Api(entry.getKey(), aggregateApplicationLifecylceState(entry.getValue())))
+                .collect(toList());
+    }
 
-        List<Api> apiList = new ArrayList<>();
-        for (Entry<String, List<ApiEntity>> entry : apisGroupedByNameMap.entrySet()) {
-            boolean isApiActive = entry.getValue()
-                    .stream()
-                    .filter(apiEntity -> ACTIVE.equals(apiEntity.getLifecycleState())).count() > 0;
-
-            apiList.add(new Api(entry.getKey(), isApiActive ? ACTIVE : INACTIVE));
-
+    private ApiLifecycleState aggregateApplicationLifecylceState(List<ApiEntity> apis) {
+        if (apis.stream()
+                .filter(apiEntity -> ACTIVE.equals(apiEntity.getLifecycleState())).count() > 0) {
+            return ACTIVE;
+        } else if (apis.stream()
+                .filter(apiEntity -> INACTIVE.equals(apiEntity.getLifecycleState())).count() > 0) {
+            return INACTIVE;
         }
-        return apiList;
+        return DECOMMISSIONED;
     }
 
     public List<Api> getAllApis(ApiLifecycleState filterByLifecycleState) {
