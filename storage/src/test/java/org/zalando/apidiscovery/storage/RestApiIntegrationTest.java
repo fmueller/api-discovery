@@ -19,7 +19,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
-import static org.zalando.apidiscovery.storage.ApiLifecycleManager.*;
+import static org.zalando.apidiscovery.storage.ApiLifecycleManager.ACTIVE;
+import static org.zalando.apidiscovery.storage.ApiLifecycleManager.DECOMMISSIONED;
+import static org.zalando.apidiscovery.storage.ApiLifecycleManager.INACTIVE;
 import static org.zalando.apidiscovery.storage.TestDataHelper.createBasicApiDefinition;
 import static org.zalando.apidiscovery.storage.TestDataHelper.createDecommissionedApiDefinition;
 import static org.zalando.apidiscovery.storage.TestDataHelper.createInactiveApiDefinition;

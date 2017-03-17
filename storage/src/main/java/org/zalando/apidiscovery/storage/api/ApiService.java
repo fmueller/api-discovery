@@ -1,13 +1,15 @@
 package org.zalando.apidiscovery.storage.api;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
-import static org.zalando.apidiscovery.storage.api.ApiLifecycleState.*;
+import static org.zalando.apidiscovery.storage.api.ApiLifecycleState.ACTIVE;
+import static org.zalando.apidiscovery.storage.api.ApiLifecycleState.DECOMMISSIONED;
+import static org.zalando.apidiscovery.storage.api.ApiLifecycleState.INACTIVE;
 
 @Service
 public class ApiService {
