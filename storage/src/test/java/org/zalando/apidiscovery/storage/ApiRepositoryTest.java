@@ -1,5 +1,6 @@
 package org.zalando.apidiscovery.storage;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,11 @@ public class ApiRepositoryTest {
 
     @Autowired
     private ApplicationRepository applicationRepository;
+
+    @Before
+    public void cleanDatabase() {
+        applicationRepository.deleteAll();
+    }
 
     @Test
     public void shouldReturnAllApis() throws Exception {

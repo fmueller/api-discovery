@@ -19,6 +19,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static org.zalando.apidiscovery.storage.ApiLifecycleManager.*;
 import static org.zalando.apidiscovery.storage.TestDataHelper.createBasicApiDefinition;
 import static org.zalando.apidiscovery.storage.TestDataHelper.createDecommissionedApiDefinition;
 import static org.zalando.apidiscovery.storage.TestDataHelper.createInactiveApiDefinition;
@@ -160,9 +161,9 @@ public class RestApiIntegrationTest {
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         assertThat(responseEntity.getBody())
-                .contains(ApiLifecycleManager.ACTIVE)
-                .doesNotContain(ApiLifecycleManager.INACTIVE)
-                .doesNotContain(ApiLifecycleManager.DECOMMISSIONED);
+                .contains(ACTIVE)
+                .doesNotContain(INACTIVE)
+                .doesNotContain(DECOMMISSIONED);
     }
 
     @Test
@@ -175,9 +176,9 @@ public class RestApiIntegrationTest {
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         assertThat(responseEntity.getBody())
-                .contains(ApiLifecycleManager.INACTIVE)
-                .doesNotContain("\"" + ApiLifecycleManager.ACTIVE + "\"") // necessary, otherwise INACTIVE would also match this
-                .doesNotContain(ApiLifecycleManager.DECOMMISSIONED);
+                .contains(INACTIVE)
+                .doesNotContain("\"" + ACTIVE + "\"") // necessary, otherwise INACTIVE would also match this
+                .doesNotContain(DECOMMISSIONED);
     }
 
     @Test
@@ -190,9 +191,9 @@ public class RestApiIntegrationTest {
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         assertThat(responseEntity.getBody())
-                .contains(ApiLifecycleManager.DECOMMISSIONED)
-                .doesNotContain(ApiLifecycleManager.ACTIVE)
-                .doesNotContain(ApiLifecycleManager.INACTIVE);
+                .contains(DECOMMISSIONED)
+                .doesNotContain(ACTIVE)
+                .doesNotContain(INACTIVE);
     }
 
     @Test
@@ -208,7 +209,7 @@ public class RestApiIntegrationTest {
         DateTime lastChanged = retrieveApiDefinition().getLastChanged();
 
         apiDefinition.setStatus("FAILED");
-        apiDefinition.setLifecycleState(ApiLifecycleManager.ACTIVE);
+        apiDefinition.setLifecycleState(ACTIVE);
         saveApiDefinition();
 
         assertThat(lastChanged)
