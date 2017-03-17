@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.org/zalando-incubator/api-discovery.svg?branch=master)](https://travis-ci.org/zalando-incubator/api-discovery)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/af767a162ce24df0b22d1e4cb70a6556)](https://www.codacy.com/app/felix-mueller-berlin/api-discovery?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=zalando-incubator/api-discovery&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://api.codacy.com/project/badge/Coverage/af767a162ce24df0b22d1e4cb70a6556)](https://www.codacy.com/app/api-infrastructure/api-discovery?utm_source=github.com&utm_medium=referral&utm_content=zalando-incubator/api-discovery&utm_campaign=Badge_Coverage)
 
 # API Discovery Solution for Microservice Architectures
 
