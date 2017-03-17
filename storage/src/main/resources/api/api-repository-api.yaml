@@ -376,7 +376,8 @@ definitions:
         description: Version from the Swagger definition
         example: 1.0.0
       last_crawled:
-        type: dateTime
+        type: string
+        format: date-time
         description: Last time crawled
       type:
         type: string
@@ -414,11 +415,11 @@ definitions:
         example: 123e4567-e89b-12d3-a456-426655440000
         description: opaque id of the version
       created:
-        type: dateTime
-        description: first time crawled
+        type: string
+        format: date-time
       last_crawled:
-        type: dateTime
-        description: last time crawled
+        type: string
+        format: date-time
       lifecycle_state:
         $ref: '#/definitions/LifecycleState'
       href:
@@ -437,10 +438,12 @@ definitions:
         example: kio-app
         description: unique application name
       created:
-        type: dateTime
+        type: string
+        format: date-time
         description: first time crawled
       last_crawled:
-        type: dateTime
+        type: string
+        format: date-time
         description: last time crawled
       lifecycle_state:
         $ref: '#/definitions/LifecycleState'
