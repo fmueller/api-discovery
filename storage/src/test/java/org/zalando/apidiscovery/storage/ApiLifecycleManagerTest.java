@@ -1,13 +1,16 @@
 package org.zalando.apidiscovery.storage;
 
-import org.joda.time.DateTime;
-import org.junit.Test;
-
 import java.util.Collections;
 import java.util.List;
 
+import org.joda.time.DateTime;
+import org.junit.Test;
+
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class ApiLifecycleManagerTest {
 

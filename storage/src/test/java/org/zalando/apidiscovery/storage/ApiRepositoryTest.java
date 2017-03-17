@@ -1,14 +1,18 @@
 package org.zalando.apidiscovery.storage;
 
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.zalando.apidiscovery.storage.api.*;
-
-import java.util.List;
+import org.zalando.apidiscovery.storage.api.ApiEntity;
+import org.zalando.apidiscovery.storage.api.ApiLifecycleState;
+import org.zalando.apidiscovery.storage.api.ApiRepository;
+import org.zalando.apidiscovery.storage.api.ApplicationEntity;
+import org.zalando.apidiscovery.storage.api.ApplicationRepository;
 
 import static java.time.LocalDateTime.now;
 import static java.util.Arrays.asList;
