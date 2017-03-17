@@ -1,9 +1,6 @@
 package org.zalando.apidiscovery.storage.api;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -20,6 +17,7 @@ import static javax.persistence.CascadeType.ALL;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "application")
+@ToString(exclude = "apiEntities")
 public class ApplicationEntity {
 
     @Id
