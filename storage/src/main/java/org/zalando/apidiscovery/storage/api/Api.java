@@ -10,7 +10,7 @@ public class Api {
 
     private ApiMetaData apiMetaData;
 
-    public Api(final String name, final String lifecycleState) {
+    public Api(final String name, final ApiLifecycleState lifecycleState) {
         apiMetaData = new ApiMetaData(name, lifecycleState);
     }
 
@@ -19,6 +19,6 @@ public class Api {
     @NoArgsConstructor
     private class ApiMetaData {
         private String name;
-        private String lifecycleState;
+        private ApiLifecycleState lifecycleState;
     }
 }

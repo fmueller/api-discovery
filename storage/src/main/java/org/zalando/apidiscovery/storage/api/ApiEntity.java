@@ -9,8 +9,6 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-import static javax.persistence.CascadeType.ALL;
-
 
 @Data
 @Builder
@@ -27,7 +25,7 @@ public class ApiEntity implements Serializable {
     private String apiVersion;
     private String definition;
     @Enumerated(EnumType.STRING)
-    private ApiLifecycleState lifecycle_state;
+    private ApiLifecycleState lifecycleState;
     private String url;
     private String ui;
     private LocalDateTime lastContentChange;

@@ -44,17 +44,17 @@ public class ApiResourceIntegrationTest {
 
         ApiEntity testAPi100 = ApiEntity.builder().apiName("testAPi")
                 .apiVersion("1.0.0")
-                .lifecycle_state(ApiLifecycleState.INACTIVE)
+                .lifecycleState(ApiLifecycleState.INACTIVE)
                 .application(app1)
                 .build();
         ApiEntity testAPi101 = ApiEntity.builder().apiName("testAPi")
                 .apiVersion("1.0.1")
-                .lifecycle_state(ApiLifecycleState.ACTIVE)
+                .lifecycleState(ApiLifecycleState.ACTIVE)
                 .application(app1)
                 .build();
         ApiEntity anotherAPi101 = ApiEntity.builder().apiName("anotherApi")
                 .apiVersion("1.0.0")
-                .lifecycle_state(ApiLifecycleState.ACTIVE)
+                .lifecycleState(ApiLifecycleState.ACTIVE)
                 .application(app2)
                 .build();
 

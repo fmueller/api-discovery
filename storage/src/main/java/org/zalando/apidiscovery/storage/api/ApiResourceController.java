@@ -2,12 +2,13 @@ package org.zalando.apidiscovery.storage.api;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
+import java.util.List;
 
 @CrossOrigin
 @RestController
@@ -15,12 +16,12 @@ import java.util.ArrayList;
 public class ApiResourceController {
 
     @Autowired
-    private ApiRepository apiRepositroy;
+    private ApiService apiService;
 
     @GetMapping
-    public ApiListDto getApis() {
-
-        return ApiListDto.builder().apis(new ArrayList<>()).build();
+    public ResponseEntity<ApiListDto> getApis() {
+        List<Api> allApis = apiService.getAllApis();
+        return ResponseEntity.ok(new ApiListDto(allApis));
     }
 
 }
