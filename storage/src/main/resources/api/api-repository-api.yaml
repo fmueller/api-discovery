@@ -26,6 +26,15 @@ produces:
 consumes:
 - application/json
 
+securityDefinitions:
+  oauth2:
+    type: oauth2
+    flow: implicit
+    authorizationUrl: https://example.com/oauth2/dialog
+    scopes:
+      uid: Unique identifier of the user accessing the service.
+      api-is.api-repository.api-definition.write: Scope allowing the user to write API definitions.
+
 security:
 - oauth2: [uid, api-is.api-repository.api-definition.write]
 
@@ -502,12 +511,3 @@ definitions:
           A human readable explanation specific to this occurrence of the
           problem.
         example: Connection to database timed out
-
-securityDefinitions:
-  oauth2:
-    type: oauth2
-    flow: implicit
-    authorizationUrl: https://example.com/oauth2/dialog
-    scopes:
-      uid: Unique identifier of the user accessing the service.
-      api-is.api-repository.api-definition.write: Scope allowing the user to write API definitions.
