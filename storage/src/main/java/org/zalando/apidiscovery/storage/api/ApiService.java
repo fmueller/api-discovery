@@ -14,8 +14,12 @@ import static org.zalando.apidiscovery.storage.api.ApiLifecycleState.INACTIVE;
 @Service
 public class ApiService {
 
+    private final ApiRepository apiRepository;
+
     @Autowired
-    private ApiRepository apiRepository;
+    public ApiService(ApiRepository apiRepository) {
+        this.apiRepository = apiRepository;
+    }
 
     public List<Api> getAllApis() {
         List<ApiEntity> apiEntities = apiRepository.findAll();

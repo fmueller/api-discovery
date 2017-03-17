@@ -19,8 +19,12 @@ import static java.util.stream.Collectors.toList;
 @RequestMapping("/apis")
 public class ApiResourceController {
 
+    private final ApiService apiService;
+
     @Autowired
-    private ApiService apiService;
+    public ApiResourceController(ApiService apiService) {
+        this.apiService = apiService;
+    }
 
     @GetMapping
     public ResponseEntity<ApiListDto> getApis(@RequestParam(value = "lifecycle_state", required = false) ApiLifecycleState lifecycleState) {
