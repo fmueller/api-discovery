@@ -4,7 +4,7 @@ info:
   title: API Repository API
   version: '1.0.0'
   description: |
-    Storage API of the API Discovery Solution (a.k.a Meta-API) is currently used to manage versions and Applications of
+    Repository API of the API Infrastructure Solution is currently used to manage versions and Applications of
     APIs. Later, it will be also used to manage API's meta information like documentation and user manuals.
 
     API resource represents an abstract API. One particular API has one or more Versions which can be deployed in
@@ -17,7 +17,7 @@ info:
     Versions: an API is ACTIVE if there is at least one ACTIVE Version.
 
 externalDocs:
-  description: API Infrastructure Documentation
+  description: API Infrastructure Solution Documentation
   url: https://github.com/zalando-incubator/api-discovery
 
 basePath: /
@@ -342,8 +342,8 @@ definitions:
     properties:
       name:
         type: string
-        description: Human readable name of the API
-        example: API Discovery Storage API
+        description: Human readable name of the API, extracted from API definition
+        example: Kio API
       lifecycle_state:
         $ref: '#/definitions/LifecycleState'
 
