@@ -24,9 +24,9 @@ script:
   - npm i -g jshint
   - npm install
   - cd ../storage
-  - gradle build --info
+  - ./gradlew build --info
   - cd ../crawler
-  - gradle build --info
+  - ./gradlew build --info
 
 after_success:
   - ~/jpm/bin/codacy-coverage-reporter --language Java --coverageReport crawler/build/reports/jacoco/test/jacocoTestReport.xml -t $CODACY_PROJECT_TOKEN
