@@ -38,6 +38,39 @@ securityDefinitions:
 security:
 - oauth2: [uid, api-is.api-repository.api-definition.write]
 
+parameters:
+  ApiId:
+    name: api_id
+    in: path
+    type: string
+    description: ID of the API
+    required: true
+  VersionId:
+    name: version_id
+    in: path
+    type: string
+    description: ID of the API version
+    required: true
+  ApplicationName:
+    name: application_name
+    in: path
+    type: string
+    description: Name of the application
+    required: true
+  LifecycleState:
+    name: lifecycle_state
+    in: query
+    type: string
+    description: Filter APIs by lifecycle state
+    required: false
+  APIDefinition:
+    name: APIDefinition
+    in: body
+    description: API definition details that will be saved
+    schema:
+      $ref: '#/definitions/APIDefinition'
+    required: true
+
 paths:
   '/apis':
     get:
@@ -50,11 +83,7 @@ paths:
       - oauth2:
         - uid
       parameters:
-      - name: lifecycle_state
-        in: query
-        type: string
-        description: Filter APIs by lifecycle state
-        required: false
+      - $ref: "#/parameters/LifecycleState"
       responses:
         200:
           description: List of APIs
@@ -79,11 +108,7 @@ paths:
       - oauth2:
         - uid
       parameters:
-      - name: api_id
-        in: path
-        type: string
-        description: ID of the API
-        required: true
+      - $ref: "#/parameters/ApiId"
       responses:
         200:
           description: API's details
@@ -104,16 +129,8 @@ paths:
       - oauth2:
         - uid
       parameters:
-      - name: api_id
-        in: path
-        type: string
-        description: ID of the API
-        required: true
-      - name: lifecycle_state
-        in: query
-        type: string
-        description: Filter versions by lifecycle state
-        required: false
+      - $ref: "#/parameters/ApiId"
+      - $ref: "#/parameters/LifecycleState"
       responses:
         200:
           description: List of API's versions
@@ -139,16 +156,8 @@ paths:
       - oauth2:
         - uid
       parameters:
-      - name: api_id
-        in: path
-        type: string
-        description: ID of the API
-        required: true
-      - name: version_id
-        in: path
-        type: string
-        description: Version ID
-        required: true
+      - $ref: "#/parameters/ApiId"
+      - $ref: "#/parameters/VersionId"
       responses:
         200:
           description: Version of the API
@@ -170,16 +179,8 @@ paths:
       - oauth2:
         - uid
       parameters:
-      - name: api_id
-        in: path
-        type: string
-        description: ID of the API
-        required: true
-      - name: version_id
-        in: path
-        type: string
-        description: Version ID
-        required: true
+      - $ref: "#/parameters/ApiId"
+      - $ref: "#/parameters/VersionId"
       responses:
         200:
           description: Swagger Definition of the API
@@ -200,16 +201,8 @@ paths:
       - oauth2:
         - uid
       parameters:
-      - name: api_id
-        in: path
-        type: string
-        description: ID of the API
-        required: true
-      - name: lifecycle_state
-        in: query
-        type: string
-        description: Filter Applications by lifecycle state
-        required: false
+      - $ref: "#/parameters/ApiId"
+      - $ref: "#/parameters/LifecycleState"
       responses:
         200:
           description: List of API's Applications
@@ -225,7 +218,7 @@ paths:
 
   '/apis/{api_id}/applications/{application_name}':
     get:
-      summary: reads a Application of an API
+      summary: reads an Application of an API
       description: Specific Application of an API
       operationId: "org.zalando.api-is.api-repository/get-api-application!"
       tags:
@@ -235,16 +228,8 @@ paths:
       - oauth2:
         - uid
       parameters:
-      - name: api_id
-        in: path
-        type: string
-        description: ID of the API
-        required: true
-      - name: application_name
-        in: path
-        type: string
-        description: application name
-        required: true
+      - $ref: "#/parameters/ApiId"
+      - $ref: "#/parameters/ApplicationName"
       responses:
         200:
           description: Application of the API
@@ -265,12 +250,7 @@ paths:
         - uid
         - api-is.api-repository.api-definition.write
       parameters:
-      - name: APIDefinition
-        in: body
-        description: API definition details that will be saved
-        schema:
-          $ref: '#/definitions/APIDefinition'
-        required: true
+      - $ref: "#/parameters/APIDefinition"
       responses:
         200:
           description: API definition has been saved
