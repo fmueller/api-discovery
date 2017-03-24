@@ -253,7 +253,7 @@ paths:
     get:
       summary: reads all Applications
       description: List of all Applications
-      operationId: "org.zalando.api-is.api-repository/get-application!"
+      operationId: "org.zalando.api-is.api-repository/get-applications!"
       tags:
       - Applications
       security:
@@ -269,6 +269,26 @@ paths:
                 type: array
                 items:
                   $ref: '#/definitions/Application'
+        default:
+          $ref: '#/responses/Error'
+
+  '/applications/{application_name}':
+    get:
+      summary: reads all Applications
+      description: List of all Applications
+      operationId: "org.zalando.api-is.api-repository/get-application!"
+      tags:
+      - Applications
+      security:
+      - oauth2:
+        - uid
+      parameters:
+      - $ref: '#/parameters/ApplicationName'
+      responses:
+        200:
+          description: Application details
+          schema:
+            $ref: '#/definitions/Application'
         default:
           $ref: '#/responses/Error'
 
