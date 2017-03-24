@@ -4,17 +4,22 @@ info:
   title: API Repository API
   version: '2.0.0'
   description: |
-    Repository API of the API Infrastructure Solution is currently used to manage versions and Applications of
-    APIs. Later, it will be also used to manage API's meta information like documentation and user manuals.
+    Repository API of the API Infrastructure Solution is currently used to manage APIs: Versions, Definitions, and
+    Applications which implement the API. Later, it will be also used to manage API's meta information like
+    documentation and user manuals.
 
-    API resource represents an abstract API. One particular API has one or more Versions which can be deployed in
-    multiple Applications. An Application can implement multiple APIs.
+    API resource represents an abstract API. One particular API has one or more semantic Versions which can be deployed
+    in multiple applications. An Application can implement multiple APIs. An API Version represents the version of the
+    API which is stated in the formal definition (e.g. OpenAPI). In the ideal case, there is only one Definition
+    instance per Version. Nevertheless, under some circumstances, multiple definitions can exist for the same version
+    (e.g. when developers forget to increase the API version after some changes).
 
-    APIs, Applications, and Versions have defined lifecycles. An Application is ACTIVE if it has been crawled recently.
-    An Application gets INACTIVE or DECOMMISSIONED if it wasn't available for a long period of time. The Application
-    lifecycle state gets lifted to the lifecycle state of the API Version: a Version is ACTIVE if there is an ACTIVE
-    Application which implements the given Version of the API. API lifecycle aggregates the lifecycle statuses of its
-    Versions: an API is ACTIVE if there is at least one ACTIVE Version.
+    A crawled API (seen deployment instance) has a defined Lifecycle. Recently crawled API definition implemented by an
+    Application has the ACTIVE status. It gets INACTIVE or DECOMMISSIONED if it wasn't available for a long period of
+    time. These lifecycle statuses get lifted to the API Version, Application, and the abstract API: if there was a
+    recent crawling of an API Version then the API Version becomes ACTIVE. A typical transition of the statutes is
+    ACTIVE -> INACTIVE -> DECOMMISSIONED. For the time beeing, the lifecycle status is based on the crawling information
+    only.
 
 externalDocs:
   description: API Infrastructure Solution Documentation
