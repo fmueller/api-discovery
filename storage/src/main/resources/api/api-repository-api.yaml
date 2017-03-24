@@ -447,11 +447,11 @@ definitions:
   DefintionLink:
     type: object
     properties:
-      ui:
+      api_ui:
         type: string
         description: Path to the UI for browsing the API
         example: /swagger-ui
-      url:
+      api_url:
         type: string
         description: Path to the API definition
         example: /swagger/api.json
@@ -468,18 +468,18 @@ definitions:
       href:
         type: string
         format: uri
-        example: https://meta.api.example.com/apps/sales-orders-app TODO
+        example: https://meta.api.example.com/apis/sales-orders-api/versions/1.0.0/definitions/1
     required:
     - href
 
   ApplicationLink:
     type: object
     properties:
-      ui:
+      api_ui:
         type: string
         description: Path to the UI for browsing the API
         example: /swagger-ui
-      url:
+      api_url:
         type: string
         description: Path to the API definition
         example: /swagger/api.json
@@ -496,7 +496,7 @@ definitions:
       href:
         type: string
         format: uri
-        example: https://meta.api.example.com/apps/sales-orders-app
+        example: https://meta.api.example.com/applications/sales-orders-app
     required:
     - href
 
