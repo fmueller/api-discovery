@@ -4,17 +4,22 @@ info:
   title: API Repository API
   version: '1.0.0'
   description: |
-    Repository API of the API Infrastructure Solution is currently used to manage versions and Applications of
-    APIs. Later, it will be also used to manage API's meta information like documentation and user manuals.
+    Repository API of the API Infrastructure Solution is currently used to manage APIs: Versions, Definitions, and
+    Applications which implement the API. Later it could be used to manage API meta information like
+    documentation and user manuals as well.
 
-    API resource represents an abstract API. One particular API has one or more Versions which can be deployed in
-    multiple Applications. An Application can implement multiple APIs.
+    API resource represents an abstract API. One particular API has one or more semantic Versions which can be deployed
+    in multiple applications. An Application can implement multiple APIs. An API Version represents the version of the
+    API which is stated in the formal definition (e.g. OpenAPI). In the ideal case, there is only one Definition
+    instance per Version. Nevertheless, under some circumstances, multiple definitions can exist for the same version
+    (e.g. developers forget to increase the API version after some changes).
 
-    APIs, Applications, and Versions have defined lifecycles. An Application is ACTIVE if it has been crawled recently.
-    An Application gets INACTIVE or DECOMMISSIONED if it wasn't available for a long period of time. The Application
-    lifecycle state gets lifted to the lifecycle state of the API Version: a Version is ACTIVE if there is an ACTIVE
-    Application which implements the given Version of the API. API lifecycle aggregates the lifecycle statuses of its
-    Versions: an API is ACTIVE if there is at least one ACTIVE Version.
+    A crawled API (seen deployment instance) has a defined Lifecycle. A recently crawled API definition implemented by an
+    Application has the ACTIVE status. It gets INACTIVE or DECOMMISSIONED if it wasn't available for a long period of
+    time. These lifecycle statuses get lifted to the API Version, Application, and the abstract API: if there was a
+    recent crawling of an API Version then the API Version becomes ACTIVE. A typical transition of the status is
+    ACTIVE -> INACTIVE -> DECOMMISSIONED. For the time being, the lifecycle status is based on crawling information
+    only.
 
 externalDocs:
   description: API Infrastructure Solution Documentation
@@ -49,7 +54,13 @@ parameters:
     name: version_id
     in: path
     type: string
-    description: ID of the API version
+    description: The API version (e.g. 1.0.0)
+    required: true
+  DefinitionId:
+    name: definition_id
+    in: path
+    type: string
+    description: ID of the API definition
     required: true
   ApplicationName:
     name: application_name
@@ -63,12 +74,12 @@ parameters:
     type: string
     description: Filter APIs by lifecycle state
     required: false
-  APIDefinition:
-    name: APIDefinition
+  CrawledAPIDefinition:
+    name: CrawledAPIDefinition
     in: body
     description: API definition details that will be saved
     schema:
-      $ref: '#/definitions/APIDefinition'
+      $ref: '#/definitions/CrawledAPIDefinition'
     required: true
 
 paths:
@@ -166,7 +177,7 @@ paths:
         default:
           $ref: '#/responses/Error'
 
-  '/apis/{api_id}/versions/{version_id}/definition':
+  '/apis/{api_id}/versions/{version_id}/definitions/{definition_id}':
     get:
       summary: reads a definition of an API versions
       description: Definition of an API versions
@@ -181,31 +192,54 @@ paths:
       parameters:
       - $ref: "#/parameters/ApiId"
       - $ref: "#/parameters/VersionId"
+      - $ref: "#/parameters/DefinitionId"
       responses:
         200:
           description: Swagger Definition of the API
           schema:
-            $ref: '#/definitions/SwaggerDefinition'
+            $ref: '#/definitions/Definition'
         default:
           $ref: '#/responses/Error'
 
-  '/apis/{api_id}/applications':
+  '/apis/{api_id}/deployments':
     get:
-      summary: reads all Applications of an API
-      description: List of all Applications of an API
-      operationId: "org.zalando.api-is.api-repository/get-api-applications!"
+      summary: reads all Deployments of an API
+      description: List of all Deployments of an API
+      operationId: "org.zalando.api-is.api-repository/get-api-deployments!"
       tags:
       - APIs
-      - Applications
+      - Deployments
       security:
       - oauth2:
         - uid
       parameters:
       - $ref: "#/parameters/ApiId"
-      - $ref: "#/parameters/LifecycleState"
       responses:
         200:
-          description: List of API's Applications
+          description: List of API's Deployments
+          schema:
+            type: object
+            properties:
+              deployments:
+                type: array
+                items:
+                  $ref: '#/definitions/Deployment'
+        default:
+          $ref: '#/responses/Error'
+
+  '/applications':
+    get:
+      summary: reads all Applications
+      description: List of all Applications
+      operationId: "org.zalando.api-is.api-repository/get-applications!"
+      tags:
+      - Applications
+      security:
+      - oauth2:
+        - uid
+      responses:
+        200:
+          description: List of Applications
           schema:
             type: object
             properties:
@@ -216,23 +250,21 @@ paths:
         default:
           $ref: '#/responses/Error'
 
-  '/apis/{api_id}/applications/{application_name}':
+  '/applications/{application_name}':
     get:
-      summary: reads an Application of an API
-      description: Specific Application of an API
-      operationId: "org.zalando.api-is.api-repository/get-api-application!"
+      summary: reads all Applications
+      description: List of all Applications
+      operationId: "org.zalando.api-is.api-repository/get-application!"
       tags:
-      - APIs
       - Applications
       security:
       - oauth2:
         - uid
       parameters:
-      - $ref: "#/parameters/ApiId"
-      - $ref: "#/parameters/ApplicationName"
+      - $ref: '#/parameters/ApplicationName'
       responses:
         200:
-          description: Application of the API
+          description: Application details
           schema:
             $ref: '#/definitions/Application'
         default:
@@ -250,7 +282,7 @@ paths:
         - uid
         - api-is.api-repository.api-definition.write
       parameters:
-      - $ref: "#/parameters/APIDefinition"
+      - $ref: "#/parameters/CrawledAPIDefinition"
       responses:
         200:
           description: API definition has been saved
@@ -264,7 +296,7 @@ responses:
       $ref: '#/definitions/Problem'
 
 definitions:
-  APIDefinition:
+  CrawledAPIDefinition:
     type: object
     properties:
       status:
@@ -308,8 +340,28 @@ definitions:
            "foo": "bar"}
     required:
     - status
-    - api_name
     - app_name
+
+  Definition:
+    type: object
+    properties:
+      id:
+        type: string
+        description: opaque identifier
+      type:
+        type: string
+        description: Type of API definition
+        example: SWAGGER-2.0
+      definition:
+        type: string
+        description: The API definition
+        example: |
+          {"swagger": "2.0"
+           "foo": "bar"}
+      applications:
+        type: array
+        items:
+          $ref: '#/definitions/ApplicationLink'
 
   API:
     description: A representation of an abstract API
@@ -329,6 +381,10 @@ definitions:
   APIMetadata:
     type: object
     properties:
+      id:
+        type: string
+        description: ID of the API, extracted from API Name field
+        example: kio-api
       name:
         type: string
         description: Human readable name of the API, extracted from API definition
@@ -344,57 +400,56 @@ definitions:
         type: string
         description: Application name (e.g. application and/or environment name)
         example: sales-orders-app
-      service_url:
+      app_url:
         type: string
         description: URL of the Application
         example: sales-orders.api.zalando.com
-      ui:
-        type: string
-        description: Path to the UI for browsing the API
-        example: /swagger-ui
-      url:
-        type: string
-        description: Path to the API definition
-        example: /swagger/api.json
-      lifecycle_state:
-        $ref: '#/definitions/LifecycleState'
-      versions:
+      definitions:
         type: array
         items:
-          $ref: '#/definitions/VersionLink'
+          $ref: '#/definitions/DefinitionLink'
+
+  Deployment:
+    type: object
+    description: A Deployment of an Application
+    properties:
+      api_version:
+        type: string
+        description: Version of the API
+        example: 1.0.0
+      application:
+        type: object
+        properties:
+          name:
+            type: string
+            description: Application name (e.g. application and/or environment name)
+            example: sales-orders-app
+          href:
+            type: string
+            description: link to the Application
+            example: https://meta.api.example.com/applications/sales-orders-app
+      definition:
+        type: object
+        properties:
+          href:
+            type: string
+            description: link to the current API definition
+            example: https://meta.api.example.com/apis/orders-api/1.0.0/definitions/3
 
   Version:
     type: object
     description: A version of one particular API
     properties:
-      id:
+      api_version:
         type: string
-        description: opaque id of the version
-        example: 123e4567-e89b-12d3-a456-426655440000
-      swagger_version:
-        type: string
-        description: Version from the Swagger definition
+        description: Version from the definition
         example: 1.0.0
-      last_crawled:
-        type: string
-        format: date-time
-        description: Last time crawled
-      type:
-        type: string
-        description: Type of the API definition
-        example: swagger-2.0
-      definition:
-        type: string
-        description: Formal definition of the API
-        example: |
-          {"swagger": "2.0"
-           "foo": "bar"}
       lifecycle_state:
         $ref: '#/definitions/LifecycleState'
-      applications:
+      definitions:
         type: array
         items:
-          $ref: '#/definitions/ApplicationLink'
+          $ref: '#/definitions/Definition'
 
   LifecycleState:
     type: string
@@ -403,45 +458,22 @@ definitions:
     - INACTIVE
     - DECOMMISSIONED
 
-  SwaggerDefinition:
-    type: object
-    description: Swagger definition in JSON format
-
-  VersionLink:
+  DefinitionLink:
     type: object
     properties:
-      version_id:
+      api_ui:
         type: string
-        example: 123e4567-e89b-12d3-a456-426655440000
-        description: opaque id of the version
-      created:
+        description: Path to the UI for browsing the API
+        example: /swagger-ui
+      api_url:
         type: string
-        format: date-time
-      last_crawled:
-        type: string
-        format: date-time
-      lifecycle_state:
-        $ref: '#/definitions/LifecycleState'
-      href:
-        type: string
-        format: uri
-        example: https://meta.api.example.com/apis/sales-orders/versions/123e4567-e89b-12d3-a456-426655440000
-    required:
-    - version_id
-    - href
-
-  ApplicationLink:
-    type: object
-    properties:
-      application_name:
-        type: string
-        example: kio-app
-        description: unique application name
+        description: Path to the API definition
+        example: /swagger/api.json
       created:
         type: string
         format: date-time
         description: first time crawled
-      last_crawled:
+      last_updated:
         type: string
         format: date-time
         description: last time crawled
@@ -450,9 +482,36 @@ definitions:
       href:
         type: string
         format: uri
-        example: https://meta.api.example.com/apis/sales-orders/applicatons/kio-app
+        example: https://meta.api.example.com/apis/sales-orders-api/versions/1.0.0/definitions/1
     required:
-    - application_name
+    - href
+
+  ApplicationLink:
+    type: object
+    properties:
+      api_ui:
+        type: string
+        description: Path to the UI for browsing the API
+        example: /swagger-ui
+      api_url:
+        type: string
+        description: Path to the API definition
+        example: /swagger/api.json
+      created:
+        type: string
+        format: date-time
+        description: first time crawled
+      last_updated:
+        type: string
+        format: date-time
+        description: last time crawled
+      lifecycle_state:
+        $ref: '#/definitions/LifecycleState'
+      href:
+        type: string
+        format: uri
+        example: https://meta.api.example.com/applications/sales-orders-app
+    required:
     - href
 
   Problem:
