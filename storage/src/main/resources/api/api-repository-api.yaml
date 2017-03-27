@@ -438,7 +438,7 @@ definitions:
         example: 1.0.0
       lifecycle_state:
         $ref: '#/definitions/LifecycleState'
-      defintions:
+      definitions:
         type: array
         items:
           $ref: '#/definitions/Definition'
