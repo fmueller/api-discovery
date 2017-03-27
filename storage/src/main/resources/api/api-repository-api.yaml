@@ -60,7 +60,7 @@ parameters:
     name: definition_id
     in: path
     type: string
-    description: ID of the APIdefintion
+    description: ID of the API definition
     required: true
   ApplicationName:
     name: application_name
@@ -407,7 +407,7 @@ definitions:
       definitions:
         type: array
         items:
-          $ref: '#/definitions/DefintionLink'
+          $ref: '#/definitions/DefinitionLink'
 
   Deployment:
     type: object
@@ -458,7 +458,7 @@ definitions:
     - INACTIVE
     - DECOMMISSIONED
 
-  DefintionLink:
+  DefinitionLink:
     type: object
     properties:
       api_ui:
