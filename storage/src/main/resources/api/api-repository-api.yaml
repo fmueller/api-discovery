@@ -404,7 +404,7 @@ definitions:
         type: string
         description: URL of the Application
         example: sales-orders.api.zalando.com
-      defintions:
+      definitions:
         type: array
         items:
           $ref: '#/definitions/DefintionLink'
@@ -413,20 +413,28 @@ definitions:
     type: object
     description: A Deployment of an Application
     properties:
-      application_name:
-        type: string
-        description: Application name (e.g. application and/or environment name)
-        example: sales-orders-app
-      application_href:
-        type: string
-        description: link to the Application
-        example: https://meta.api.example.com/apps/sales-orders-app
       api_version:
         type: string
         description: Version of the API
         example: 1.0.0
-      defintion:
-        $ref: '#/definitions/Definition'
+      application:
+        type: object
+        properties:
+          name:
+            type: string
+            description: Application name (e.g. application and/or environment name)
+            example: sales-orders-app
+          href:
+            type: string
+            description: link to the Application
+            example: https://meta.api.example.com/applications/sales-orders-app
+      definition:
+        type: object
+        properties:
+          href:
+            type: string
+            description: link to the current API definition
+            example: https://meta.api.example.com/apis/orders-api/1.0.0/definitions/3
 
   Version:
     type: object
