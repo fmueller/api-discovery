@@ -227,28 +227,6 @@ paths:
         default:
           $ref: '#/responses/Error'
 
-  '/apis/{api_id}/applications/{application_name}':
-    get:
-      summary: reads an Application of an API
-      description: Specific Application of an API
-      operationId: "org.zalando.api-is.api-repository/get-api-application!"
-      tags:
-      - APIs
-      - Applications
-      security:
-      - oauth2:
-        - uid
-      parameters:
-      - $ref: "#/parameters/ApiId"
-      - $ref: "#/parameters/ApplicationName"
-      responses:
-        200:
-          description: Application of the API
-          schema:
-            $ref: '#/definitions/Application'
-        default:
-          $ref: '#/responses/Error'
-
   '/applications':
     get:
       summary: reads all Applications
