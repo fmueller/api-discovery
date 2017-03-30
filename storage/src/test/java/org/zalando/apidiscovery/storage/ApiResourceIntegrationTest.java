@@ -35,6 +35,7 @@ public class ApiResourceIntegrationTest {
     @Before
     public void cleanDatabase() {
         applicationRepository.deleteAll();
+        apiRepository.deleteAll();
     }
 
     @Test

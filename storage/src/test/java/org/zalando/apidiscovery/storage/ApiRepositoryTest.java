@@ -26,6 +26,7 @@ public class ApiRepositoryTest {
     @Before
     public void cleanDatabase() {
         applicationRepository.deleteAll();
+        apiRepository.deleteAll();
     }
 
     @Test
