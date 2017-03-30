@@ -2,11 +2,12 @@ ALTER TABLE application
   DROP COLUMN last_crawled;
 
 CREATE TABLE api_deployment (
-  api_version_id      BIGINT REFERENCES api_version(id),
+  api_id              BIGINT REFERENCES api_version(id),
   application_name    TEXT REFERENCES application(name),
   api_ui              TEXT,
   api_url             TEXT,
   last_crawled        TIMESTAMP,
+  crawled_state       TEXT,
   lifecycle_state     TEXT,
   created             TIMESTAMP
 );
