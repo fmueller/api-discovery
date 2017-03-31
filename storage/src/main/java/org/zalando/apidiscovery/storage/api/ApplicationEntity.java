@@ -1,12 +1,17 @@
 package org.zalando.apidiscovery.storage.api;
 
-import lombok.*;
-
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.List;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import static javax.persistence.CascadeType.ALL;
 
@@ -22,7 +27,7 @@ public class ApplicationEntity extends AbstractCreateAbleEntity {
 
     @Id
     private String name;
-    private String serviceUrl;
+    private String appUrl;
     @OneToMany(mappedBy = "application", cascade = ALL)
     private List<ApiDeploymentEntity> apiDeploymentEntities;
 

@@ -1,9 +1,9 @@
 package org.zalando.apidiscovery.storage.api;
 
-import lombok.Data;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
+
+import lombok.Data;
 
 @Data
 public abstract class AbstractCreateAbleEntity implements Serializable {

@@ -20,8 +20,8 @@ public class MetricsCollector {
     @Scheduled(fixedDelayString = "${metrics-collecting.delay}")
     public void collectMetrics() {
         repository.countStatus().forEach(c ->
-                metricServices.submit("gauge.apis.crawled." + c.getStatus().toLowerCase(), c.getCount()));
+            metricServices.submit("gauge.apis.crawled." + c.getStatus().toLowerCase(), c.getCount()));
         repository.countLifecycleStates().forEach(c ->
-                metricServices.submit("gauge.apis." + c.getStatus().toLowerCase(), c.getCount()));
+            metricServices.submit("gauge.apis." + c.getStatus().toLowerCase(), c.getCount()));
     }
 }

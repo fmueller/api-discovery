@@ -46,7 +46,7 @@ class ApiDefinitionService {
             }
 
             if (apiDefinition.getStatus().equals("SUCCESS")
-                    || StringUtils.isEmpty(persistedDefinition.getLifecycleState())) {
+                || StringUtils.isEmpty(persistedDefinition.getLifecycleState())) {
                 apiDefinition.setLifecycleState(ApiLifecycleManager.ACTIVE);
             } else {
                 apiDefinition.setLifecycleState(persistedDefinition.getLifecycleState());

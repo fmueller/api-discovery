@@ -30,18 +30,18 @@ class OAuthConfiguration extends ResourceServerConfigurerAdapter {
     @Override
     public void configure(final HttpSecurity http) throws Exception {
         http
-                .httpBasic().disable()
-                .requestMatchers().antMatchers("/**")
-                .and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.NEVER)
-                .and()
-                .authorizeRequests()
-                .antMatchers("/health").permitAll()
-                .antMatchers("/metrics").access("#oauth2.hasScope('uid')")
-                .antMatchers(HttpMethod.OPTIONS, "/apps/**").permitAll()
-                .antMatchers(HttpMethod.PUT, "/apps/**").access("#oauth2.hasScope('application.write_all')")
-                .antMatchers("/**").access("#oauth2.hasScope('uid')");
+            .httpBasic().disable()
+            .requestMatchers().antMatchers("/**")
+            .and()
+            .sessionManagement()
+            .sessionCreationPolicy(SessionCreationPolicy.NEVER)
+            .and()
+            .authorizeRequests()
+            .antMatchers("/health").permitAll()
+            .antMatchers("/metrics").access("#oauth2.hasScope('uid')")
+            .antMatchers(HttpMethod.OPTIONS, "/apps/**").permitAll()
+            .antMatchers(HttpMethod.PUT, "/apps/**").access("#oauth2.hasScope('application.write_all')")
+            .antMatchers("/**").access("#oauth2.hasScope('uid')");
     }
 
     @Bean
