@@ -4,6 +4,8 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import java.io.Serializable;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -12,6 +14,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.hibernate.annotations.Type;
 
 import static javax.persistence.CascadeType.ALL;
 
@@ -23,12 +26,15 @@ import static javax.persistence.CascadeType.ALL;
 @EqualsAndHashCode(callSuper = false)
 @Table(name = "application")
 @ToString(exclude = "apiDeploymentEntities")
-public class ApplicationEntity extends AbstractCreateAbleEntity {
+public class ApplicationEntity implements Serializable {
 
     @Id
     private String name;
     private String appUrl;
     @OneToMany(mappedBy = "application", cascade = ALL)
     private List<ApiDeploymentEntity> apiDeploymentEntities;
+
+    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentOffsetDateTime")
+    private OffsetDateTime created;
 
 }

@@ -3,7 +3,6 @@ package org.zalando.apidiscovery.storage;
 import java.util.Arrays;
 import java.util.List;
 
-import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import static java.time.OffsetDateTime.now;
+import static java.time.ZoneOffset.UTC;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.zalando.apidiscovery.storage.TestDataHelper.createBasicApiDefinition;
 import static org.zalando.apidiscovery.storage.TestDataHelper.createDecommissionedApiDefinition;
@@ -41,9 +42,9 @@ public class DatabaseIntegrationTest {
     @Test
     public void persistApiDefinitionWithMetadataFields() {
         ApiDefinition apiDefinition = createBasicApiDefinition();
-        apiDefinition.setCreated(DateTime.now());
-        apiDefinition.setLastChanged(DateTime.now());
-        apiDefinition.setLastPersisted(DateTime.now());
+        apiDefinition.setCreated(now(UTC));
+        apiDefinition.setLastChanged(now(UTC));
+        apiDefinition.setLastPersisted(now(UTC));
 
         apiDefinition = repository.save(apiDefinition);
 
@@ -73,13 +74,13 @@ public class DatabaseIntegrationTest {
     @Test
     public void shouldFindAllOldApiDefinitionsWhichAreUnsuccessful() {
         ApiDefinition apiDefinition = createUnsuccessfulApiDefinition();
-        apiDefinition.setLastChanged(DateTime.now().minusSeconds(10));
+        apiDefinition.setLastChanged(now(UTC).minusSeconds(10));
         apiDefinition = repository.save(apiDefinition);
 
         repository.save(createUnsuccessfulApiDefinition());
         repository.save(createUnsuccessfulApiDefinition());
 
-        List<ApiDefinition> foundApi = repository.findOlderThanAndUnsuccessful(DateTime.now().minusSeconds(5));
+        List<ApiDefinition> foundApi = repository.findOlderThanAndUnsuccessful(now(UTC).minusSeconds(5));
         assertThat(foundApi).containsOnly(apiDefinition);
     }
 
@@ -92,14 +93,14 @@ public class DatabaseIntegrationTest {
         repository.save(createUnsuccessfulApiDefinition());
         repository.save(createUnsuccessfulApiDefinition());
 
-        List<ApiDefinition> foundApi = repository.findOlderThanAndUnsuccessful(DateTime.now().minusSeconds(10));
+        List<ApiDefinition> foundApi = repository.findOlderThanAndUnsuccessful(now(UTC).minusSeconds(10));
         assertThat(foundApi).containsOnly(apiDefinition);
     }
 
     @Test
     public void shouldFindAllNotUpdatedApiDefinitions() {
         ApiDefinition apiDefinition = createBasicApiDefinition();
-        apiDefinition.setLastPersisted(DateTime.now().minusSeconds(10));
+        apiDefinition.setLastPersisted(now(UTC).minusSeconds(10));
         apiDefinition = repository.save(apiDefinition);
 
         ApiDefinition apiDefinitionWithNullLastPersisted = createUnsuccessfulApiDefinition();
@@ -109,14 +110,14 @@ public class DatabaseIntegrationTest {
         repository.save(createBasicApiDefinition());
         repository.save(createUnsuccessfulApiDefinition());
 
-        List<ApiDefinition> foundApi = repository.findNotUpdatedSince(DateTime.now().minusSeconds(5));
+        List<ApiDefinition> foundApi = repository.findNotUpdatedSince(now(UTC).minusSeconds(5));
         assertThat(foundApi).containsOnly(apiDefinition, apiDefinitionWithNullLastPersisted);
     }
 
     @Test
     public void shouldFindAllNotUpdatedAndInactiveApiDefinitions() {
         ApiDefinition apiDefinition = createInactiveApiDefinition();
-        apiDefinition.setLastPersisted(DateTime.now().minusSeconds(10));
+        apiDefinition.setLastPersisted(now(UTC).minusSeconds(10));
         apiDefinition = repository.save(apiDefinition);
 
         ApiDefinition apiDefinitionWithNullLastPersisted = createInactiveApiDefinition();
@@ -126,37 +127,37 @@ public class DatabaseIntegrationTest {
         repository.save(createBasicApiDefinition());
         repository.save(createUnsuccessfulApiDefinition());
 
-        List<ApiDefinition> foundApi = repository.findNotUpdatedSince(DateTime.now().minusSeconds(5));
+        List<ApiDefinition> foundApi = repository.findNotUpdatedSince(now(UTC).minusSeconds(5));
         assertThat(foundApi).containsOnly(apiDefinition, apiDefinitionWithNullLastPersisted);
     }
 
     @Test
     public void shouldCountAlStatusStatesCorrectly() {
         repository.save(Arrays.asList(createBasicApiDefinition(),
-                createBasicApiDefinition(),
-                createBasicApiDefinition(),
-                createUnsuccessfulApiDefinition(),
-                createUnsuccessfulApiDefinition()));
+            createBasicApiDefinition(),
+            createBasicApiDefinition(),
+            createUnsuccessfulApiDefinition(),
+            createUnsuccessfulApiDefinition()));
 
         List<ApiDefinitionStatusStatistics> statusStatistics = repository.countStatus();
         assertThat(statusStatistics).containsOnlyOnce(
-                new ApiDefinitionStatusStatistics("SUCCESS", 3L),
-                new ApiDefinitionStatusStatistics("UNSUCCESSFUL", 2L));
+            new ApiDefinitionStatusStatistics("SUCCESS", 3L),
+            new ApiDefinitionStatusStatistics("UNSUCCESSFUL", 2L));
     }
 
     @Test
     public void shouldCountAllLifecycleStatesCorrectly() {
         repository.save(Arrays.asList(createBasicApiDefinition(),
-                createBasicApiDefinition(),
-                createBasicApiDefinition(),
-                createInactiveApiDefinition(),
-                createInactiveApiDefinition(),
-                createDecommissionedApiDefinition()));
+            createBasicApiDefinition(),
+            createBasicApiDefinition(),
+            createInactiveApiDefinition(),
+            createInactiveApiDefinition(),
+            createDecommissionedApiDefinition()));
 
         List<ApiDefinitionStatusStatistics> statusStatistics = repository.countLifecycleStates();
         assertThat(statusStatistics).containsOnlyOnce(
-                new ApiDefinitionStatusStatistics(ApiLifecycleManager.ACTIVE, 3L),
-                new ApiDefinitionStatusStatistics(ApiLifecycleManager.INACTIVE, 2L),
-                new ApiDefinitionStatusStatistics(ApiLifecycleManager.DECOMMISSIONED, 1L));
+            new ApiDefinitionStatusStatistics(ApiLifecycleManager.ACTIVE, 3L),
+            new ApiDefinitionStatusStatistics(ApiLifecycleManager.INACTIVE, 2L),
+            new ApiDefinitionStatusStatistics(ApiLifecycleManager.DECOMMISSIONED, 1L));
     }
 }

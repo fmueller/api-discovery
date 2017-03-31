@@ -6,13 +6,15 @@ import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import java.time.LocalDateTime;
+import java.io.Serializable;
+import java.time.OffsetDateTime;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Type;
 
 @Data
 @Builder
@@ -21,7 +23,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = false)
 @Entity
 @Table(name = "api_deployment")
-public class ApiDeploymentEntity extends AbstractCreateAbleEntity {
+public class ApiDeploymentEntity implements Serializable {
 
     @Id
     @ManyToOne
@@ -34,6 +36,9 @@ public class ApiDeploymentEntity extends AbstractCreateAbleEntity {
     @Enumerated(EnumType.STRING)
     private ApiLifecycleState lifecycleState;
 
-    //@Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentOffsetDateTime")
-    private LocalDateTime lastCrawled;
+    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentOffsetDateTime")
+    private OffsetDateTime lastCrawled;
+
+    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentOffsetDateTime")
+    private OffsetDateTime created;
 }

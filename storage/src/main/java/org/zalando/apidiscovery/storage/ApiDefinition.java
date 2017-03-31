@@ -4,9 +4,9 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.time.OffsetDateTime;
 
 import org.hibernate.annotations.Type;
-import org.joda.time.DateTime;
 
 @Entity
 @Table(name = "api")
@@ -35,14 +35,14 @@ class ApiDefinition {
 
     private String definition;
 
-    @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentDateTime")
-    private DateTime created;
+    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentOffsetDateTime")
+    private OffsetDateTime created;
 
-    @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentDateTime")
-    private DateTime lastChanged;
+    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentOffsetDateTime")
+    private OffsetDateTime lastChanged;
 
-    @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentDateTime")
-    private DateTime lastPersisted;
+    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentOffsetDateTime")
+    private OffsetDateTime lastPersisted;
 
     public String getApplicationId() {
         return applicationId;
@@ -124,27 +124,27 @@ class ApiDefinition {
         this.definition = definition;
     }
 
-    public DateTime getCreated() {
+    public OffsetDateTime getCreated() {
         return created;
     }
 
-    public void setCreated(DateTime created) {
-        this.created = created;
-    }
-
-    public DateTime getLastChanged() {
+    public OffsetDateTime getLastChanged() {
         return lastChanged;
     }
 
-    public void setLastChanged(DateTime lastChanged) {
-        this.lastChanged = lastChanged;
-    }
-
-    public DateTime getLastPersisted() {
+    public OffsetDateTime getLastPersisted() {
         return lastPersisted;
     }
 
-    public void setLastPersisted(DateTime lastPersisted) {
+    public void setCreated(OffsetDateTime created) {
+        this.created = created;
+    }
+
+    public void setLastChanged(OffsetDateTime lastChanged) {
+        this.lastChanged = lastChanged;
+    }
+
+    public void setLastPersisted(OffsetDateTime lastPersisted) {
         this.lastPersisted = lastPersisted;
     }
 

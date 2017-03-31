@@ -1,11 +1,11 @@
 package org.zalando.apidiscovery.storage;
 
 import java.io.IOException;
+import java.time.OffsetDateTime;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -88,14 +88,14 @@ public class RestApiIntegrationTest {
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         assertThat(responseEntity.getBody())
-                .contains(serviceId)
-                .contains(serviceId + "-2")
-                .contains(serviceId + "-3")
-                .contains("status")
-                .contains("name")
-                .contains("version")
-                .doesNotContain("some-other-service-id")
-                .doesNotContain("definition");
+            .contains(serviceId)
+            .contains(serviceId + "-2")
+            .contains(serviceId + "-3")
+            .contains("status")
+            .contains("name")
+            .contains("version")
+            .doesNotContain("some-other-service-id")
+            .doesNotContain("definition");
     }
 
     @Test
@@ -167,9 +167,9 @@ public class RestApiIntegrationTest {
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         assertThat(responseEntity.getBody())
-                .contains(ACTIVE)
-                .doesNotContain(INACTIVE)
-                .doesNotContain(DECOMMISSIONED);
+            .contains(ACTIVE)
+            .doesNotContain(INACTIVE)
+            .doesNotContain(DECOMMISSIONED);
     }
 
     @Test
@@ -182,9 +182,9 @@ public class RestApiIntegrationTest {
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         assertThat(responseEntity.getBody())
-                .contains(INACTIVE)
-                .doesNotContain("\"" + ACTIVE + "\"") // necessary, otherwise INACTIVE would also match this
-                .doesNotContain(DECOMMISSIONED);
+            .contains(INACTIVE)
+            .doesNotContain("\"" + ACTIVE + "\"") // necessary, otherwise INACTIVE would also match this
+            .doesNotContain(DECOMMISSIONED);
     }
 
     @Test
@@ -197,9 +197,9 @@ public class RestApiIntegrationTest {
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         assertThat(responseEntity.getBody())
-                .contains(DECOMMISSIONED)
-                .doesNotContain(ACTIVE)
-                .doesNotContain(INACTIVE);
+            .contains(DECOMMISSIONED)
+            .doesNotContain(ACTIVE)
+            .doesNotContain(INACTIVE);
     }
 
     @Test
@@ -212,37 +212,37 @@ public class RestApiIntegrationTest {
     @Test
     public void setLastChangedDateAccordinglyForUpdatedApiDefinition() {
         saveApiDefinition();
-        DateTime lastChanged = retrieveApiDefinition().getLastChanged();
+        OffsetDateTime lastChanged = retrieveApiDefinition().getLastChanged();
 
         apiDefinition.setStatus("FAILED");
         apiDefinition.setLifecycleState(ACTIVE);
         saveApiDefinition();
 
         assertThat(lastChanged)
-                .isNotNull()
-                .isNotEqualTo(retrieveApiDefinition().getLastChanged());
+            .isNotNull()
+            .isNotEqualTo(retrieveApiDefinition().getLastChanged());
     }
 
     @Test
     public void doesNotSetLastChangedDateIfNothingChanged() {
         saveApiDefinition();
-        DateTime lastChanged = retrieveApiDefinition().getLastChanged();
+        OffsetDateTime lastChanged = retrieveApiDefinition().getLastChanged();
         saveApiDefinition();
 
         assertThat(lastChanged)
-                .isNotNull()
-                .isEqualTo(retrieveApiDefinition().getLastChanged());
+            .isNotNull()
+            .isEqualTo(retrieveApiDefinition().getLastChanged());
     }
 
     @Test
     public void setLastPersistedDateAccordinglyEvenIfNothingChanged() {
         saveApiDefinition();
-        DateTime lastPersisted = retrieveApiDefinition().getLastPersisted();
+        OffsetDateTime lastPersisted = retrieveApiDefinition().getLastPersisted();
         saveApiDefinition();
 
         assertThat(lastPersisted)
-                .isNotNull()
-                .isNotEqualTo(retrieveApiDefinition().getLastPersisted());
+            .isNotNull()
+            .isNotEqualTo(retrieveApiDefinition().getLastPersisted());
     }
 
     @Test
