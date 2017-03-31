@@ -39,10 +39,14 @@ public class RestApiIntegrationTest {
     @Autowired
     private MetricsCollector metricsCollector;
 
+    @Autowired
+    private ObjectMapper mapper;
+
+    @Autowired
+    private TestRestTemplate restTemplate;
+
     private ApiDefinition apiDefinition;
 
-    private final ObjectMapper mapper = new ObjectMapper();
-    private final TestRestTemplate restTemplate = new TestRestTemplate();
     private final String serviceId = "some-service";
 
     @Before
@@ -59,7 +63,7 @@ public class RestApiIntegrationTest {
     public void saveBaseApiDefinition() {
         saveApiDefinition();
 
-        ResponseEntity<ApiDefinition> responseEntity = restTemplate.getForEntity(getUrl() + "/apps/" + serviceId, ApiDefinition.class);
+        ResponseEntity<ApiDefinition> responseEntity = restTemplate.getForEntity("/apps/" + serviceId, ApiDefinition.class);
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(responseEntity.getBody()).isEqualTo(apiDefinition);
     }
@@ -69,7 +73,7 @@ public class RestApiIntegrationTest {
         apiDefinition.setStatus("NOT_SUCCESS");
         saveApiDefinition();
 
-        ResponseEntity<ApiDefinition> responseEntity = restTemplate.getForEntity(getUrl() + "/apps/" + serviceId, ApiDefinition.class);
+        ResponseEntity<ApiDefinition> responseEntity = restTemplate.getForEntity("/apps/" + serviceId, ApiDefinition.class);
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(responseEntity.getBody()).isEqualTo(apiDefinition);
     }
@@ -80,7 +84,7 @@ public class RestApiIntegrationTest {
         saveApiDefinition(serviceId + "-2");
         saveApiDefinition(serviceId + "-3");
 
-        ResponseEntity<String> responseEntity = restTemplate.getForEntity(getUrl() + "/apps", String.class);
+        ResponseEntity<String> responseEntity = restTemplate.getForEntity("/apps", String.class);
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         assertThat(responseEntity.getBody())
@@ -98,7 +102,7 @@ public class RestApiIntegrationTest {
     public void retrieveDefinitionOfOneApiDefinition() throws IOException {
         saveApiDefinition();
 
-        ResponseEntity<String> responseEntity = restTemplate.getForEntity(getUrl() + "/apps/" + serviceId + "/definition", String.class);
+        ResponseEntity<String> responseEntity = restTemplate.getForEntity("/apps/" + serviceId + "/definition", String.class);
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         assertThat(mapper.readTree(apiDefinition.getDefinition())).isEqualTo(mapper.readTree(responseEntity.getBody()));
@@ -109,7 +113,7 @@ public class RestApiIntegrationTest {
         apiDefinition.setServiceUrl("my.service/");
         saveApiDefinition();
 
-        ResponseEntity<String> responseEntity = restTemplate.getForEntity(getUrl() + "/apps/" + serviceId, String.class);
+        ResponseEntity<String> responseEntity = restTemplate.getForEntity("/apps/" + serviceId, String.class);
 
         assertThat(mapper.readTree(responseEntity.getBody()).get("service_url").textValue()).isEqualTo("my.service");
     }
@@ -123,7 +127,7 @@ public class RestApiIntegrationTest {
         apiDefinition.setDefinition(definition.toString());
         saveApiDefinition();
 
-        ResponseEntity<String> responseEntity = restTemplate.getForEntity(getUrl() + "/apps/" + serviceId, String.class);
+        ResponseEntity<String> responseEntity = restTemplate.getForEntity("/apps/" + serviceId, String.class);
         assertThat(mapper.readTree(responseEntity.getBody()).get("service_url").textValue()).isEqualTo("https://my.service");
     }
 
@@ -136,7 +140,7 @@ public class RestApiIntegrationTest {
         apiDefinition.setDefinition(definition.toString());
         saveApiDefinition();
 
-        ResponseEntity<String> responseEntity = restTemplate.getForEntity(getUrl() + "/apps/" + serviceId, String.class);
+        ResponseEntity<String> responseEntity = restTemplate.getForEntity("/apps/" + serviceId, String.class);
         assertThat(mapper.readTree(responseEntity.getBody()).get("service_url").textValue()).isEqualTo("https://my.service");
     }
 
@@ -149,7 +153,7 @@ public class RestApiIntegrationTest {
         apiDefinition.setDefinition(definition.toString());
         saveApiDefinition();
 
-        ResponseEntity<String> responseEntity = restTemplate.getForEntity(getUrl() + "/apps/" + serviceId, String.class);
+        ResponseEntity<String> responseEntity = restTemplate.getForEntity("/apps/" + serviceId, String.class);
         assertThat(mapper.readTree(responseEntity.getBody()).get("service_url").textValue()).isEqualTo("http://my.service");
     }
 
@@ -159,7 +163,7 @@ public class RestApiIntegrationTest {
         repository.save(createInactiveApiDefinition());
         repository.save(createDecommissionedApiDefinition());
 
-        ResponseEntity<String> responseEntity = restTemplate.getForEntity(getUrl() + "/apps?lifecycle_state=active", String.class);
+        ResponseEntity<String> responseEntity = restTemplate.getForEntity("/apps?lifecycle_state=active", String.class);
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         assertThat(responseEntity.getBody())
@@ -174,7 +178,7 @@ public class RestApiIntegrationTest {
         repository.save(createInactiveApiDefinition());
         repository.save(createDecommissionedApiDefinition());
 
-        ResponseEntity<String> responseEntity = restTemplate.getForEntity(getUrl() + "/apps?lifecycle_state=inactive", String.class);
+        ResponseEntity<String> responseEntity = restTemplate.getForEntity("/apps?lifecycle_state=inactive", String.class);
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         assertThat(responseEntity.getBody())
@@ -189,7 +193,7 @@ public class RestApiIntegrationTest {
         repository.save(createInactiveApiDefinition());
         repository.save(createDecommissionedApiDefinition());
 
-        ResponseEntity<String> responseEntity = restTemplate.getForEntity(getUrl() + "/apps?lifecycle_state=decommissioned", String.class);
+        ResponseEntity<String> responseEntity = restTemplate.getForEntity("/apps?lifecycle_state=decommissioned", String.class);
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         assertThat(responseEntity.getBody())
@@ -246,14 +250,14 @@ public class RestApiIntegrationTest {
         saveApiDefinition();
         metricsCollector.collectMetrics();
 
-        ResponseEntity<JsonNode> metricsResponse = restTemplate.getForEntity("http://localhost:" + port + "/metrics", JsonNode.class);
+        ResponseEntity<JsonNode> metricsResponse = restTemplate.getForEntity("/metrics", JsonNode.class);
         assertThat(metricsResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
         JsonNode rootObject = metricsResponse.getBody();
         assertThat(rootObject.has("gauge.apis.crawled.success")).isTrue();
     }
 
     private ApiDefinition retrieveApiDefinition() {
-        return restTemplate.getForEntity(getUrl() + "/apps/" + serviceId, ApiDefinition.class).getBody();
+        return restTemplate.getForEntity("/apps/" + serviceId, ApiDefinition.class).getBody();
     }
 
     private void saveApiDefinition() {
@@ -262,10 +266,6 @@ public class RestApiIntegrationTest {
 
     private void saveApiDefinition(String serviceId) {
         apiDefinition.setApplicationId(serviceId);
-        restTemplate.put(getUrl() + "/apps/" + serviceId, apiDefinition);
-    }
-
-    private String getUrl() {
-        return "http://localhost:" + port;
+        restTemplate.put("/apps/" + serviceId, apiDefinition);
     }
 }

@@ -1,18 +1,14 @@
 package org.zalando.apidiscovery.storage;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 /**
  * This DTO is used for list representation of {@link ApiDefinition}.
  */
 class ApiDefinitionListDto {
 
-    @JsonProperty(value = "application_id")
     private final String applicationId;
 
     private final String status;
 
-    @JsonProperty(value = "lifecycle_state")
     private final String lifecycleState;
 
     private final String name;

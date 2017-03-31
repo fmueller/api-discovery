@@ -29,12 +29,13 @@ class ApiDefinitionController {
 
     private final ApiDefinitionRepository repository;
     private final ApiDefinitionService service;
-    private final ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper;
 
     @Autowired
-    ApiDefinitionController(ApiDefinitionRepository repository, ApiDefinitionService service) {
+    ApiDefinitionController(ApiDefinitionRepository repository, ApiDefinitionService service, ObjectMapper mapper) {
         this.repository = repository;
         this.service = service;
+        this.mapper = mapper;
     }
 
     @RequestMapping(method = RequestMethod.GET)
