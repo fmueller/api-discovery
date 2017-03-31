@@ -3,13 +3,11 @@ package org.zalando.apidiscovery.storage.api;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.codehaus.jackson.annotate.JsonProperty;
 
 @Data
 @NoArgsConstructor
 public class Api {
 
-    @JsonProperty("APIMetaData")
     private ApiMetaData apiMetaData;
 
     public Api(final String name, final ApiLifecycleState lifecycleState) {

@@ -5,24 +5,19 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.annotations.Type;
 import org.joda.time.DateTime;
 
 @Entity
 @Table(name = "api")
-@JsonIgnoreProperties(ignoreUnknown = true)
 class ApiDefinition {
 
     @Id
-    @JsonProperty(value = "application_id")
     private String applicationId;
 
     @Column(nullable = false)
     private String status;
 
-    @JsonProperty(value = "lifecycle_state")
     @Column(nullable = false)
     private String lifecycleState;
 
@@ -32,7 +27,6 @@ class ApiDefinition {
 
     private String version;
 
-    @JsonProperty(value = "service_url")
     private String serviceUrl;
 
     private String url;
@@ -44,11 +38,9 @@ class ApiDefinition {
     @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentDateTime")
     private DateTime created;
 
-    @JsonProperty(value = "last_changed")
     @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentDateTime")
     private DateTime lastChanged;
 
-    @JsonProperty(value = "last_persisted")
     @Type(type = "org.jadira.usertype.dateandtime.joda.PersistentDateTime")
     private DateTime lastPersisted;
 
