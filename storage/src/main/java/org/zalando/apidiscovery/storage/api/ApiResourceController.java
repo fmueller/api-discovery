@@ -30,8 +30,8 @@ public class ApiResourceController {
     public ResponseEntity<ApiListDto> getApis(@RequestParam(value = "lifecycle_state", required = false) ApiLifecycleState lifecycleState) {
         List<Api> allApis = lifecycleState == null ? apiService.getAllApis() : apiService.getAllApis(lifecycleState);
         allApis.stream()
-                .sorted(comparing(api -> api.getApiMetaData().getName()))
-                .collect(toList());
+            .sorted(comparing(api -> api.getApiMetaData().getName()))
+            .collect(toList());
         return ResponseEntity.ok(new ApiListDto(allApis));
     }
 

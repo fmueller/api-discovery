@@ -25,20 +25,28 @@ public class ApiService {
         List<ApiEntity> apiEntities = apiRepository.findAll();
 
         return apiEntities
-                .stream()
-                .collect(groupingBy(ApiEntity::getApiName))
-                .entrySet()
-                .stream()
-                .map(entry -> new Api(entry.getKey(), aggregateApplicationLifecycleState(entry.getValue())))
-                .collect(toList());
+            .stream()
+            .collect(groupingBy(ApiEntity::getApiName))
+            .entrySet()
+            .stream()
+            .map(entry -> new Api(entry.getKey(), aggregateApplicationLifecycleStateForApi(entry.getValue())))
+            .collect(toList());
     }
 
-    private ApiLifecycleState aggregateApplicationLifecycleState(List<ApiEntity> apis) {
-        if (apis.stream()
-                .filter(apiEntity -> ACTIVE.equals(apiEntity.getLifecycleState())).count() > 0) {
+    private ApiLifecycleState aggregateApplicationLifecycleStateForApi(List<ApiEntity> apiEntities) {
+        List<ApiDeploymentEntity> apiDeploymentList = apiEntities
+            .stream()
+            .flatMap(apiEntity -> apiEntity.getApiDeploymentEntities().stream())
+            .collect(toList());
+        return aggregateApplicationLifecycleStateForDeploymentEntities(apiDeploymentList);
+    }
+
+    private ApiLifecycleState aggregateApplicationLifecycleStateForDeploymentEntities(List<ApiDeploymentEntity> apiDeploymentEntities) {
+        if (apiDeploymentEntities.stream()
+            .filter(apiEntity -> ACTIVE.equals(apiEntity.getLifecycleState())).count() > 0) {
             return ACTIVE;
-        } else if (apis.stream()
-                .filter(apiEntity -> INACTIVE.equals(apiEntity.getLifecycleState())).count() > 0) {
+        } else if (apiDeploymentEntities.stream()
+            .filter(apiEntity -> INACTIVE.equals(apiEntity.getLifecycleState())).count() > 0) {
             return INACTIVE;
         }
         return DECOMMISSIONED;
@@ -46,8 +54,8 @@ public class ApiService {
 
     public List<Api> getAllApis(ApiLifecycleState filterByLifecycleState) {
         return getAllApis().stream()
-                .filter(api -> filterByLifecycleState.equals(api.getApiMetaData().getLifecycleState()))
-                .collect(toList());
+            .filter(api -> filterByLifecycleState.equals(api.getApiMetaData().getLifecycleState()))
+            .collect(toList());
     }
 
 }

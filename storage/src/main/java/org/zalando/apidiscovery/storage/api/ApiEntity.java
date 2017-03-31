@@ -1,29 +1,33 @@
 package org.zalando.apidiscovery.storage.api;
 
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
+
+import static javax.persistence.CascadeType.ALL;
 
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(callSuper = false)
 @Entity
 @Table(name = "api_version")
-public class ApiEntity implements Serializable {
+@ToString(exclude = "apiDeploymentEntities")
+public class ApiEntity extends AbstractCreateAbleEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,12 +35,11 @@ public class ApiEntity implements Serializable {
     private String apiName;
     private String apiVersion;
     private String definition;
-    @Enumerated(EnumType.STRING)
-    private ApiLifecycleState lifecycleState;
-    private String url;
-    private String ui;
-    private LocalDateTime lastContentChange;
-    private LocalDateTime created;
-    @ManyToOne
-    private ApplicationEntity application;
+    @OneToMany(mappedBy = "api", cascade = ALL)
+    private List<ApiDeploymentEntity> apiDeploymentEntities = new ArrayList<>();
+
+
+    public void addDeploymentEntity(ApiDeploymentEntity deploymentEntity) {
+        apiDeploymentEntities.add(deploymentEntity);
+    }
 }
