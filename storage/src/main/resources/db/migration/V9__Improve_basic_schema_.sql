@@ -1,6 +1,15 @@
 ALTER TABLE application
   DROP COLUMN last_crawled;
 
+ALTER TABLE application
+  DROP COLUMN crawled_state;
+
+ALTER TABLE application
+  DROP COLUMN service_url;
+
+ALTER TABLE application
+  ADD COLUMN app_url TEXT;
+
 CREATE TABLE api_deployment (
   api_id              BIGINT REFERENCES api_version(id),
   application_name    TEXT REFERENCES application(name),
@@ -28,6 +37,3 @@ ALTER TABLE api_version
 
 ALTER TABLE api_version
   DROP COLUMN last_content_change;
-
-
-
