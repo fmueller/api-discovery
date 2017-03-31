@@ -1,13 +1,16 @@
 package org.zalando.apidiscovery.storage;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+import static java.time.OffsetDateTime.now;
+import static java.time.ZoneOffset.UTC;
 
 /**
  * This component schedules a recurring job which checks for lifecycle state changes:
@@ -38,14 +41,14 @@ class ApiLifecycleManager {
 
     @Scheduled(fixedDelayString = "${lifecycle-check.delay}")
     public void checkLifecycleStates() {
-        final DateTime now = DateTime.now();
+        final OffsetDateTime now = now(UTC);
         inactivateApis(now);
         decomissionApis(now);
     }
 
     @Transactional
-    public void inactivateApis(DateTime now) {
-        final DateTime toOldApis = now.minusSeconds(markAsInactiveTime);
+    public void inactivateApis(OffsetDateTime now) {
+        final OffsetDateTime toOldApis = now.minusSeconds(markAsInactiveTime);
 
         List<ApiDefinition> inactivatedApis = repository.findOlderThanAndUnsuccessful(toOldApis);
         inactivatedApis.addAll(repository.findNotUpdatedSince(toOldApis));
@@ -55,7 +58,7 @@ class ApiLifecycleManager {
     }
 
     @Transactional
-    public void decomissionApis(DateTime now) {
+    public void decomissionApis(OffsetDateTime now) {
         List<ApiDefinition> decommissionedApis = repository.findNotUpdatedSinceAndInactive(now.minusSeconds(markAsDecommissionedTime));
         decommissionedApis.forEach(a -> a.setLifecycleState(DECOMMISSIONED));
         repository.save(decommissionedApis);

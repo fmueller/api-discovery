@@ -8,12 +8,19 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.zalando.apidiscovery.storage.api.*;
+import org.zalando.apidiscovery.storage.api.ApiDeploymentEntity;
+import org.zalando.apidiscovery.storage.api.ApiEntity;
+import org.zalando.apidiscovery.storage.api.ApiLifecycleState;
+import org.zalando.apidiscovery.storage.api.ApiRepository;
+import org.zalando.apidiscovery.storage.api.ApplicationEntity;
+import org.zalando.apidiscovery.storage.api.ApplicationRepository;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
-import static org.zalando.apidiscovery.storage.ApiLifecycleManager.*;
+import static org.zalando.apidiscovery.storage.ApiLifecycleManager.ACTIVE;
+import static org.zalando.apidiscovery.storage.ApiLifecycleManager.DECOMMISSIONED;
+import static org.zalando.apidiscovery.storage.ApiLifecycleManager.INACTIVE;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT)
@@ -53,13 +60,13 @@ public class ApiResourceIntegrationTest {
 
         ApiEntity testAPi100 = ApiEntity.builder().apiName(TEST_API)
             .apiVersion("1.0.0")
-                .build();
+            .build();
         ApiEntity testAPi101 = ApiEntity.builder().apiName(TEST_API)
             .apiVersion("1.0.1")
-                .build();
+            .build();
         ApiEntity anotherAPi100 = ApiEntity.builder().apiName(ANOTHER_API)
-                .apiVersion("1.0.0")
-                .build();
+            .apiVersion("1.0.0")
+            .build();
 
         ApiDeploymentEntity testAPi100OnApp1 = ApiDeploymentEntity.builder()
             .api(testAPi100)
@@ -86,13 +93,13 @@ public class ApiResourceIntegrationTest {
         apiRepository.save(asList(testAPi100, testAPi101, anotherAPi100));
 
         ResponseEntity<String> responseEntity = restTemplate.getForEntity(
-                "/apis", String.class);
+            "/apis", String.class);
 
         assertThat(responseEntity.getBody())
             .containsOnlyOnce(TEST_API)
             .containsOnlyOnce(ANOTHER_API)
-                .contains(ACTIVE)
-                .contains(INACTIVE);
+            .contains(ACTIVE)
+            .contains(INACTIVE);
     }
 
     @Test
@@ -133,13 +140,13 @@ public class ApiResourceIntegrationTest {
         apiRepository.save(asList(testAPi100, anotherAPi100));
 
         ResponseEntity<String> responseEntity = restTemplate.getForEntity(
-                "/apis?lifecycle_state=ACTIVE", String.class);
+            "/apis?lifecycle_state=ACTIVE", String.class);
 
         assertThat(responseEntity.getBody())
             .containsOnlyOnce(TEST_API)
-                .contains(ACTIVE)
+            .contains(ACTIVE)
             .doesNotContain(ANOTHER_API)
-                .doesNotContain(INACTIVE);
+            .doesNotContain(INACTIVE);
     }
 
     @Test
@@ -190,14 +197,14 @@ public class ApiResourceIntegrationTest {
         apiRepository.save(asList(testAPi100, testAPi101, anotherAPi100));
 
         ResponseEntity<String> responseEntity = restTemplate.getForEntity(
-                "/apis?lifecycle_state=INACTIVE", String.class);
+            "/apis?lifecycle_state=INACTIVE", String.class);
 
         assertThat(responseEntity.getBody())
             .containsOnlyOnce(ANOTHER_API)
-                .contains(INACTIVE)
-                .doesNotContain(DECOMMISSIONED)
+            .contains(INACTIVE)
+            .doesNotContain(DECOMMISSIONED)
             .doesNotContain(TEST_API)
-                .doesNotContain("\"" + ACTIVE + "\""); // necessary, otherwise INACTIVE would also match this;
+            .doesNotContain("\"" + ACTIVE + "\""); // necessary, otherwise INACTIVE would also match this;
     }
 
 
@@ -239,12 +246,12 @@ public class ApiResourceIntegrationTest {
         apiRepository.save(asList(testAPi100, anotherAPi100));
 
         ResponseEntity<String> responseEntity = restTemplate.getForEntity(
-                "/apis?lifecycle_state=DECOMMISSIONED", String.class);
+            "/apis?lifecycle_state=DECOMMISSIONED", String.class);
 
         assertThat(responseEntity.getBody())
             .containsOnlyOnce(ANOTHER_API)
-                .contains(DECOMMISSIONED)
-                .doesNotContain("\"" + ACTIVE + "\""); // necessary, otherwise INACTIVE would also match this;
+            .contains(DECOMMISSIONED)
+            .doesNotContain("\"" + ACTIVE + "\""); // necessary, otherwise INACTIVE would also match this;
     }
 
 }

@@ -1,10 +1,14 @@
 package org.zalando.apidiscovery.storage;
 
-import org.joda.time.DateTime;
+import java.time.OffsetDateTime;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+
+import static java.time.OffsetDateTime.now;
+import static java.time.ZoneOffset.UTC;
 
 @Service
 class ApiDefinitionService {
@@ -19,7 +23,7 @@ class ApiDefinitionService {
     @Transactional
     public void persistWithMetadata(ApiDefinition apiDefinition) {
         final ApiDefinition persistedDefinition = repository.findOne(apiDefinition.getApplicationId());
-        final DateTime now = DateTime.now();
+        final OffsetDateTime now = now(UTC);
 
         apiDefinition.setStatus(apiDefinition.getStatus().toUpperCase());
 

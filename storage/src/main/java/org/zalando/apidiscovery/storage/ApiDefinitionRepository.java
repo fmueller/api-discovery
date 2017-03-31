@@ -1,21 +1,21 @@
 package org.zalando.apidiscovery.storage;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
-import org.joda.time.DateTime;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 interface ApiDefinitionRepository extends CrudRepository<ApiDefinition, String> {
 
     @Query("select a from ApiDefinition a where a.status = 'UNSUCCESSFUL' and (a.lastChanged is null or a.lastChanged < ?1)")
-    List<ApiDefinition> findOlderThanAndUnsuccessful(DateTime olderThan);
+    List<ApiDefinition> findOlderThanAndUnsuccessful(OffsetDateTime olderThan);
 
     @Query("select a from ApiDefinition a where a.lastPersisted is null or a.lastPersisted < ?1")
-    List<ApiDefinition> findNotUpdatedSince(DateTime olderThan);
+    List<ApiDefinition> findNotUpdatedSince(OffsetDateTime olderThan);
 
     @Query("select a from ApiDefinition a where a.lifecycleState = 'INACTIVE' and (a.lastPersisted is null or a.lastPersisted < ?1)")
-    List<ApiDefinition> findNotUpdatedSinceAndInactive(DateTime olderThan);
+    List<ApiDefinition> findNotUpdatedSinceAndInactive(OffsetDateTime olderThan);
 
     List<ApiDefinition> findByLifecycleState(String lifecycleState);
 

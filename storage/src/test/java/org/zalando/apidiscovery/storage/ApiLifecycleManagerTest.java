@@ -1,11 +1,13 @@
 package org.zalando.apidiscovery.storage;
 
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
 
-import org.joda.time.DateTime;
 import org.junit.Test;
 
+import static java.time.OffsetDateTime.now;
+import static java.time.ZoneOffset.UTC;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -23,10 +25,10 @@ public class ApiLifecycleManagerTest {
         List<ApiDefinition> outdatedApis = Collections.singletonList(apiDefinition);
 
         ApiDefinitionRepository mockedRepository = mock(ApiDefinitionRepository.class);
-        when(mockedRepository.findOlderThanAndUnsuccessful(any(DateTime.class))).thenReturn(outdatedApis);
+        when(mockedRepository.findOlderThanAndUnsuccessful(any(OffsetDateTime.class))).thenReturn(outdatedApis);
 
         ApiLifecycleManager lifecycleManager = new ApiLifecycleManager(mockedRepository, 1, Integer.MAX_VALUE);
-        lifecycleManager.inactivateApis(DateTime.now());
+        lifecycleManager.inactivateApis(now(UTC));
 
         verify(mockedRepository).save(outdatedApis);
         verify(apiDefinition).setLifecycleState(ApiLifecycleManager.INACTIVE);
@@ -41,10 +43,10 @@ public class ApiLifecycleManagerTest {
         List<ApiDefinition> outdatedApis = Collections.singletonList(apiDefinition);
 
         ApiDefinitionRepository mockedRepository = mock(ApiDefinitionRepository.class);
-        when(mockedRepository.findNotUpdatedSinceAndInactive(any(DateTime.class))).thenReturn(outdatedApis);
+        when(mockedRepository.findNotUpdatedSinceAndInactive(any(OffsetDateTime.class))).thenReturn(outdatedApis);
 
         ApiLifecycleManager lifecycleManager = new ApiLifecycleManager(mockedRepository, 1, Integer.MAX_VALUE);
-        lifecycleManager.decomissionApis(DateTime.now());
+        lifecycleManager.decomissionApis(now(UTC));
 
         verify(mockedRepository).save(outdatedApis);
         verify(apiDefinition).setLifecycleState(ApiLifecycleManager.DECOMMISSIONED);

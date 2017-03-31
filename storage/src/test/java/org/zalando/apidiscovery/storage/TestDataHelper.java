@@ -1,11 +1,14 @@
 package org.zalando.apidiscovery.storage;
 
 import org.apache.commons.lang3.RandomStringUtils;
-import org.joda.time.DateTime;
+
+import static java.time.OffsetDateTime.now;
+import static java.time.ZoneOffset.UTC;
 
 final class TestDataHelper {
 
-    private TestDataHelper() {}
+    private TestDataHelper() {
+    }
 
     public static ApiDefinition createUnsuccessfulApiDefinition() {
         ApiDefinition apiDefinition = createBasicApiDefinition();
@@ -30,7 +33,7 @@ final class TestDataHelper {
         apiDefinition.setApplicationId(RandomStringUtils.randomAlphabetic(20));
         apiDefinition.setStatus("SUCCESS");
         apiDefinition.setLifecycleState(ApiLifecycleManager.ACTIVE);
-        apiDefinition.setLastPersisted(DateTime.now());
+        apiDefinition.setLastPersisted(now(UTC));
         apiDefinition.setLastChanged(apiDefinition.getLastPersisted());
         return apiDefinition;
     }
