@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.toList;
@@ -38,11 +39,32 @@ public class ApiResourceController {
     }
 
     @GetMapping("/{api_id}")
-    public ResponseEntity<Api> getApi(@PathVariable("api_id") String apiId) {
+    public ResponseEntity<Api> getApi(@PathVariable("api_id") String apiId, UriComponentsBuilder builder) {
         return apiService.getApi(apiId)
-            .map(api -> ResponseEntity.ok(api))
+            .map(api -> ResponseEntity.ok(buildLinks(api, builder)))
             .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
 
+    }
+
+    private Api buildLinks(Api api, UriComponentsBuilder builder) {
+        api.getVersions()
+            .forEach(versionsDto -> versionsDto.getDefinitions()
+                .forEach(apiDefinitionDto -> apiDefinitionDto.getApplications()
+                    .forEach(deploymentLinkDto -> deploymentLinkDto.setHref(
+                        builder.cloneBuilder()
+                            .path(deploymentLinkDto.getLinkBuilder().buildLink())
+                            .toUriString())))
+            );
+
+        api.getApplications()
+            .forEach(applicationDto -> applicationDto.getDefinitions()
+                .forEach(deploymentLinkDto -> deploymentLinkDto.setHref(
+                    builder.cloneBuilder()
+                        .path(deploymentLinkDto.getLinkBuilder().buildLink())
+                        .toUriString()))
+            );
+
+        return api;
     }
 
 }

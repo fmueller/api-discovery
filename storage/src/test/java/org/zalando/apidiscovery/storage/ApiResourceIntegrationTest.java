@@ -4,10 +4,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.web.util.UriComponentsBuilder;
 import org.zalando.apidiscovery.storage.api.ApiDeploymentEntity;
 import org.zalando.apidiscovery.storage.api.ApiEntity;
 import org.zalando.apidiscovery.storage.api.ApiLifecycleState;
@@ -15,6 +18,9 @@ import org.zalando.apidiscovery.storage.api.ApiRepository;
 import org.zalando.apidiscovery.storage.api.ApplicationEntity;
 import org.zalando.apidiscovery.storage.api.ApplicationRepository;
 
+import static java.lang.String.valueOf;
+import static java.time.OffsetDateTime.now;
+import static java.time.ZoneOffset.UTC;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -37,6 +43,9 @@ public class ApiResourceIntegrationTest {
 
     @Autowired
     private ApiRepository apiRepository;
+
+    @LocalServerPort
+    private int port;
 
 
     @Before
@@ -204,7 +213,7 @@ public class ApiResourceIntegrationTest {
             .contains(INACTIVE)
             .doesNotContain(DECOMMISSIONED)
             .doesNotContain(TEST_API)
-            .doesNotContain("\"" + ACTIVE + "\""); // necessary, otherwise INACTIVE would also match this;
+            .doesNotContain(exact(ACTIVE));
     }
 
 
@@ -251,7 +260,7 @@ public class ApiResourceIntegrationTest {
         assertThat(responseEntity.getBody())
             .containsOnlyOnce(ANOTHER_API)
             .contains(DECOMMISSIONED)
-            .doesNotContain("\"" + ACTIVE + "\""); // necessary, otherwise INACTIVE would also match this;
+            .doesNotContain(exact(ACTIVE)); // necessary, otherwise INACTIVE would also match this;
     }
 
 
@@ -261,38 +270,60 @@ public class ApiResourceIntegrationTest {
             ApplicationEntity
                 .builder()
                 .name("testApp")
+                .appUrl("/info")
+                .created(now(UTC))
                 .build());
 
         ApplicationEntity app2 = applicationRepository.save(
             ApplicationEntity
                 .builder()
                 .name("app2")
+                .appUrl("/info")
+                .created(now(UTC))
                 .build());
 
-        ApiEntity testAPi100 = ApiEntity.builder().apiName(TEST_API)
+        ApiEntity testAPi100 = ApiEntity.builder()
+            .apiName(TEST_API)
             .apiVersion("1.0.0")
+            .definitionType("swagger")
+            .created(now(UTC))
             .build();
 
-        ApiEntity testAPi101 = ApiEntity.builder().apiName(TEST_API)
+        ApiEntity testAPi101 = ApiEntity.builder()
+            .apiName(TEST_API)
             .apiVersion("1.0.1")
+            .definitionType("swagger")
+            .created(now(UTC))
             .build();
 
         ApiDeploymentEntity testAPi100OnApp1 = ApiDeploymentEntity.builder()
             .api(testAPi100)
             .application(app1)
+            .apiUi("/ui")
+            .apiUrl("/api")
             .lifecycleState(ApiLifecycleState.ACTIVE)
+            .created(now(UTC))
+            .lastCrawled(now(UTC))
             .build();
 
         ApiDeploymentEntity testAPi100OnApp2 = ApiDeploymentEntity.builder()
             .api(testAPi100)
             .application(app2)
+            .apiUi("/ui")
+            .apiUrl("/api")
             .lifecycleState(ApiLifecycleState.ACTIVE)
+            .created(now(UTC))
+            .lastCrawled(now(UTC))
             .build();
 
         ApiDeploymentEntity testAPi101OnApp1 = ApiDeploymentEntity.builder()
             .api(testAPi101)
             .application(app1)
+            .apiUi("/ui")
+            .apiUrl("/api")
             .lifecycleState(ApiLifecycleState.ACTIVE)
+            .created(now(UTC))
+            .lastCrawled(now(UTC))
             .build();
 
         testAPi100.setApiDeploymentEntities(asList(testAPi100OnApp1, testAPi100OnApp2));
@@ -302,13 +333,40 @@ public class ApiResourceIntegrationTest {
         ResponseEntity<String> responseEntity = restTemplate.getForEntity(
             "/apis/" + TEST_API, String.class);
 
-        assertThat(responseEntity.getBody())
-            .containsOnlyOnce(TEST_API)
-            .contains(ACTIVE)
-            .containsOnlyOnce("1.0.0")
-            .containsOnlyOnce("1.0.1")
-            .containsOnlyOnce("testApp")
-            .containsOnlyOnce("app2");
+        assertThat(responseEntity.getStatusCode())
+            .isEqualTo(HttpStatus.OK);
 
+        assertThat(responseEntity.getBody())
+            .containsOnlyOnce(exact(TEST_API))
+            .contains(exact(ACTIVE))
+            .containsOnlyOnce(exact("1.0.0"))
+            .containsOnlyOnce(exact("1.0.1"))
+            .containsOnlyOnce(exact("testApp"))
+            .containsOnlyOnce(exact("app2"))
+            .contains(localUriBuilder()
+                .path("applications/testApp")
+                .toUriString())
+            .contains(localUriBuilder()
+                .path("apis/" + TEST_API + "/versions/1.0.0/definitions/" + valueOf(testAPi100.getId()))
+                .toUriString());
+    }
+
+    @Test
+    public void shouldReturn400IfNoApiFound() throws Exception {
+        ResponseEntity<String> responseEntity = restTemplate.getForEntity(
+            "/apis/" + TEST_API, String.class);
+        assertThat(responseEntity.getStatusCode())
+            .isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+    private UriComponentsBuilder localUriBuilder() {
+        return UriComponentsBuilder.newInstance()
+            .scheme("http")
+            .host("localhost")
+            .port(port);
+    }
+
+    private static String exact(String field) {
+        return "\"" + field + "\"";
     }
 }

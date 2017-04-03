@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import static java.lang.String.valueOf;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static org.zalando.apidiscovery.storage.api.ApiLifecycleState.ACTIVE;
@@ -80,7 +81,7 @@ public class ApiService {
             .map(entry -> new VersionsDto(entry.getKey(), aggregateApplicationLifecycleStateForApi(entry.getValue()),
                 entry
                     .getValue().stream()
-                    .map(apiEntity -> mapApiEntityToApiDefinition(apiEntity))
+                    .map(this::mapApiEntityToApiDefinition)
                     .collect(toList()))
             )
             .collect(toList());
@@ -88,26 +89,39 @@ public class ApiService {
 
     private ApiDefinitionDto mapApiEntityToApiDefinition(ApiEntity apiEntity) {
         List<DeploymentLinkDto> deploymentLinkDtos = apiEntity.getApiDeploymentEntities().stream()
-            .map(deployment -> mapApiDeploymentEntityToDeploymentLink(deployment))
+            .map(this::mapApiDeploymentEntityToApplicationDeploymentLink)
             .collect(toList());
 
         return ApiDefinitionDto.builder()
-            .id(String.valueOf(apiEntity.getId()))
+            .id(valueOf(apiEntity.getId()))
             .definition(apiEntity.getDefinition())
             .type(apiEntity.getDefinitionType())
             .applications(deploymentLinkDtos)
             .build();
     }
 
-    private DeploymentLinkDto mapApiDeploymentEntityToDeploymentLink(ApiDeploymentEntity apiDeploymentEntity) {
+
+    private DeploymentLinkDto mapApiDeploymentEntityToApplicationDeploymentLink(ApiDeploymentEntity apiDeploymentEntity) {
+        return mapApiDeploymentEntityToDeploymentLink(apiDeploymentEntity)
+            .linkBuilder(new ApplicationDeploymentLinkBuilder(apiDeploymentEntity.getApplication().getName()))
+            .build();
+    }
+
+    private DeploymentLinkDto mapApiDeploymentEntityToDefinitionDeploymentLink(ApiDeploymentEntity apiDeploymentEntity) {
+        ApiEntity apiEntity = apiDeploymentEntity.getApi();
+        return mapApiDeploymentEntityToDeploymentLink(apiDeploymentEntity)
+            .linkBuilder(new DefinitionDeploymentLinkBuilder(apiEntity.getApiName(), apiEntity.getApiVersion(), String.valueOf(apiEntity.getId())))
+            .build();
+    }
+
+
+    private DeploymentLinkDto.DeploymentLinkDtoBuilder mapApiDeploymentEntityToDeploymentLink(ApiDeploymentEntity apiDeploymentEntity) {
         return DeploymentLinkDto.builder()
             .lifecycleState(apiDeploymentEntity.getLifecycleState())
             .apiUi(apiDeploymentEntity.getApiUi())
             .apiUrl(apiDeploymentEntity.getApiUrl())
             .created(apiDeploymentEntity.getCreated())
-            .lastUpdated(apiDeploymentEntity.getLastCrawled())
-            .build();
-
+            .lastUpdated(apiDeploymentEntity.getLastCrawled());
     }
 
     private List<ApplicationDto> mapApplications(List<ApiEntity> apiEntities) {
@@ -120,14 +134,14 @@ public class ApiService {
             .collect(toList());
 
         return applicationEntityList.stream()
-            .map(applicationEntity -> mapApplicationToApplicationDto(applicationEntity))
+            .map(this::mapApplicationToApplicationDto)
             .collect(toList());
     }
 
 
     private ApplicationDto mapApplicationToApplicationDto(ApplicationEntity applicationEntity) {
         List<DeploymentLinkDto> deploymentLinkDtos = applicationEntity.getApiDeploymentEntities().stream()
-            .map(deployment -> mapApiDeploymentEntityToDeploymentLink(deployment))
+            .map(this::mapApiDeploymentEntityToDefinitionDeploymentLink)
             .collect(toList());
 
         return ApplicationDto.builder()
