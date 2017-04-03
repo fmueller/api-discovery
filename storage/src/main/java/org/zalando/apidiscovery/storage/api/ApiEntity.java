@@ -44,8 +44,4 @@ public class ApiEntity implements Serializable {
     @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentOffsetDateTime")
     private OffsetDateTime created;
 
-
-    public void addDeploymentEntity(ApiDeploymentEntity deploymentEntity) {
-        apiDeploymentEntities.add(deploymentEntity);
-    }
 }

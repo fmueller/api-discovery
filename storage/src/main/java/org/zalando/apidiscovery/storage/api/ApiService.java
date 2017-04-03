@@ -17,10 +17,12 @@ import static org.zalando.apidiscovery.storage.api.ApiLifecycleState.INACTIVE;
 public class ApiService {
 
     private final ApiRepository apiRepository;
+    private final ApplicationRepository applicationRepository;
 
     @Autowired
-    public ApiService(ApiRepository apiRepository) {
+    public ApiService(ApiRepository apiRepository, ApplicationRepository applicationRepository) {
         this.apiRepository = apiRepository;
+        this.applicationRepository = applicationRepository;
     }
 
     public List<ApiDto> getAllApis() {
@@ -61,7 +63,7 @@ public class ApiService {
     public Optional<ApiDto> getApi(String apiName) {
         List<ApiEntity> apiEntities = apiRepository.findByApiName(apiName);
 
-        if (!apiEntities.isEmpty()) {
+        if (apiEntities.stream().findFirst().isPresent()) {
             ApiEntity apiEntity = apiEntities.stream().findFirst().get();
 
             return Optional.of(new ApiDto(apiEntity.getApiName(),
@@ -124,16 +126,8 @@ public class ApiService {
             .lastUpdated(apiDeploymentEntity.getLastCrawled());
     }
 
-    private List<ApplicationDto> mapApplications(List<ApiEntity> apiEntities) {
-        // TODO: write sql query
-        List<ApplicationEntity> applicationEntityList = apiEntities.stream()
-            .map(apiEntity -> apiEntity.getApiDeploymentEntities().stream()
-                .map(ApiDeploymentEntity::getApplication).collect(toList()))
-            .flatMap(List::stream)
-            .distinct()
-            .collect(toList());
-
-        return applicationEntityList.stream()
+    private List<ApplicationDto> mapApplications(List<ApiEntity> apieEntities) {
+        return applicationRepository.findByApiIds(apieEntities).stream()
             .map(this::mapApplicationToApplicationDto)
             .collect(toList());
     }
