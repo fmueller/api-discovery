@@ -13,6 +13,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ApiListDto {
 
-    private List<Api> apis;
+    private List<ApiDto> apis;
 
 }

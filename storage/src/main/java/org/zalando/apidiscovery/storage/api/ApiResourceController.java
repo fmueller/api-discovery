@@ -31,25 +31,25 @@ public class ApiResourceController {
 
     @GetMapping
     public ResponseEntity<ApiListDto> getApis(@RequestParam(value = "lifecycle_state", required = false) ApiLifecycleState lifecycleState) {
-        List<Api> apiList = loadApis(lifecycleState).stream()
+        List<ApiDto> apiList = loadApis(lifecycleState).stream()
             .sorted(comparing(api -> api.getApiMetaData().getName()))
             .collect(toList());
         return ResponseEntity.ok(new ApiListDto(apiList));
     }
 
-    private List<Api> loadApis(ApiLifecycleState lifecycleState) {
+    private List<ApiDto> loadApis(ApiLifecycleState lifecycleState) {
         return lifecycleState == null ? apiService.getAllApis() : apiService.getAllApis(lifecycleState);
     }
 
     @GetMapping("/{api_id}")
-    public ResponseEntity<Api> getApi(@PathVariable("api_id") String apiId, UriComponentsBuilder builder) {
+    public ResponseEntity<ApiDto> getApi(@PathVariable("api_id") String apiId, UriComponentsBuilder builder) {
         return apiService.getApi(apiId)
             .map(api -> ResponseEntity.ok(buildLinks(api, builder)))
             .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
 
     }
 
-    private Api buildLinks(Api api, UriComponentsBuilder builder) {
+    private ApiDto buildLinks(ApiDto api, UriComponentsBuilder builder) {
         api.getVersions()
             .forEach(versionsDto -> versionsDto.getDefinitions()
                 .forEach(apiDefinitionDto -> apiDefinitionDto.getApplications()

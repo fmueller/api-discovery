@@ -23,14 +23,14 @@ public class ApiService {
         this.apiRepository = apiRepository;
     }
 
-    public List<Api> getAllApis() {
+    public List<ApiDto> getAllApis() {
         List<ApiEntity> apiEntities = apiRepository.findAll();
 
         return apiEntities
             .stream()
             .collect(groupingBy(ApiEntity::getApiName))
             .entrySet().stream()
-            .map(entry -> new Api(entry.getKey(), aggregateApplicationLifecycleStateForApi(entry.getValue())))
+            .map(entry -> new ApiDto(entry.getKey(), aggregateApplicationLifecycleStateForApi(entry.getValue())))
             .collect(toList());
     }
 
@@ -52,19 +52,19 @@ public class ApiService {
         return DECOMMISSIONED;
     }
 
-    public List<Api> getAllApis(ApiLifecycleState filterByLifecycleState) {
+    public List<ApiDto> getAllApis(ApiLifecycleState filterByLifecycleState) {
         return getAllApis().stream()
             .filter(api -> filterByLifecycleState.equals(api.getApiMetaData().getLifecycleState()))
             .collect(toList());
     }
 
-    public Optional<Api> getApi(String apiName) {
+    public Optional<ApiDto> getApi(String apiName) {
         List<ApiEntity> apiEntities = apiRepository.findByApiName(apiName);
 
         if (!apiEntities.isEmpty()) {
             ApiEntity apiEntity = apiEntities.stream().findFirst().get();
 
-            return Optional.of(new Api(apiEntity.getApiName(),
+            return Optional.of(new ApiDto(apiEntity.getApiName(),
                 aggregateApplicationLifecycleStateForApi(apiEntities),
                 mapVersions(apiEntities),
                 mapApplications(apiEntities)));

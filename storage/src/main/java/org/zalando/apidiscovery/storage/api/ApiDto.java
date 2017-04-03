@@ -8,18 +8,18 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class Api {
+public class ApiDto {
 
     private ApiMetaData apiMetaData;
     private List<VersionsDto> versions;
     private List<ApplicationDto> applications;
 
 
-    public Api(final String name, final ApiLifecycleState lifecycleState) {
+    public ApiDto(final String name, final ApiLifecycleState lifecycleState) {
         apiMetaData = new ApiMetaData(name, lifecycleState);
     }
 
-    public Api(final String name, final ApiLifecycleState lifecycleState, List<VersionsDto> versions, List<ApplicationDto> applications) {
+    public ApiDto(final String name, final ApiLifecycleState lifecycleState, List<VersionsDto> versions, List<ApplicationDto> applications) {
         apiMetaData = new ApiMetaData(name, lifecycleState);
         this.versions = versions;
         this.applications = applications;
