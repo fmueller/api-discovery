@@ -33,6 +33,9 @@ public class ApiDeploymentEntity implements Serializable {
     @ManyToOne
     private ApplicationEntity application;
 
+    private String apiUrl;
+    private String apiUi;
+
     @Enumerated(EnumType.STRING)
     private ApiLifecycleState lifecycleState;
 

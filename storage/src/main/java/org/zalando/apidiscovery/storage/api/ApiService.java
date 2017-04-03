@@ -1,6 +1,7 @@
 package org.zalando.apidiscovery.storage.api;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,15 +28,13 @@ public class ApiService {
         return apiEntities
             .stream()
             .collect(groupingBy(ApiEntity::getApiName))
-            .entrySet()
-            .stream()
+            .entrySet().stream()
             .map(entry -> new Api(entry.getKey(), aggregateApplicationLifecycleStateForApi(entry.getValue())))
             .collect(toList());
     }
 
     private ApiLifecycleState aggregateApplicationLifecycleStateForApi(List<ApiEntity> apiEntities) {
-        List<ApiDeploymentEntity> apiDeploymentList = apiEntities
-            .stream()
+        List<ApiDeploymentEntity> apiDeploymentList = apiEntities.stream()
             .flatMap(apiEntity -> apiEntity.getApiDeploymentEntities().stream())
             .collect(toList());
         return aggregateApplicationLifecycleStateForDeploymentEntities(apiDeploymentList);
@@ -57,5 +56,86 @@ public class ApiService {
             .filter(api -> filterByLifecycleState.equals(api.getApiMetaData().getLifecycleState()))
             .collect(toList());
     }
+
+    public Optional<Api> getApi(String apiName) {
+        List<ApiEntity> apiEntities = apiRepository.findByApiName(apiName);
+
+        if (!apiEntities.isEmpty()) {
+            ApiEntity apiEntity = apiEntities.stream().findFirst().get();
+
+            return Optional.of(new Api(apiEntity.getApiName(),
+                aggregateApplicationLifecycleStateForApi(apiEntities),
+                mapVersions(apiEntities),
+                mapApplications(apiEntities)));
+
+        }
+        return Optional.empty();
+
+    }
+
+    private List<VersionsDto> mapVersions(List<ApiEntity> apiEntities) {
+        return apiEntities.stream()
+            .collect(groupingBy(ApiEntity::getApiVersion))
+            .entrySet().stream()
+            .map(entry -> new VersionsDto(entry.getKey(), aggregateApplicationLifecycleStateForApi(entry.getValue()),
+                entry
+                    .getValue().stream()
+                    .map(apiEntity -> mapApiEntityToApiDefinition(apiEntity))
+                    .collect(toList()))
+            )
+            .collect(toList());
+    }
+
+    private ApiDefinitionDto mapApiEntityToApiDefinition(ApiEntity apiEntity) {
+        List<DeploymentLinkDto> deploymentLinkDtos = apiEntity.getApiDeploymentEntities().stream()
+            .map(deployment -> mapApiDeploymentEntityToDeploymentLink(deployment))
+            .collect(toList());
+
+        return ApiDefinitionDto.builder()
+            .id(String.valueOf(apiEntity.getId()))
+            .definition(apiEntity.getDefinition())
+            .type(apiEntity.getDefinitionType())
+            .applications(deploymentLinkDtos)
+            .build();
+    }
+
+    private DeploymentLinkDto mapApiDeploymentEntityToDeploymentLink(ApiDeploymentEntity apiDeploymentEntity) {
+        return DeploymentLinkDto.builder()
+            .lifecycleState(apiDeploymentEntity.getLifecycleState())
+            .apiUi(apiDeploymentEntity.getApiUi())
+            .apiUrl(apiDeploymentEntity.getApiUrl())
+            .created(apiDeploymentEntity.getCreated())
+            .lastUpdated(apiDeploymentEntity.getLastCrawled())
+            .build();
+
+    }
+
+    private List<ApplicationDto> mapApplications(List<ApiEntity> apiEntities) {
+        // TODO: write sql query
+        List<ApplicationEntity> applicationEntityList = apiEntities.stream()
+            .map(apiEntity -> apiEntity.getApiDeploymentEntities().stream()
+                .map(ApiDeploymentEntity::getApplication).collect(toList()))
+            .flatMap(List::stream)
+            .distinct()
+            .collect(toList());
+
+        return applicationEntityList.stream()
+            .map(applicationEntity -> mapApplicationToApplicationDto(applicationEntity))
+            .collect(toList());
+    }
+
+
+    private ApplicationDto mapApplicationToApplicationDto(ApplicationEntity applicationEntity) {
+        List<DeploymentLinkDto> deploymentLinkDtos = applicationEntity.getApiDeploymentEntities().stream()
+            .map(deployment -> mapApiDeploymentEntityToDeploymentLink(deployment))
+            .collect(toList());
+
+        return ApplicationDto.builder()
+            .name(applicationEntity.getName())
+            .appUrl(applicationEntity.getAppUrl())
+            .definitions(deploymentLinkDtos)
+            .build();
+    }
+
 
 }

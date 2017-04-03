@@ -254,4 +254,61 @@ public class ApiResourceIntegrationTest {
             .doesNotContain("\"" + ACTIVE + "\""); // necessary, otherwise INACTIVE would also match this;
     }
 
+
+    @Test
+    public void shouldReturnOneApi() throws Exception {
+        ApplicationEntity app1 = applicationRepository.save(
+            ApplicationEntity
+                .builder()
+                .name("testApp")
+                .build());
+
+        ApplicationEntity app2 = applicationRepository.save(
+            ApplicationEntity
+                .builder()
+                .name("app2")
+                .build());
+
+        ApiEntity testAPi100 = ApiEntity.builder().apiName(TEST_API)
+            .apiVersion("1.0.0")
+            .build();
+
+        ApiEntity testAPi101 = ApiEntity.builder().apiName(TEST_API)
+            .apiVersion("1.0.1")
+            .build();
+
+        ApiDeploymentEntity testAPi100OnApp1 = ApiDeploymentEntity.builder()
+            .api(testAPi100)
+            .application(app1)
+            .lifecycleState(ApiLifecycleState.ACTIVE)
+            .build();
+
+        ApiDeploymentEntity testAPi100OnApp2 = ApiDeploymentEntity.builder()
+            .api(testAPi100)
+            .application(app2)
+            .lifecycleState(ApiLifecycleState.ACTIVE)
+            .build();
+
+        ApiDeploymentEntity testAPi101OnApp1 = ApiDeploymentEntity.builder()
+            .api(testAPi101)
+            .application(app1)
+            .lifecycleState(ApiLifecycleState.ACTIVE)
+            .build();
+
+        testAPi100.setApiDeploymentEntities(asList(testAPi100OnApp1, testAPi100OnApp2));
+        testAPi101.setApiDeploymentEntities(asList(testAPi101OnApp1));
+        apiRepository.save(asList(testAPi100, testAPi101));
+
+        ResponseEntity<String> responseEntity = restTemplate.getForEntity(
+            "/apis/" + TEST_API, String.class);
+
+        assertThat(responseEntity.getBody())
+            .containsOnlyOnce(TEST_API)
+            .contains(ACTIVE)
+            .containsOnlyOnce("1.0.0")
+            .containsOnlyOnce("1.0.1")
+            .containsOnlyOnce("testApp")
+            .containsOnlyOnce("app2");
+
+    }
 }
