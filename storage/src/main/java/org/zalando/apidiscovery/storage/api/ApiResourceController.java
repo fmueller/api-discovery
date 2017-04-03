@@ -31,11 +31,14 @@ public class ApiResourceController {
 
     @GetMapping
     public ResponseEntity<ApiListDto> getApis(@RequestParam(value = "lifecycle_state", required = false) ApiLifecycleState lifecycleState) {
-        List<Api> allApis = lifecycleState == null ? apiService.getAllApis() : apiService.getAllApis(lifecycleState);
-        allApis.stream()
+        List<Api> apiList = loadApis(lifecycleState).stream()
             .sorted(comparing(api -> api.getApiMetaData().getName()))
             .collect(toList());
-        return ResponseEntity.ok(new ApiListDto(allApis));
+        return ResponseEntity.ok(new ApiListDto(apiList));
+    }
+
+    private List<Api> loadApis(ApiLifecycleState lifecycleState) {
+        return lifecycleState == null ? apiService.getAllApis() : apiService.getAllApis(lifecycleState);
     }
 
     @GetMapping("/{api_id}")
