@@ -68,7 +68,7 @@ public class CrawlerService {
         try {
             name = swagger.nameOf(crawledAPIDefinition.getDefinition());
             version = swagger.versionOf(crawledAPIDefinition.getDefinition());
-        } catch (IOException e) {
+        } catch (IOException | NullPointerException e) {
             throw new SwaggerParseException("could not parse swagger definition json", e);
         }
 
