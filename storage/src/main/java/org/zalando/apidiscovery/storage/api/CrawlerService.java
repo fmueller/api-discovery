@@ -4,9 +4,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.zalando.apidiscovery.storage.utils.SwaggerDefinitionHelper;
+import org.zalando.apidiscovery.storage.utils.SwaggerParseException;
 
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -22,21 +25,24 @@ public class CrawlerService {
     private ApplicationRepository applicationRepository;
     private ApiRepository apiRepository;
     private EntityManager entityManager;
+    private SwaggerDefinitionHelper swagger;
 
     @Autowired
     public CrawlerService(final ApplicationRepository appRepository,
                           final ApiRepository apiRepository,
-                          final EntityManager entityManager) {
+                          final EntityManager entityManager,
+                          final SwaggerDefinitionHelper swaggerHelper) {
         this.applicationRepository = appRepository;
         this.apiRepository = apiRepository;
         this.entityManager = entityManager;
+        this.swagger = swaggerHelper;
     }
 
     @Transactional
     public void processCrawledApiDefinition(final CrawledApiDefinitionDto crawledAPIDefinition) {
         final OffsetDateTime now = now(UTC);
 
-        setApiName(crawledAPIDefinition);
+        setApiNameAndVersion(crawledAPIDefinition);
 
         ApiEntity apiVersion = apiRepository.saveAndFlush(newApiVersion(crawledAPIDefinition, now));
 
@@ -55,11 +61,19 @@ public class CrawlerService {
         LOG.info("Received and processed a new crawling information; api-deployment-entity: {}", apiDeployment);
     }
 
-    private void setApiName(CrawledApiDefinitionDto crawledAPIDefinition) {
-        crawledAPIDefinition.setApiName(crawledAPIDefinition.getApplicationName() + "-api");
-        crawledAPIDefinition.setVersion("1.0.0");
-        //TODO extract api-name, toLowercase, truncate, replace spaces with `-`
-        //TODO extract api-version from the definition JSON
+    void setApiNameAndVersion(CrawledApiDefinitionDto crawledAPIDefinition) throws SwaggerParseException {
+        final String name;
+        final String version;
+
+        try {
+            name = swagger.nameOf(crawledAPIDefinition.getDefinition());
+            version = swagger.versionOf(crawledAPIDefinition.getDefinition());
+        } catch (IOException e) {
+            throw new SwaggerParseException("could not parse swagger definition json", e);
+        }
+
+        crawledAPIDefinition.setApiName(name);
+        crawledAPIDefinition.setVersion(version);
     }
 
     private ApiDeploymentEntity newApiDeployment(OffsetDateTime now) {
