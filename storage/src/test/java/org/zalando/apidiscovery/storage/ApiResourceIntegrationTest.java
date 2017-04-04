@@ -34,6 +34,10 @@ public class ApiResourceIntegrationTest {
 
     private final static String TEST_API = "testAPI";
     private final static String ANOTHER_API = "anotherAPI";
+    private final static String V1 = "1.0.0";
+    private final static String V2 = "2.0.0";
+    private final static String APP1 = "app1";
+    private final static String APP2 = "app2";
 
     @Autowired
     private TestRestTemplate restTemplate;
@@ -56,26 +60,12 @@ public class ApiResourceIntegrationTest {
 
     @Test
     public void shouldReturnAllApis() throws Exception {
-        ApplicationEntity app1 = applicationRepository.save(
-            ApplicationEntity
-                .builder()
-                .name("testApp")
-                .build());
-        ApplicationEntity app2 = applicationRepository.save(
-            ApplicationEntity
-                .builder()
-                .name("testApp2")
-                .build());
+        ApplicationEntity app1 = givenApplication(APP1);
+        ApplicationEntity app2 = givenApplication(APP2);
 
-        ApiEntity testAPi100 = ApiEntity.builder().apiName(TEST_API)
-            .apiVersion("1.0.0")
-            .build();
-        ApiEntity testAPi101 = ApiEntity.builder().apiName(TEST_API)
-            .apiVersion("1.0.1")
-            .build();
-        ApiEntity anotherAPi100 = ApiEntity.builder().apiName(ANOTHER_API)
-            .apiVersion("1.0.0")
-            .build();
+        ApiEntity testAPi100 = givenApiEntity(TEST_API, V1);
+        ApiEntity testAPi200 = givenApiEntity(TEST_API, V2);
+        ApiEntity anotherAPi100 = givenApiEntity(ANOTHER_API, V1);
 
         ApiDeploymentEntity testAPi100OnApp1 = ApiDeploymentEntity.builder()
             .api(testAPi100)
@@ -83,8 +73,8 @@ public class ApiResourceIntegrationTest {
             .lifecycleState(ApiLifecycleState.ACTIVE)
             .build();
 
-        ApiDeploymentEntity testAPi101OnApp1 = ApiDeploymentEntity.builder()
-            .api(testAPi101)
+        ApiDeploymentEntity testAPi200OnApp1 = ApiDeploymentEntity.builder()
+            .api(testAPi200)
             .application(app1)
             .lifecycleState(ApiLifecycleState.ACTIVE)
             .build();
@@ -96,10 +86,10 @@ public class ApiResourceIntegrationTest {
             .build();
 
         testAPi100.setApiDeploymentEntities(asList(testAPi100OnApp1));
-        testAPi101.setApiDeploymentEntities(asList(testAPi101OnApp1));
+        testAPi200.setApiDeploymentEntities(asList(testAPi200OnApp1));
         anotherAPi100.setApiDeploymentEntities(asList(anotherAPi100OnApp2));
 
-        apiRepository.save(asList(testAPi100, testAPi101, anotherAPi100));
+        apiRepository.save(asList(testAPi100, testAPi200, anotherAPi100));
 
         ResponseEntity<String> responseEntity = restTemplate.getForEntity(
             "/apis", String.class);
@@ -113,23 +103,11 @@ public class ApiResourceIntegrationTest {
 
     @Test
     public void shouldReturnAllActiveApis() throws Exception {
-        ApplicationEntity app1 = applicationRepository.save(
-            ApplicationEntity
-                .builder()
-                .name("testApp")
-                .build());
-        ApplicationEntity app2 = applicationRepository.save(
-            ApplicationEntity
-                .builder()
-                .name("testApp2")
-                .build());
+        ApplicationEntity app1 = givenApplication(APP1);
+        ApplicationEntity app2 = givenApplication(APP2);
 
-        ApiEntity testAPi100 = ApiEntity.builder().apiName(TEST_API)
-            .apiVersion("1.0.0")
-            .build();
-        ApiEntity anotherAPi100 = ApiEntity.builder().apiName(ANOTHER_API)
-            .apiVersion("1.0.0")
-            .build();
+        ApiEntity testAPi100 = givenApiEntity(TEST_API, V1);
+        ApiEntity anotherAPi100 = givenApiEntity(ANOTHER_API, V1);
 
         ApiDeploymentEntity testAPi100OnApp1 = ApiDeploymentEntity.builder()
             .api(testAPi100)
@@ -160,26 +138,12 @@ public class ApiResourceIntegrationTest {
 
     @Test
     public void shouldReturnAllInActiveApis() throws Exception {
-        ApplicationEntity app1 = applicationRepository.save(
-            ApplicationEntity
-                .builder()
-                .name("testApp")
-                .build());
-        ApplicationEntity app2 = applicationRepository.save(
-            ApplicationEntity
-                .builder()
-                .name("testApp2")
-                .build());
+        ApplicationEntity app1 = givenApplication(APP1);
+        ApplicationEntity app2 = givenApplication(APP2);
 
-        ApiEntity testAPi100 = ApiEntity.builder().apiName(TEST_API)
-            .apiVersion("1.0.0")
-            .build();
-        ApiEntity testAPi101 = ApiEntity.builder().apiName(TEST_API)
-            .apiVersion("1.0.1")
-            .build();
-        ApiEntity anotherAPi100 = ApiEntity.builder().apiName(ANOTHER_API)
-            .apiVersion("1.0.0")
-            .build();
+        ApiEntity testAPi100 = givenApiEntity(TEST_API, V1);
+        ApiEntity testAPi200 = givenApiEntity(TEST_API, V2);
+        ApiEntity anotherAPi100 = givenApiEntity(ANOTHER_API, V1);
 
         ApiDeploymentEntity testAPi100OnApp1 = ApiDeploymentEntity.builder()
             .api(testAPi100)
@@ -187,8 +151,8 @@ public class ApiResourceIntegrationTest {
             .lifecycleState(ApiLifecycleState.ACTIVE)
             .build();
 
-        ApiDeploymentEntity testAPi101OnApp1 = ApiDeploymentEntity.builder()
-            .api(testAPi101)
+        ApiDeploymentEntity testAPi200OnApp1 = ApiDeploymentEntity.builder()
+            .api(testAPi200)
             .application(app1)
             .lifecycleState(ApiLifecycleState.INACTIVE)
             .build();
@@ -200,10 +164,10 @@ public class ApiResourceIntegrationTest {
             .build();
 
         testAPi100.setApiDeploymentEntities(asList(testAPi100OnApp1));
-        testAPi101.setApiDeploymentEntities(asList(testAPi101OnApp1));
+        testAPi200.setApiDeploymentEntities(asList(testAPi200OnApp1));
         anotherAPi100.setApiDeploymentEntities(asList(anotherAPi100OnApp2));
 
-        apiRepository.save(asList(testAPi100, testAPi101, anotherAPi100));
+        apiRepository.save(asList(testAPi100, testAPi200, anotherAPi100));
 
         ResponseEntity<String> responseEntity = restTemplate.getForEntity(
             "/apis?lifecycle_state=INACTIVE", String.class);
@@ -219,23 +183,11 @@ public class ApiResourceIntegrationTest {
 
     @Test
     public void shouldReturnAllDecommissionedApis() throws Exception {
-        ApplicationEntity app1 = applicationRepository.save(
-            ApplicationEntity
-                .builder()
-                .name("testApp")
-                .build());
-        ApplicationEntity app2 = applicationRepository.save(
-            ApplicationEntity
-                .builder()
-                .name("testApp2")
-                .build());
+        ApplicationEntity app1 = givenApplication(APP1);
+        ApplicationEntity app2 = givenApplication(APP2);
 
-        ApiEntity testAPi100 = ApiEntity.builder().apiName(TEST_API)
-            .apiVersion("1.0.0")
-            .build();
-        ApiEntity anotherAPi100 = ApiEntity.builder().apiName(ANOTHER_API)
-            .apiVersion("1.0.0")
-            .build();
+        ApiEntity testAPi100 = givenApiEntity(TEST_API, V1);
+        ApiEntity anotherAPi100 = givenApiEntity(ANOTHER_API, V1);
 
         ApiDeploymentEntity testAPi100OnApp1 = ApiDeploymentEntity.builder()
             .api(testAPi100)
@@ -260,75 +212,23 @@ public class ApiResourceIntegrationTest {
         assertThat(responseEntity.getBody())
             .containsOnlyOnce(ANOTHER_API)
             .contains(DECOMMISSIONED)
-            .doesNotContain(exact(ACTIVE)); // necessary, otherwise INACTIVE would also match this;
+            .doesNotContain(exact(ACTIVE));
     }
 
 
     @Test
     public void shouldReturnOneApi() throws Exception {
-        ApplicationEntity app1 = applicationRepository.save(
-            ApplicationEntity
-                .builder()
-                .name("testApp")
-                .appUrl("/info")
-                .created(now(UTC))
-                .build());
+        ApplicationEntity app1 = givenApplication(APP1);
+        ApplicationEntity app2 = givenApplication(APP2);
 
-        ApplicationEntity app2 = applicationRepository.save(
-            ApplicationEntity
-                .builder()
-                .name("app2")
-                .appUrl("/info")
-                .created(now(UTC))
-                .build());
+        ApiEntity testAPi100 = givenApiEntity(TEST_API, V1);
+        testAPi100.setApiDeploymentEntities(asList(givenApiDeployment(testAPi100, app1),
+            givenApiDeployment(testAPi100, app2)));
 
-        ApiEntity testAPi100 = ApiEntity.builder()
-            .apiName(TEST_API)
-            .apiVersion("1.0.0")
-            .definitionType("swagger")
-            .created(now(UTC))
-            .build();
+        ApiEntity testAPi200 = givenApiEntity(TEST_API, V2);
+        testAPi200.setApiDeploymentEntities(asList(givenApiDeployment(testAPi200, app1)));
 
-        ApiEntity testAPi101 = ApiEntity.builder()
-            .apiName(TEST_API)
-            .apiVersion("1.0.1")
-            .definitionType("swagger")
-            .created(now(UTC))
-            .build();
-
-        ApiDeploymentEntity testAPi100OnApp1 = ApiDeploymentEntity.builder()
-            .api(testAPi100)
-            .application(app1)
-            .apiUi("/ui")
-            .apiUrl("/api")
-            .lifecycleState(ApiLifecycleState.ACTIVE)
-            .created(now(UTC))
-            .lastCrawled(now(UTC))
-            .build();
-
-        ApiDeploymentEntity testAPi100OnApp2 = ApiDeploymentEntity.builder()
-            .api(testAPi100)
-            .application(app2)
-            .apiUi("/ui")
-            .apiUrl("/api")
-            .lifecycleState(ApiLifecycleState.ACTIVE)
-            .created(now(UTC))
-            .lastCrawled(now(UTC))
-            .build();
-
-        ApiDeploymentEntity testAPi101OnApp1 = ApiDeploymentEntity.builder()
-            .api(testAPi101)
-            .application(app1)
-            .apiUi("/ui")
-            .apiUrl("/api")
-            .lifecycleState(ApiLifecycleState.ACTIVE)
-            .created(now(UTC))
-            .lastCrawled(now(UTC))
-            .build();
-
-        testAPi100.setApiDeploymentEntities(asList(testAPi100OnApp1, testAPi100OnApp2));
-        testAPi101.setApiDeploymentEntities(asList(testAPi101OnApp1));
-        apiRepository.save(asList(testAPi100, testAPi101));
+        apiRepository.save(asList(testAPi100, testAPi200));
 
         ResponseEntity<String> responseEntity = restTemplate.getForEntity(
             "/apis/" + TEST_API, String.class);
@@ -339,16 +239,47 @@ public class ApiResourceIntegrationTest {
         assertThat(responseEntity.getBody())
             .containsOnlyOnce(exact(TEST_API))
             .contains(exact(ACTIVE))
-            .containsOnlyOnce(exact("1.0.0"))
-            .containsOnlyOnce(exact("1.0.1"))
-            .containsOnlyOnce(exact("testApp"))
-            .containsOnlyOnce(exact("app2"))
+            .containsOnlyOnce(exact(V1))
+            .containsOnlyOnce(exact(V1))
+            .containsOnlyOnce(exact(APP1))
+            .containsOnlyOnce(exact(APP2))
             .contains(localUriBuilder()
-                .path("applications/testApp")
+                .path("applications/app1")
                 .toUriString())
             .contains(localUriBuilder()
                 .path("apis/" + TEST_API + "/versions/1.0.0/definitions/" + valueOf(testAPi100.getId()))
                 .toUriString());
+    }
+
+    private ApiDeploymentEntity givenApiDeployment(ApiEntity apiEntity, ApplicationEntity applicationEntity) {
+        return ApiDeploymentEntity.builder()
+            .api(apiEntity)
+            .application(applicationEntity)
+            .apiUi("/ui")
+            .apiUrl("/api")
+            .lifecycleState(ApiLifecycleState.ACTIVE)
+            .created(now(UTC))
+            .lastCrawled(now(UTC))
+            .build();
+    }
+
+    private ApiEntity givenApiEntity(String name, String version) {
+        return ApiEntity.builder()
+            .apiName(name)
+            .apiVersion(version)
+            .definitionType("swagger")
+            .created(now(UTC))
+            .build();
+    }
+
+    private ApplicationEntity givenApplication(String name) {
+        return applicationRepository.save(
+            ApplicationEntity
+                .builder()
+                .name(name)
+                .appUrl("/info")
+                .created(now(UTC))
+                .build());
     }
 
     @Test

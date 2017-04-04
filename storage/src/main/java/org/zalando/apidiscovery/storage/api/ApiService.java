@@ -63,17 +63,14 @@ public class ApiService {
     public Optional<ApiDto> getApi(String apiName) {
         List<ApiEntity> apiEntities = apiRepository.findByApiName(apiName);
 
-        if (apiEntities.stream().findFirst().isPresent()) {
-            ApiEntity apiEntity = apiEntities.stream().findFirst().get();
-
-            return Optional.of(new ApiDto(apiEntity.getApiName(),
-                aggregateApplicationLifecycleStateForApi(apiEntities),
-                mapVersions(apiEntities),
-                mapApplications(apiEntities)));
-
-        }
-        return Optional.empty();
-
+        return apiEntities.stream()
+            .findFirst()
+            .map(apiEntity ->
+                Optional.of(new ApiDto(apiEntity.getApiName(),
+                    aggregateApplicationLifecycleStateForApi(apiEntities),
+                    mapVersions(apiEntities),
+                    mapApplications(apiEntities))))
+            .orElse(Optional.empty());
     }
 
     private List<VersionsDto> mapVersions(List<ApiEntity> apiEntities) {
