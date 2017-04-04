@@ -312,7 +312,4 @@ public class ApiResourceIntegrationTest {
             .port(port);
     }
 
-    private static String exact(String field) {
-        return "\"" + field + "\"";
-    }
 }
