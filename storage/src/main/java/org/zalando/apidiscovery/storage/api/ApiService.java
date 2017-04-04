@@ -112,7 +112,7 @@ public class ApiService {
     private DeploymentLinkDto mapApiDeploymentEntityToDefinitionDeploymentLink(ApiDeploymentEntity apiDeploymentEntity) {
         ApiEntity apiEntity = apiDeploymentEntity.getApi();
         return mapApiDeploymentEntityToDeploymentLink(apiDeploymentEntity)
-            .linkBuilder(new DefinitionDeploymentLinkBuilder(apiEntity.getApiName(), apiEntity.getApiVersion(), String.valueOf(apiEntity.getId())))
+            .linkBuilder(new DefinitionDeploymentLinkBuilder(apiEntity.getApiName(), apiEntity.getApiVersion(), valueOf(apiEntity.getId())))
             .build();
     }
 
