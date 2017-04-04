@@ -60,6 +60,18 @@ public class APIDefinitionRestIntegrationTest {
         assertThat(deployment.getLifecycleState()).isEqualTo(ApiLifecycleState.ACTIVE);
     }
 
+    @Test
+    public void shouldCreateNewDeploymentOnlyIfApplicationAlreadyExists() throws Exception {
+        final ApplicationEntity app = ApplicationEntity.builder()
+                .name("uber.api")
+                .build();
+        applicationRepository.saveAndFlush(app);
+
+        restTemplate.exchange("/api-definitions", HttpMethod.POST, crawledUberAPIDefinitionRequest(), Void.class);
+        final List<ApiEntity> apis = apiRepository.findByApiNameAndApiVersion("uber-api", "1.0.0");
+        assertThat(apis.size()).isEqualTo(1);
+    }
+
     private HttpEntity<String> crawledUberAPIDefinitionRequest() throws IOException, URISyntaxException {
         final HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", APPLICATION_JSON_UTF8_VALUE);
