@@ -1,11 +1,6 @@
 package org.zalando.apidiscovery.storage.api;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.time.OffsetDateTime;
 
@@ -41,4 +36,9 @@ public class ApiDeploymentEntity implements Serializable {
 
     @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentOffsetDateTime")
     private OffsetDateTime created;
+
+    public ApiDeploymentEntity(ApiEntity api, ApplicationEntity application){
+        this.api = api;
+        this.application = application;
+    }
 }

@@ -75,7 +75,7 @@ parameters:
     description: Filter APIs by lifecycle state
     required: false
   CrawledAPIDefinition:
-    name: CrawledAPIDefinition
+    name: CrawledApiDefinitionDto
     in: body
     description: API definition details that will be saved
     schema:
