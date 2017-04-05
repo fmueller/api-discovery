@@ -12,6 +12,7 @@ import javax.transaction.Transactional;
 import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static java.time.OffsetDateTime.now;
@@ -40,28 +41,53 @@ public class CrawlerService {
 
     @Transactional
     public void processCrawledApiDefinition(final CrawledApiDefinitionDto crawledAPIDefinition) {
+        setApiNameAndVersion(crawledAPIDefinition);
         final OffsetDateTime now = now(UTC);
 
-        setApiNameAndVersion(crawledAPIDefinition);
+        final ApiEntity apiVersion = createOrUpdateApiVersion(crawledAPIDefinition, now);
+        final ApplicationEntity application = createOrUpdateApplication(crawledAPIDefinition, now);
+        final ApiDeploymentEntity apiDeployment = createOrUpdateApiDeployment(apiVersion, application, now);
 
-        ApiEntity apiVersion = apiRepository.saveAndFlush(newApiVersion(crawledAPIDefinition, now));
+        LOG.info("New crawling information has been processed; api deployment: {}", apiDeployment);
+    }
 
-        final Optional<ApplicationEntity> applicationOption =
-                applicationRepository.findOneByName(crawledAPIDefinition.getApplicationName());
-        ApplicationEntity application = applicationOption.isPresent() ?
-                applicationOption.get() : newApplication(crawledAPIDefinition, now);
-        application = applicationRepository.saveAndFlush(application);
+    private ApiDeploymentEntity createOrUpdateApiDeployment(ApiEntity apiVersion, ApplicationEntity application,
+                                                    OffsetDateTime now) {
+        final ApiDeploymentEntity existingApiDeployment = entityManager
+                .find(ApiDeploymentEntity.class, new ApiDeploymentEntity(apiVersion, application));
+        final ApiDeploymentEntity apiDeployment = existingApiDeployment == null ?
+                newApiDeployment(now) : existingApiDeployment;
 
-        final ApiDeploymentEntity apiDeployment = newApiDeployment(now);
+        apiDeployment.setLastCrawled(now);
+        apiDeployment.setLifecycleState(ApiLifecycleState.ACTIVE);
         apiDeployment.setApplication(application);
         apiDeployment.setApi(apiVersion);
 
         entityManager.persist(apiDeployment);
-
-        LOG.info("Received and processed a new crawling information; api-deployment-entity: {}", apiDeployment);
+        return apiDeployment;
     }
 
-    void setApiNameAndVersion(CrawledApiDefinitionDto crawledAPIDefinition) throws SwaggerParseException {
+    private ApplicationEntity createOrUpdateApplication(CrawledApiDefinitionDto crawledAPIDefinition, OffsetDateTime now) {
+        final Optional<ApplicationEntity> existingApplication =
+                applicationRepository.findOneByName(crawledAPIDefinition.getApplicationName());
+
+        final ApplicationEntity application = existingApplication.isPresent() ?
+                existingApplication.get() : newApplication(crawledAPIDefinition, now);
+
+        return applicationRepository.saveAndFlush(application);
+    }
+
+    private ApiEntity createOrUpdateApiVersion(final CrawledApiDefinitionDto crawledAPIDefinition, final OffsetDateTime now) {
+        final List<ApiEntity> existingApis = apiRepository.findByApiNameAndApiVersionAndDefinition(
+                crawledAPIDefinition.getApiName(),
+                crawledAPIDefinition.getVersion(),
+                crawledAPIDefinition.getDefinition());
+
+        return !existingApis.isEmpty() ? existingApis.get(0) :
+                apiRepository.saveAndFlush(newApiVersion(crawledAPIDefinition, now));
+    }
+
+    void setApiNameAndVersion(final CrawledApiDefinitionDto crawledAPIDefinition) throws SwaggerParseException {
         final String name;
         final String version;
 
@@ -79,8 +105,6 @@ public class CrawlerService {
     private ApiDeploymentEntity newApiDeployment(OffsetDateTime now) {
         return ApiDeploymentEntity.builder()
                 .created(now)
-                .lastCrawled(now)
-                .lifecycleState(ApiLifecycleState.ACTIVE)
                 .build();
     }
 

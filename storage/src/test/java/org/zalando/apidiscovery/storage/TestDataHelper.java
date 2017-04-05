@@ -46,11 +46,15 @@ final public class TestDataHelper {
         return apiDefinition;
     }
 
-    public static String crawledUberApiDefinitionRequestBody() throws IOException, URISyntaxException {
+    public static String crawlerUberApi() throws IOException, URISyntaxException {
         return readFile("uber.json");
     }
 
-    public static String instagramSwaggerDefinitionJson() throws IOException, URISyntaxException {
+    public static String minimalCrawledApi() throws IOException, URISyntaxException {
+        return readFile("minimal-crawler-data.json");
+    }
+
+    public static String instagramApiDefinition() throws IOException, URISyntaxException {
         return readFile("instagram-api-definition.json");
     }
 

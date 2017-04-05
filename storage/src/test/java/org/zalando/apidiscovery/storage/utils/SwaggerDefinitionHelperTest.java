@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.zalando.apidiscovery.storage.TestDataHelper.instagramSwaggerDefinitionJson;
+import static org.zalando.apidiscovery.storage.TestDataHelper.instagramApiDefinition;
 
 public class SwaggerDefinitionHelperTest {
 
@@ -17,7 +17,7 @@ public class SwaggerDefinitionHelperTest {
     @Before
     public void setUp() throws IOException, URISyntaxException {
         swagger = new SwaggerDefinitionHelper();
-        instagramDefinition = instagramSwaggerDefinitionJson();
+        instagramDefinition = instagramApiDefinition();
     }
 
     @Test
