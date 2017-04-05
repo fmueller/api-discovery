@@ -10,16 +10,16 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api-definitions")
 public class ApiDefinitionResourceController {
 
-    private CrawlerService crawlerService;
+    private ApiDefinitionManager apiDefinitionManager;
 
     @Autowired
-    public ApiDefinitionResourceController(CrawlerService crawlerService) {
-        this.crawlerService = crawlerService;
+    public ApiDefinitionResourceController(ApiDefinitionManager apiDefinitionManager) {
+        this.apiDefinitionManager = apiDefinitionManager;
     }
 
     @PostMapping
-    public ResponseEntity<?> postCrawledApiDefinition(@RequestBody CrawledApiDefinitionDto crawledAPIDefinitionDto) {
-        crawlerService.processCrawledApiDefinition(crawledAPIDefinitionDto);
+    public ResponseEntity<Void> postCrawledApiDefinition(@RequestBody CrawledApiDefinitionDto crawledAPIDefinitionDto) {
+        apiDefinitionManager.processCrawledApiDefinition(crawledAPIDefinitionDto);
 
         //TODO set location header
         return ResponseEntity.ok().build();

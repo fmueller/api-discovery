@@ -19,9 +19,9 @@ import static java.time.OffsetDateTime.now;
 import static java.time.ZoneOffset.UTC;
 
 @Service
-public class ApiDefinitionsManager {
+public class ApiDefinitionManager {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ApiDefinitionsManager.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ApiDefinitionManager.class);
 
     private final ApplicationRepository applicationRepository;
     private final ApiRepository apiRepository;
@@ -29,10 +29,10 @@ public class ApiDefinitionsManager {
     private final SwaggerDefinitionHelper swagger;
 
     @Autowired
-    public ApiDefinitionsManager(final ApplicationRepository appRepository,
-                                 final ApiRepository apiRepository,
-                                 final EntityManager entityManager,
-                                 final SwaggerDefinitionHelper swaggerHelper) {
+    public ApiDefinitionManager(final ApplicationRepository appRepository,
+                                final ApiRepository apiRepository,
+                                final EntityManager entityManager,
+                                final SwaggerDefinitionHelper swaggerHelper) {
         this.applicationRepository = appRepository;
         this.apiRepository = apiRepository;
         this.entityManager = entityManager;
