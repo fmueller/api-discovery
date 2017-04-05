@@ -19,20 +19,20 @@ import static java.time.OffsetDateTime.now;
 import static java.time.ZoneOffset.UTC;
 
 @Service
-public class CrawlerService {
+public class ApiDefinitionsManager {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CrawlerService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ApiDefinitionsManager.class);
 
-    private ApplicationRepository applicationRepository;
-    private ApiRepository apiRepository;
-    private EntityManager entityManager;
-    private SwaggerDefinitionHelper swagger;
+    private final ApplicationRepository applicationRepository;
+    private final ApiRepository apiRepository;
+    private final EntityManager entityManager;
+    private final SwaggerDefinitionHelper swagger;
 
     @Autowired
-    public CrawlerService(final ApplicationRepository appRepository,
-                          final ApiRepository apiRepository,
-                          final EntityManager entityManager,
-                          final SwaggerDefinitionHelper swaggerHelper) {
+    public ApiDefinitionsManager(final ApplicationRepository appRepository,
+                                 final ApiRepository apiRepository,
+                                 final EntityManager entityManager,
+                                 final SwaggerDefinitionHelper swaggerHelper) {
         this.applicationRepository = appRepository;
         this.apiRepository = apiRepository;
         this.entityManager = entityManager;
