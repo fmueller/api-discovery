@@ -1,21 +1,18 @@
 package org.zalando.apidiscovery.storage.api;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import static java.lang.String.valueOf;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static org.zalando.apidiscovery.storage.api.ApiEntityToVersionConverter.toVersionDtoList;
 import static org.zalando.apidiscovery.storage.api.ApiLifecycleState.ACTIVE;
 import static org.zalando.apidiscovery.storage.api.ApiLifecycleState.DECOMMISSIONED;
 import static org.zalando.apidiscovery.storage.api.ApiLifecycleState.INACTIVE;
-import static org.zalando.apidiscovery.storage.api.ApplicationEntityToApplicationDtoConverter.toApplicationDto;
 
 @Service
 public class ApiService {
@@ -48,7 +45,7 @@ public class ApiService {
         return aggregateApplicationLifecycleStateForDeploymentEntities(apiDeploymentList);
     }
 
-    public static  ApiLifecycleState aggregateApplicationLifecycleStateForDeploymentEntities(List<ApiDeploymentEntity> apiDeploymentEntities) {
+    public static ApiLifecycleState aggregateApplicationLifecycleStateForDeploymentEntities(List<ApiDeploymentEntity> apiDeploymentEntities) {
         if (apiDeploymentEntities.stream()
             .filter(apiEntity -> ACTIVE.equals(apiEntity.getLifecycleState())).count() > 0) {
             return ACTIVE;
@@ -84,7 +81,6 @@ public class ApiService {
             .map(ApplicationEntityToApplicationDtoConverter::toApplicationDto)
             .collect(toList());
     }
-
 
 
 }

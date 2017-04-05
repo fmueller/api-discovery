@@ -4,7 +4,6 @@ import org.junit.Test;
 import org.zalando.apidiscovery.storage.api.ApiDefinitionDto;
 import org.zalando.apidiscovery.storage.api.ApiDeploymentEntity;
 import org.zalando.apidiscovery.storage.api.ApiEntity;
-import org.zalando.apidiscovery.storage.api.ApiEntityToApiDefinitionConverter;
 import org.zalando.apidiscovery.storage.api.ApplicationEntity;
 import org.zalando.apidiscovery.storage.api.DeploymentLinkDto;
 

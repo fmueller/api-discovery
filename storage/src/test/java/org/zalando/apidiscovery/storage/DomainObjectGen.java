@@ -2,7 +2,6 @@ package org.zalando.apidiscovery.storage;
 
 import java.time.OffsetDateTime;
 
-import org.apache.catalina.LifecycleState;
 import org.zalando.apidiscovery.storage.api.ApiDeploymentEntity;
 import org.zalando.apidiscovery.storage.api.ApiEntity;
 import org.zalando.apidiscovery.storage.api.ApiLifecycleState;

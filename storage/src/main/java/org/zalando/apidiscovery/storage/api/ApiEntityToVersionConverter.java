@@ -4,7 +4,6 @@ import java.util.List;
 
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
-import static org.zalando.apidiscovery.storage.api.ApiEntityToApiDefinitionConverter.toApiDefinitionDto;
 import static org.zalando.apidiscovery.storage.api.ApiService.aggregateApplicationLifecycleStateForApi;
 
 public class ApiEntityToVersionConverter {
@@ -24,10 +23,10 @@ public class ApiEntityToVersionConverter {
     }
 
     private static void apiEntitiesMustHaveSameName(List<ApiEntity> apiEntities) {
-         if(apiEntities.stream()
+        if (apiEntities.stream()
             .collect(groupingBy(ApiEntity::getApiName)).size() > 1) {
-             throw new IllegalArgumentException("ApiEntities must have same name");
-         }
+            throw new IllegalArgumentException("ApiEntities must have same name");
+        }
     }
 }
 
