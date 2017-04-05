@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 import static java.time.OffsetDateTime.now;
 import static java.time.ZoneOffset.UTC;
 
-final public class TestDataHelper {
+public final class TestDataHelper {
 
     private TestDataHelper() {
     }
