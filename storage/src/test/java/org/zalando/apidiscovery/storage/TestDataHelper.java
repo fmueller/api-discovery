@@ -59,7 +59,7 @@ final public class TestDataHelper {
     }
 
     private static String readFile(String fileName) throws URISyntaxException, IOException {
-        URI fileLocation = TestDataHelper.class.getClassLoader().getResource(fileName).toURI();
+        URI fileLocation = Thread.currentThread().getContextClassLoader().getResource(fileName).toURI();
         Path path = Paths.get(fileLocation);
         return Files.lines(path).collect(Collectors.joining());
     }

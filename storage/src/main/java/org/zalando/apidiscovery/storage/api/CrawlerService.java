@@ -52,11 +52,12 @@ public class CrawlerService {
     }
 
     private ApiDeploymentEntity createOrUpdateApiDeployment(ApiEntity apiVersion, ApplicationEntity application,
-                                                    OffsetDateTime now) {
-        final ApiDeploymentEntity existingApiDeployment = entityManager
-                .find(ApiDeploymentEntity.class, new ApiDeploymentEntity(apiVersion, application));
-        final ApiDeploymentEntity apiDeployment = existingApiDeployment == null ?
-                newApiDeployment(now) : existingApiDeployment;
+                                                            OffsetDateTime now) {
+        final Optional<ApiDeploymentEntity> existingApiDeployment = Optional.ofNullable(
+                entityManager.find(ApiDeploymentEntity.class, new ApiDeploymentEntity(apiVersion, application)));
+        final ApiDeploymentEntity apiDeployment = existingApiDeployment
+                .map(deployment -> deployment)
+                .orElse(newApiDeployment(now));
 
         apiDeployment.setLastCrawled(now);
         apiDeployment.setLifecycleState(ApiLifecycleState.ACTIVE);
@@ -71,8 +72,9 @@ public class CrawlerService {
         final Optional<ApplicationEntity> existingApplication =
                 applicationRepository.findOneByName(crawledAPIDefinition.getApplicationName());
 
-        final ApplicationEntity application = existingApplication.isPresent() ?
-                existingApplication.get() : newApplication(crawledAPIDefinition, now);
+        final ApplicationEntity application = existingApplication
+                .map(app -> app)
+                .orElse(newApplication(crawledAPIDefinition, now));
 
         return applicationRepository.saveAndFlush(application);
     }
@@ -83,8 +85,11 @@ public class CrawlerService {
                 crawledAPIDefinition.getVersion(),
                 crawledAPIDefinition.getDefinition());
 
-        return !existingApis.isEmpty() ? existingApis.get(0) :
-                apiRepository.saveAndFlush(newApiVersion(crawledAPIDefinition, now));
+        if (existingApis.isEmpty()) {
+            return apiRepository.saveAndFlush(newApiVersion(crawledAPIDefinition, now));
+        } else {
+            return existingApis.get(0);
+        }
     }
 
     void setApiNameAndVersion(final CrawledApiDefinitionDto crawledAPIDefinition) throws SwaggerParseException {
