@@ -25,6 +25,15 @@ public class DeploymentLinkDto {
     @JsonIgnore
     private LinkBuilder linkBuilder;
 
+    public DeploymentLinkDto(ApiDeploymentEntity apiDeploymentEntity, LinkBuilder linkBuilder) {
+        lifecycleState = apiDeploymentEntity.getLifecycleState();
+        apiUi = apiDeploymentEntity.getApiUi();
+        apiUrl = apiDeploymentEntity.getApiUrl();
+        created = apiDeploymentEntity.getCreated();
+        lastUpdated = apiDeploymentEntity.getLastCrawled();
+        this.linkBuilder = linkBuilder;
+    }
+
 
 }
 

@@ -1,5 +1,7 @@
 package org.zalando.apidiscovery.storage.api;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -9,9 +11,11 @@ import org.springframework.stereotype.Service;
 import static java.lang.String.valueOf;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
+import static org.zalando.apidiscovery.storage.api.ApiEntityToVersionConverter.toVersionDtoList;
 import static org.zalando.apidiscovery.storage.api.ApiLifecycleState.ACTIVE;
 import static org.zalando.apidiscovery.storage.api.ApiLifecycleState.DECOMMISSIONED;
 import static org.zalando.apidiscovery.storage.api.ApiLifecycleState.INACTIVE;
+import static org.zalando.apidiscovery.storage.api.ApplicationEntityToApplicationDtoConverter.toApplicationDto;
 
 @Service
 public class ApiService {
@@ -36,14 +40,15 @@ public class ApiService {
             .collect(toList());
     }
 
-    private ApiLifecycleState aggregateApplicationLifecycleStateForApi(List<ApiEntity> apiEntities) {
+    public static ApiLifecycleState aggregateApplicationLifecycleStateForApi(List<ApiEntity> apiEntities) {
         List<ApiDeploymentEntity> apiDeploymentList = apiEntities.stream()
-            .flatMap(apiEntity -> apiEntity.getApiDeploymentEntities().stream())
+            .flatMap(apiEntity ->
+                apiEntity.getApiDeploymentEntities() != null ? apiEntity.getApiDeploymentEntities().stream() : new ArrayList<ApiDeploymentEntity>().stream())
             .collect(toList());
         return aggregateApplicationLifecycleStateForDeploymentEntities(apiDeploymentList);
     }
 
-    private ApiLifecycleState aggregateApplicationLifecycleStateForDeploymentEntities(List<ApiDeploymentEntity> apiDeploymentEntities) {
+    public static  ApiLifecycleState aggregateApplicationLifecycleStateForDeploymentEntities(List<ApiDeploymentEntity> apiDeploymentEntities) {
         if (apiDeploymentEntities.stream()
             .filter(apiEntity -> ACTIVE.equals(apiEntity.getLifecycleState())).count() > 0) {
             return ACTIVE;
@@ -68,79 +73,18 @@ public class ApiService {
             .map(apiEntity ->
                 Optional.of(new ApiDto(apiEntity.getApiName(),
                     aggregateApplicationLifecycleStateForApi(apiEntities),
-                    mapVersions(apiEntities),
-                    mapApplications(apiEntities))))
+                    toVersionDtoList(apiEntities),
+                    toApplicationDtoList(apiEntities))))
             .orElse(Optional.empty());
     }
 
-    private List<VersionsDto> mapVersions(List<ApiEntity> apiEntities) {
-        return apiEntities.stream()
-            .collect(groupingBy(ApiEntity::getApiVersion))
-            .entrySet().stream()
-            .map(entry -> new VersionsDto(entry.getKey(), aggregateApplicationLifecycleStateForApi(entry.getValue()),
-                entry
-                    .getValue().stream()
-                    .map(this::mapApiEntityToApiDefinition)
-                    .collect(toList()))
-            )
+
+    private List<ApplicationDto> toApplicationDtoList(List<ApiEntity> apiEntities) {
+        return applicationRepository.findByApiIds(apiEntities).stream()
+            .map(ApplicationEntityToApplicationDtoConverter::toApplicationDto)
             .collect(toList());
     }
 
-    private ApiDefinitionDto mapApiEntityToApiDefinition(ApiEntity apiEntity) {
-        List<DeploymentLinkDto> deploymentLinkDtos = apiEntity.getApiDeploymentEntities().stream()
-            .map(this::mapApiDeploymentEntityToApplicationDeploymentLink)
-            .collect(toList());
-
-        return ApiDefinitionDto.builder()
-            .id(valueOf(apiEntity.getId()))
-            .definition(apiEntity.getDefinition())
-            .type(apiEntity.getDefinitionType())
-            .applications(deploymentLinkDtos)
-            .build();
-    }
-
-
-    private DeploymentLinkDto mapApiDeploymentEntityToApplicationDeploymentLink(ApiDeploymentEntity apiDeploymentEntity) {
-        return mapApiDeploymentEntityToDeploymentLink(apiDeploymentEntity)
-            .linkBuilder(new ApplicationDeploymentLinkBuilder(apiDeploymentEntity.getApplication().getName()))
-            .build();
-    }
-
-    private DeploymentLinkDto mapApiDeploymentEntityToDefinitionDeploymentLink(ApiDeploymentEntity apiDeploymentEntity) {
-        ApiEntity apiEntity = apiDeploymentEntity.getApi();
-        return mapApiDeploymentEntityToDeploymentLink(apiDeploymentEntity)
-            .linkBuilder(new DefinitionDeploymentLinkBuilder(apiEntity.getApiName(), apiEntity.getApiVersion(), valueOf(apiEntity.getId())))
-            .build();
-    }
-
-
-    private DeploymentLinkDto.DeploymentLinkDtoBuilder mapApiDeploymentEntityToDeploymentLink(ApiDeploymentEntity apiDeploymentEntity) {
-        return DeploymentLinkDto.builder()
-            .lifecycleState(apiDeploymentEntity.getLifecycleState())
-            .apiUi(apiDeploymentEntity.getApiUi())
-            .apiUrl(apiDeploymentEntity.getApiUrl())
-            .created(apiDeploymentEntity.getCreated())
-            .lastUpdated(apiDeploymentEntity.getLastCrawled());
-    }
-
-    private List<ApplicationDto> mapApplications(List<ApiEntity> apieEntities) {
-        return applicationRepository.findByApiIds(apieEntities).stream()
-            .map(this::mapApplicationToApplicationDto)
-            .collect(toList());
-    }
-
-
-    private ApplicationDto mapApplicationToApplicationDto(ApplicationEntity applicationEntity) {
-        List<DeploymentLinkDto> deploymentLinkDtos = applicationEntity.getApiDeploymentEntities().stream()
-            .map(this::mapApiDeploymentEntityToDefinitionDeploymentLink)
-            .collect(toList());
-
-        return ApplicationDto.builder()
-            .name(applicationEntity.getName())
-            .appUrl(applicationEntity.getAppUrl())
-            .definitions(deploymentLinkDtos)
-            .build();
-    }
 
 
 }
