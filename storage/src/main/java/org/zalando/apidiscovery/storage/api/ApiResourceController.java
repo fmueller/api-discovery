@@ -44,20 +44,21 @@ public class ApiResourceController {
     @GetMapping("/{api_id}")
     public ResponseEntity<ApiDto> getApi(@PathVariable("api_id") String apiId, UriComponentsBuilder builder) {
         return apiService.getApi(apiId)
-            .map(api -> ResponseEntity.ok(buildLinks(api, builder)))
+            .map(api -> ResponseEntity.ok(buildAndSetLinks(api, builder)))
             .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
 
     }
 
-    private ApiDto buildLinks(ApiDto api, UriComponentsBuilder builder) {
-        api.getVersions()
-            .forEach(versionsDto -> versionsDto.getDefinitions()
-                .forEach(apiDefinitionDto -> apiDefinitionDto.getApplications()
-                    .forEach(deploymentLinkDto -> deploymentLinkDto.setHref(
-                        builder.cloneBuilder()
-                            .path(deploymentLinkDto.getLinkBuilder().buildLink())
-                            .toUriString())))
-            );
+    @GetMapping("/{api_id}/versions")
+    public ResponseEntity<VersionListDto> getApiVersions(@PathVariable("api_id") String apiId, UriComponentsBuilder builder) {
+        List<VersionsDto> versions = apiService.getVersionsForApi(apiId);
+        buildAndSetApplicationLinks(versions, builder);
+        return ResponseEntity.ok(new VersionListDto(versions));
+
+    }
+
+    private ApiDto buildAndSetLinks(ApiDto api, UriComponentsBuilder builder) {
+        buildAndSetApplicationLinks(api.getVersions(), builder);
 
         api.getApplications()
             .forEach(applicationDto -> applicationDto.getDefinitions()
@@ -68,6 +69,16 @@ public class ApiResourceController {
             );
 
         return api;
+    }
+
+    private void buildAndSetApplicationLinks(List<VersionsDto> versions, UriComponentsBuilder builder) {
+        versions.forEach(versionsDto -> versionsDto.getDefinitions()
+            .forEach(apiDefinitionDto -> apiDefinitionDto.getApplications()
+                .forEach(deploymentLinkDto -> deploymentLinkDto.setHref(
+                    builder.cloneBuilder()
+                        .path(deploymentLinkDto.getLinkBuilder().buildLink())
+                        .toUriString()))));
+
     }
 
 }

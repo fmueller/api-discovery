@@ -1,6 +1,7 @@
 package org.zalando.apidiscovery.storage.api;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -75,12 +76,14 @@ public class ApiService {
             .orElse(Optional.empty());
     }
 
-
     private List<ApplicationDto> toApplicationDtoList(List<ApiEntity> apiEntities) {
         return applicationRepository.findByApiIds(apiEntities).stream()
             .map(ApplicationEntityToApplicationDtoConverter::toApplicationDto)
             .collect(toList());
     }
 
-
+    public List<VersionsDto> getVersionsForApi(String apiId) {
+        List<ApiEntity> apiEntities = apiRepository.findByApiName(apiId);
+        return apiEntities.isEmpty() ? Collections.emptyList() : toVersionDtoList(apiEntities);
+    }
 }
