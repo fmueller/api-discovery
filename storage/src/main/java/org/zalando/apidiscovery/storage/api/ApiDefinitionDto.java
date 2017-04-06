@@ -11,8 +11,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ApiListDto {
+public class ApiDefinitionDto {
 
-    private List<ApiDto> apis;
-
+    private String id;
+    private String type;
+    private String definition;
+    private List<DeploymentLinkDto> applications;
 }

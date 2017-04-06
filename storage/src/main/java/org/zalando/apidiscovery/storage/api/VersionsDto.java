@@ -8,11 +8,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
-public class ApiListDto {
+@AllArgsConstructor
+@NoArgsConstructor
+public class VersionsDto {
 
-    private List<ApiDto> apis;
-
+    private String apiVersion;
+    private ApiLifecycleState lifecycleState;
+    private List<ApiDefinitionDto> definitions;
 }
