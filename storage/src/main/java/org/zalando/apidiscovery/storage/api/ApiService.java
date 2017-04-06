@@ -92,4 +92,10 @@ public class ApiService {
             .filter(versionsDto -> lifecycleState.equals(versionsDto.getLifecycleState()))
             .collect(toList());
     }
+
+    public Optional<VersionsDto> getVersion(String apiId, String version) {
+        List<ApiEntity> apiEntities = apiRepository.findByApiNameAndApiVersion(apiId, version);
+        return toVersionDtoList(apiEntities).stream()
+            .findFirst();
+    }
 }

@@ -62,6 +62,15 @@ public class ApiResourceController {
         return lifecycleState == null ? apiService.getVersionsForApi(apiId) : apiService.getVersionsForApi(apiId, lifecycleState);
     }
 
+    @GetMapping("/{api_id}/versions/{version_id}")
+    public ResponseEntity<VersionsDto> getApiVersions(@PathVariable("api_id") String apiId,
+                                                      @PathVariable("version_id") String version,
+                                                      UriComponentsBuilder builder) {
+        return apiService.getVersion(apiId, version)
+            .map(versionsDto -> ResponseEntity.ok(buildAndSetApplicationLinks(versionsDto, builder)))
+            .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
     private ApiDto buildAndSetLinks(ApiDto api, UriComponentsBuilder builder) {
         buildAndSetApplicationLinks(api.getVersions(), builder);
 
@@ -76,14 +85,20 @@ public class ApiResourceController {
         return api;
     }
 
-    private void buildAndSetApplicationLinks(List<VersionsDto> versions, UriComponentsBuilder builder) {
-        versions.forEach(versionsDto -> versionsDto.getDefinitions()
+    private List<VersionsDto> buildAndSetApplicationLinks(List<VersionsDto> versions, UriComponentsBuilder builder) {
+        versions.forEach(versionsDto -> buildAndSetApplicationLinks(versionsDto, builder));
+        return versions;
+    }
+
+    private VersionsDto buildAndSetApplicationLinks(VersionsDto version, UriComponentsBuilder builder) {
+        version.getDefinitions()
             .forEach(apiDefinitionDto -> apiDefinitionDto.getApplications()
                 .forEach(deploymentLinkDto -> deploymentLinkDto.setHref(
                     builder.cloneBuilder()
                         .path(deploymentLinkDto.getLinkBuilder().buildLink())
-                        .toUriString()))));
+                        .toUriString())));
 
+        return version;
     }
 
 }

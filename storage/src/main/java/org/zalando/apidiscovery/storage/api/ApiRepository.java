@@ -9,4 +9,6 @@ public interface ApiRepository extends JpaRepository<ApiEntity, Long> {
 
     List<ApiEntity> findByApiName(String apiName);
 
+    List<ApiEntity> findByApiNameAndApiVersion(String apiName, String version);
+
 }

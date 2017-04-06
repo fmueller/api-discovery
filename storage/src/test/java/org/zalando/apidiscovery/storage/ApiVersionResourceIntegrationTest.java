@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.embedded.LocalServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -25,10 +26,13 @@ import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.zalando.apidiscovery.storage.DomainObjectGen.API_NAME;
+import static org.zalando.apidiscovery.storage.DomainObjectGen.API_UI;
+import static org.zalando.apidiscovery.storage.DomainObjectGen.API_URL;
 import static org.zalando.apidiscovery.storage.DomainObjectGen.API_VERSION_1;
 import static org.zalando.apidiscovery.storage.DomainObjectGen.API_VERSION_2;
 import static org.zalando.apidiscovery.storage.DomainObjectGen.APP1_NAME;
 import static org.zalando.apidiscovery.storage.DomainObjectGen.DEFINITION;
+import static org.zalando.apidiscovery.storage.DomainObjectGen.DEFINITION_TYPE;
 import static org.zalando.apidiscovery.storage.DomainObjectGen.givenApiDeployment;
 import static org.zalando.apidiscovery.storage.DomainObjectGen.givenApiEntity;
 import static org.zalando.apidiscovery.storage.DomainObjectGen.givenApplication;
@@ -181,6 +185,46 @@ public class ApiVersionResourceIntegrationTest {
         final String response = responseEntity.getBody();
         assertThat(response, hasJsonPath("$.versions", hasSize(1)));
         assertThat(response, hasJsonPath("$.versions[0].lifecycle_state", equalTo(DECOMMISSIONED.name())));
+    }
+
+    @Test
+    public void shouldReturnOneVersion() throws Exception {
+        ApplicationEntity app1 = applicationRepository.save(givenApplication(APP1_NAME));
+
+        ApiEntity testAPi100 = givenApiEntity(API_NAME, API_VERSION_1);
+        ApiEntity testAPi200 = givenApiEntity(API_NAME, API_VERSION_2);
+
+        ApiDeploymentEntity testAPi100OnApp1 = givenApiDeployment(testAPi100, app1);
+        ApiDeploymentEntity testAPi200OnApp1 = givenApiDeployment(testAPi200, app1);
+
+        testAPi100.setApiDeploymentEntities(asList(testAPi100OnApp1));
+        testAPi200.setApiDeploymentEntities(asList(testAPi200OnApp1));
+
+        apiRepository.save(asList(testAPi100, testAPi200));
+
+        ResponseEntity<String> responseEntity = restTemplate.getForEntity(
+            "/apis/" + API_NAME + "/versions/" + API_VERSION_1, String.class);
+
+        final String response = responseEntity.getBody();
+        assertThat(response, hasJsonPath("$.api_version", equalTo(API_VERSION_1)));
+        assertThat(response, hasJsonPath("$.lifecycle_state", equalTo(ACTIVE.name())));
+        assertThat(response, hasJsonPath("$.definitions[0].type", equalTo(DEFINITION_TYPE)));
+        assertThat(response, hasJsonPath("$.definitions[0].definition", equalTo(DEFINITION)));
+        assertThat(response, hasJsonPath("$.definitions[0].applications[0].lifecycle_state", equalTo(ACTIVE.name())));
+        assertThat(response, hasJsonPath("$.definitions[0].applications[0].api_ui", equalTo(API_UI)));
+        assertThat(response, hasJsonPath("$.definitions[0].applications[0].api_url", equalTo(API_URL)));
+        //assertThat(response, hasJsonPath("$.definitions[0].applications[0].last_updated", equalTo(NOW.toString())));
+        //assertThat(response, hasJsonPath("$.definitions[0].applications[0].created", equalTo(NOW.toString())));
+        final String expectedUrl = localUriBuilder().path("/applications/" + APP1_NAME).toUriString();
+        assertThat(response, hasJsonPath("$.definitions[0].applications[0].href", equalTo(expectedUrl)));
+    }
+
+    @Test
+    public void shouldReturn404IfNoVersionFound() throws Exception {
+        ResponseEntity<String> responseEntity = restTemplate.getForEntity(
+            "/apis/" + API_NAME + "/versions/" + API_VERSION_1, String.class);
+
+        assertThat(responseEntity.getStatusCode(), equalTo(HttpStatus.NOT_FOUND));
     }
 
     private UriComponentsBuilder localUriBuilder() {
