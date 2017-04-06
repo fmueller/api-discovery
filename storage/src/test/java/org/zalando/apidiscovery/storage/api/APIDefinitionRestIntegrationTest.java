@@ -10,6 +10,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -26,6 +27,7 @@ import static java.time.ZoneOffset.UTC;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
+import static org.zalando.apidiscovery.storage.TestDataHelper.invalidCrawledApi;
 import static org.zalando.apidiscovery.storage.TestDataHelper.minimalCrawledApi;
 import static org.zalando.apidiscovery.storage.TestDataHelper.crawlerUberApi;
 
@@ -120,6 +122,14 @@ public class APIDefinitionRestIntegrationTest {
                 .getResultList().size();
 
         assertThat(deployments).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldReturnBadRequestWhenProvidingUnparsableDefinition() throws Exception {
+        final ResponseEntity<Void> exchange =
+                restTemplate.exchange("/api-definitions", HttpMethod.POST, httpEntity(invalidCrawledApi()), Void.class);
+
+        assertThat(exchange.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
     @Ignore

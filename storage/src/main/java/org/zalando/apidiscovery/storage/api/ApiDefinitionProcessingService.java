@@ -88,7 +88,7 @@ public class ApiDefinitionProcessingService {
         }
     }
 
-    void setApiNameAndVersion(final CrawledApiDefinitionDto crawledAPIDefinition) throws SwaggerParseException {
+    protected void setApiNameAndVersion(final CrawledApiDefinitionDto crawledAPIDefinition) throws SwaggerParseException {
         final String name;
         final String version;
 

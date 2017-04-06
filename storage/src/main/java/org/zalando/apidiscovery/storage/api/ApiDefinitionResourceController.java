@@ -37,8 +37,7 @@ public class ApiDefinitionResourceController {
     }
 
     @ExceptionHandler(SwaggerParseException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public void handleSwaggerParseException(SwaggerParseException e) {
-
+    public ResponseEntity<Void> handleSwaggerParseException(SwaggerParseException e) {
+        return ResponseEntity.badRequest().build();
     }
 }

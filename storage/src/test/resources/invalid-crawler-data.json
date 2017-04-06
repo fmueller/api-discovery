@@ -1,0 +1,10 @@
+{
+  "service_url": "uber.swagger.io",
+  "url": "api/swagger.json",
+  "application_name": "uber.api",
+  "name": "Uber",
+  "lifecycle_state": "ACTIVE",
+  "status": "SUCCESS",
+  "type": "swagger-2.0",
+  "definition": "{\"info\":\"title Uber API, versionv1\"}"
+}

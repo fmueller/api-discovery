@@ -50,6 +50,10 @@ public final class TestDataHelper {
         return readFile("uber.json");
     }
 
+    public static String invalidCrawledApi() throws IOException, URISyntaxException {
+        return readFile("invalid-crawler-data.json");
+    }
+
     public static String minimalCrawledApi() throws IOException, URISyntaxException {
         return readFile("minimal-crawler-data.json");
     }
