@@ -19,9 +19,9 @@ import static java.time.OffsetDateTime.now;
 import static java.time.ZoneOffset.UTC;
 
 @Service
-public class ApiDefinitionManager {
+public class ApiDefinitionProcessingService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ApiDefinitionManager.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ApiDefinitionProcessingService.class);
 
     private final ApplicationRepository applicationRepository;
     private final ApiRepository apiRepository;
@@ -29,10 +29,10 @@ public class ApiDefinitionManager {
     private final SwaggerDefinitionHelper swagger;
 
     @Autowired
-    public ApiDefinitionManager(final ApplicationRepository appRepository,
-                                final ApiRepository apiRepository,
-                                final EntityManager entityManager,
-                                final SwaggerDefinitionHelper swaggerHelper) {
+    public ApiDefinitionProcessingService(final ApplicationRepository appRepository,
+                                          final ApiRepository apiRepository,
+                                          final EntityManager entityManager,
+                                          final SwaggerDefinitionHelper swaggerHelper) {
         this.applicationRepository = appRepository;
         this.apiRepository = apiRepository;
         this.entityManager = entityManager;
@@ -76,7 +76,7 @@ public class ApiDefinitionManager {
                 .map(app -> app)
                 .orElse(newApplication(crawledAPIDefinition, now));
 
-        return applicationRepository.saveAndFlush(application);
+        return applicationRepository.save(application);
     }
 
     private ApiEntity createOrUpdateApiVersion(final CrawledApiDefinitionDto crawledAPIDefinition, final OffsetDateTime now) {
@@ -86,7 +86,7 @@ public class ApiDefinitionManager {
                 crawledAPIDefinition.getDefinition());
 
         if (existingApis.isEmpty()) {
-            return apiRepository.saveAndFlush(newApiVersion(crawledAPIDefinition, now));
+            return apiRepository.save(newApiVersion(crawledAPIDefinition, now));
         } else {
             return existingApis.get(0);
         }
