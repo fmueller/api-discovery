@@ -71,9 +71,7 @@ public class ApiDefinitionProcessingService {
         final Optional<ApplicationEntity> existingApplication =
                 applicationRepository.findOneByName(crawledAPIDefinition.getApplicationName());
 
-        final ApplicationEntity application = existingApplication.orElse(newApplication(crawledAPIDefinition, now));
-
-        return applicationRepository.save(application);
+        return existingApplication.orElse(applicationRepository.save(newApplication(crawledAPIDefinition, now)));
     }
 
     private ApiEntity createOrUpdateApiVersion(final CrawledApiDefinitionDto crawledAPIDefinition, final OffsetDateTime now) {

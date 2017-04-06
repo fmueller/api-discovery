@@ -15,9 +15,11 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.persistence.EntityManager;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 import static java.time.OffsetDateTime.now;
 import static java.time.ZoneOffset.UTC;
@@ -123,10 +125,21 @@ public class APIDefinitionRestIntegrationTest {
 
     @Test
     public void shouldReturnBadRequestWhenProvidingUnparsableDefinition() throws Exception {
-        final ResponseEntity<Void> exchange =
+        final ResponseEntity<Void> response =
                 restTemplate.exchange("/api-definitions", HttpMethod.POST, httpEntity(invalidCrawledApi()), Void.class);
 
-        assertThat(exchange.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    public void shouldReturnALocationHeader() throws Exception {
+        final ResponseEntity<Void> response =
+                restTemplate.exchange("/api-definitions", HttpMethod.POST, httpEntity(minimalCrawledApi()), Void.class);
+        final URI location = response.getHeaders().getLocation();
+        final String uriPattern = "http://localhost(:\\d+)/apis/uber-api/versions/v1/definitions/\\d+";
+
+        assertThat(location).isNotNull();
+        assertThat(Pattern.matches(uriPattern, location.toString())).isTrue();
     }
 
     private HttpEntity<String> httpEntity(final String content) throws IOException, URISyntaxException {

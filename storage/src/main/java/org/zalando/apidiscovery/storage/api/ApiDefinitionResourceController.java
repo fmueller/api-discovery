@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
 import org.zalando.apidiscovery.storage.utils.SwaggerParseException;
 
 import java.net.URI;
@@ -28,16 +29,16 @@ public class ApiDefinitionResourceController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> postCrawledApiDefinition(@RequestBody CrawledApiDefinitionDto crawledAPIDefinitionDto)
-            throws SwaggerParseException {
+    public ResponseEntity<Void> postCrawledApiDefinition(@RequestBody CrawledApiDefinitionDto crawledAPIDefinitionDto,
+                                                         UriComponentsBuilder builder) throws SwaggerParseException {
         final ApiEntity api = apiDefinitionProcessingService.processCrawledApiDefinition(crawledAPIDefinitionDto);
 
         final DefinitionDeploymentLinkBuilder linkBuilder = new DefinitionDeploymentLinkBuilder(
                 api.getApiName(),
                 api.getApiVersion(),
                 valueOf(api.getId()));
-        final URI location = URI.create(linkBuilder.buildLink());
 
+        final URI location = builder.path(linkBuilder.buildLink()).build().encode().toUri();
         return ResponseEntity.created(location).build();
     }
 

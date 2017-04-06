@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.util.regex.Pattern;
@@ -32,10 +33,11 @@ public class ApiDefinitionResourceControllerTest {
     @Test
     public void shouldReturnHttpCodeCreatedAndLocationHeader() throws Exception {
         final ApiEntity api = ApiEntity.builder().apiName("meta-api").apiVersion("1.0").id(1l).build();
-        final String uriPattern = "/apis/meta-api/versions/1.0/definitions/\\d+";
+        final UriComponentsBuilder builder = UriComponentsBuilder.fromUri(new URI("http://localhost/"));
+        final String uriPattern = "http://localhost/apis/meta-api/versions/1.0/definitions/\\d+";
         doReturn(api).when(apiDefinitionService).processCrawledApiDefinition(any(CrawledApiDefinitionDto.class));
 
-        final ResponseEntity<Void> response = apiDefinitionController.postCrawledApiDefinition(null);
+        final ResponseEntity<Void> response = apiDefinitionController.postCrawledApiDefinition(null, builder);
         final URI location = response.getHeaders().getLocation();
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
