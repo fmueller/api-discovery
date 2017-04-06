@@ -24,7 +24,8 @@ public class ApiDtoJsonTest {
         ApiDto apiDto = new ApiDto("test-api", ACTIVE);
 
         System.out.println(this.json.write(apiDto));
-        assertThat(this.json.write(apiDto)).doesNotHaveJsonPathValue("$.versions")
+        assertThat(this.json.write(apiDto))
+            .doesNotHaveJsonPathValue("$.versions")
             .doesNotHaveJsonPathValue("$.applications")
             .doesNotHaveEmptyJsonPathValue("$.apiMetaData.name")
             .doesNotHaveEmptyJsonPathValue("$.apiMetaData.lifecycleState");
