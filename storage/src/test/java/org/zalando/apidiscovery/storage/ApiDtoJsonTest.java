@@ -23,7 +23,6 @@ public class ApiDtoJsonTest {
     public void shouldOmitFieldsWithNullValues() throws Exception {
         ApiDto apiDto = new ApiDto("test-api", ACTIVE);
 
-        System.out.println(this.json.write(apiDto));
         assertThat(this.json.write(apiDto))
             .doesNotHaveJsonPathValue("$.versions")
             .doesNotHaveJsonPathValue("$.applications")
