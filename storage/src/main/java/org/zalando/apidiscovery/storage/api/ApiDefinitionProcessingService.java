@@ -55,9 +55,7 @@ public class ApiDefinitionProcessingService {
                                                             OffsetDateTime now) {
         final Optional<ApiDeploymentEntity> existingApiDeployment = Optional.ofNullable(
                 entityManager.find(ApiDeploymentEntity.class, new ApiDeploymentEntity(apiVersion, application)));
-        final ApiDeploymentEntity apiDeployment = existingApiDeployment
-                .map(deployment -> deployment)
-                .orElse(newApiDeployment(now));
+        final ApiDeploymentEntity apiDeployment = existingApiDeployment.orElse(newApiDeployment(now));
 
         apiDeployment.setLastCrawled(now);
         apiDeployment.setLifecycleState(ApiLifecycleState.ACTIVE);
@@ -72,9 +70,7 @@ public class ApiDefinitionProcessingService {
         final Optional<ApplicationEntity> existingApplication =
                 applicationRepository.findOneByName(crawledAPIDefinition.getApplicationName());
 
-        final ApplicationEntity application = existingApplication
-                .map(app -> app)
-                .orElse(newApplication(crawledAPIDefinition, now));
+        final ApplicationEntity application = existingApplication.orElse(newApplication(crawledAPIDefinition, now));
 
         return applicationRepository.save(application);
     }
