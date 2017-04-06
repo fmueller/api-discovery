@@ -54,8 +54,7 @@ public class ApiResourceController {
                                                          @RequestParam(value = "lifecycle_state", required = false) ApiLifecycleState lifecycleState,
                                                          UriComponentsBuilder builder) {
         List<VersionsDto> versions = loadVersions(apiId, lifecycleState);
-        buildAndSetApplicationLinks(versions, builder);
-        return ResponseEntity.ok(new VersionListDto(versions));
+        return ResponseEntity.ok(new VersionListDto(buildAndSetApplicationLinks(versions, builder)));
     }
 
     private List<VersionsDto> loadVersions(String apiId, ApiLifecycleState lifecycleState) {
@@ -64,10 +63,18 @@ public class ApiResourceController {
 
     @GetMapping("/{api_id}/versions/{version_id}")
     public ResponseEntity<VersionsDto> getApiVersions(@PathVariable("api_id") String apiId,
-                                                      @PathVariable("version_id") String version,
+                                                      @PathVariable("version_id") String versionId,
                                                       UriComponentsBuilder builder) {
-        return apiService.getVersion(apiId, version)
+        return apiService.getVersion(apiId, versionId)
             .map(versionsDto -> ResponseEntity.ok(buildAndSetApplicationLinks(versionsDto, builder)))
+            .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    @GetMapping("/{api_id}/versions/{version_id}/definitions/{definition_id}")
+    public ResponseEntity<ApiDefinitionDto> getApiVersions(@PathVariable("definition_id") String definitionId,
+                                                           UriComponentsBuilder builder) {
+        return apiService.getApiDefinitionDto(definitionId)
+            .map(definitionDto -> ResponseEntity.ok(buildAndSetApplicationLinks(definitionDto, builder)))
             .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
@@ -87,18 +94,25 @@ public class ApiResourceController {
 
     private List<VersionsDto> buildAndSetApplicationLinks(List<VersionsDto> versions, UriComponentsBuilder builder) {
         versions.forEach(versionsDto -> buildAndSetApplicationLinks(versionsDto, builder));
+
         return versions;
     }
 
     private VersionsDto buildAndSetApplicationLinks(VersionsDto version, UriComponentsBuilder builder) {
         version.getDefinitions()
-            .forEach(apiDefinitionDto -> apiDefinitionDto.getApplications()
-                .forEach(deploymentLinkDto -> deploymentLinkDto.setHref(
-                    builder.cloneBuilder()
-                        .path(deploymentLinkDto.getLinkBuilder().buildLink())
-                        .toUriString())));
+            .forEach(apiDefinitionDto -> buildAndSetApplicationLinks(apiDefinitionDto, builder));
 
         return version;
+    }
+
+    private ApiDefinitionDto buildAndSetApplicationLinks(ApiDefinitionDto apiDefinitionDto, UriComponentsBuilder builder) {
+        apiDefinitionDto.getApplications()
+            .forEach(deploymentLinkDto -> deploymentLinkDto.setHref(
+                builder.cloneBuilder()
+                    .path(deploymentLinkDto.getLinkBuilder().buildLink())
+                    .toUriString()));
+
+        return apiDefinitionDto;
     }
 
 }

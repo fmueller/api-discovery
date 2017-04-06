@@ -98,4 +98,22 @@ public class ApiService {
         return toVersionDtoList(apiEntities).stream()
             .findFirst();
     }
+
+    public Optional<ApiDefinitionDto> getApiDefinitionDto(String definitionId) {
+        final Long id = saveValueOf(definitionId);
+        if (id == null) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(apiRepository.findOne(id))
+            .map(ApiEntityToApiDefinitionConverter::toApiDefinitionDto);
+    }
+
+    private Long saveValueOf(String value) {
+        try {
+            return Long.valueOf(value);
+        } catch (NumberFormatException nfe) {
+            return null;
+        }
+
+    }
 }
