@@ -1,7 +1,6 @@
 package org.zalando.apidiscovery.storage.api;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -9,9 +8,12 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.net.URI;
+import java.util.regex.Pattern;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ApiDefinitionResourceControllerTest {
@@ -19,21 +21,25 @@ public class ApiDefinitionResourceControllerTest {
     private ApiDefinitionResourceController apiDefinitionController;
 
     @Mock
-    private ApiDefinitionProcessingService apiDefinitionProcessingService;
+    private ApiDefinitionProcessingService apiDefinitionService;
 
 
     @Before
     public void setUp() throws Exception {
-        apiDefinitionController = new ApiDefinitionResourceController(apiDefinitionProcessingService);
+        apiDefinitionController = new ApiDefinitionResourceController(apiDefinitionService);
     }
 
     @Test
-    @Ignore
-    public void shouldReturnHttpCodeCreated() throws Exception {
-        doNothing().when(apiDefinitionProcessingService).processCrawledApiDefinition(any(CrawledApiDefinitionDto.class));
+    public void shouldReturnHttpCodeCreatedAndLocationHeader() throws Exception {
+        final ApiEntity api = ApiEntity.builder().apiName("meta-api").apiVersion("1.0").id(1l).build();
+        final String uriPattern = "/apis/meta-api/versions/1.0/definitions/\\d+";
+        doReturn(api).when(apiDefinitionService).processCrawledApiDefinition(any(CrawledApiDefinitionDto.class));
 
-        ResponseEntity<Void> response = apiDefinitionController.postCrawledApiDefinition(new CrawledApiDefinitionDto());
+        final ResponseEntity<Void> response = apiDefinitionController.postCrawledApiDefinition(null);
+        final URI location = response.getHeaders().getLocation();
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        assertThat(location).isNotNull();
+        assertThat(Pattern.matches(uriPattern, location.toString())).isTrue();
     }
 }

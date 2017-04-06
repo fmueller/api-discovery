@@ -1,7 +1,6 @@
 package org.zalando.apidiscovery.storage.api;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +15,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.persistence.EntityManager;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
-import java.util.regex.Pattern;
 
 import static java.time.OffsetDateTime.now;
 import static java.time.ZoneOffset.UTC;
@@ -130,19 +127,6 @@ public class APIDefinitionRestIntegrationTest {
                 restTemplate.exchange("/api-definitions", HttpMethod.POST, httpEntity(invalidCrawledApi()), Void.class);
 
         assertThat(exchange.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-    }
-
-    @Ignore
-    @Test
-    public void shouldReturnALocationHeaderTest() throws Exception {
-        final ResponseEntity<Void> response =
-                restTemplate.exchange("/api-definitions", HttpMethod.POST, httpEntity(crawlerUberApi()), Void.class);
-
-        final String uriPattern = ".*/apis/.*/versions/.*/definitions/.*";
-        final URI location = response.getHeaders().getLocation();
-
-        assertThat(location).isNotNull();
-        assertThat(Pattern.matches(uriPattern, location.toString())).isTrue();
     }
 
     private HttpEntity<String> httpEntity(final String content) throws IOException, URISyntaxException {

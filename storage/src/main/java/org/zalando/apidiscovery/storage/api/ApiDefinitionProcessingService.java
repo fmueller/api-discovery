@@ -40,7 +40,7 @@ public class ApiDefinitionProcessingService {
     }
 
     @Transactional
-    public void processCrawledApiDefinition(final CrawledApiDefinitionDto crawledAPIDefinition) {
+    public ApiEntity processCrawledApiDefinition(final CrawledApiDefinitionDto crawledAPIDefinition) {
         setApiNameAndVersion(crawledAPIDefinition);
         final OffsetDateTime now = now(UTC);
 
@@ -49,6 +49,7 @@ public class ApiDefinitionProcessingService {
         final ApiDeploymentEntity apiDeployment = createOrUpdateApiDeployment(apiVersion, application, now);
 
         LOG.info("New crawling information has been processed; api deployment: {}", apiDeployment);
+        return apiVersion;
     }
 
     private ApiDeploymentEntity createOrUpdateApiDeployment(ApiEntity apiVersion, ApplicationEntity application,
