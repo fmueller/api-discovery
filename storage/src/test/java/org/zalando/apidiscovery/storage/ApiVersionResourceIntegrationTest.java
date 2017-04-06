@@ -33,6 +33,7 @@ import static org.zalando.apidiscovery.storage.DomainObjectGen.givenApiDeploymen
 import static org.zalando.apidiscovery.storage.DomainObjectGen.givenApiEntity;
 import static org.zalando.apidiscovery.storage.DomainObjectGen.givenApplication;
 import static org.zalando.apidiscovery.storage.api.ApiLifecycleState.ACTIVE;
+import static org.zalando.apidiscovery.storage.api.ApiLifecycleState.DECOMMISSIONED;
 import static org.zalando.apidiscovery.storage.api.ApiLifecycleState.INACTIVE;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -110,6 +111,76 @@ public class ApiVersionResourceIntegrationTest {
         final String expectedUrl = localUriBuilder().path("/applications/" + APP1_NAME).toUriString();
         assertThat(response, hasJsonPath("$.versions..href", hasItem(expectedUrl)));
         assertThat(response, hasJsonPath("$.versions..lifecycle_state", hasItems(ACTIVE.name(), INACTIVE.name())));
+    }
+
+
+    @Test
+    public void shouldReturnAllActiveVersions() throws Exception {
+        ApplicationEntity app1 = applicationRepository.save(givenApplication(APP1_NAME));
+
+        ApiEntity testAPi100 = givenApiEntity(API_NAME, API_VERSION_1);
+        ApiEntity testAPi200 = givenApiEntity(API_NAME, API_VERSION_2);
+
+        ApiDeploymentEntity testAPi100OnApp1 = givenApiDeployment(testAPi100, app1);
+        ApiDeploymentEntity testAPi200OnApp1 = givenApiDeployment(testAPi200, app1, INACTIVE);
+
+        testAPi100.setApiDeploymentEntities(asList(testAPi100OnApp1));
+        testAPi200.setApiDeploymentEntities(asList(testAPi200OnApp1));
+
+        apiRepository.save(asList(testAPi100, testAPi200));
+
+        ResponseEntity<String> responseEntity = restTemplate.getForEntity(
+            "/apis/" + API_NAME + "/versions?lifecycle_state=ACTIVE", String.class);
+
+        final String response = responseEntity.getBody();
+        assertThat(response, hasJsonPath("$.versions", hasSize(1)));
+        assertThat(response, hasJsonPath("$.versions[0].lifecycle_state", equalTo(ACTIVE.name())));
+    }
+
+    @Test
+    public void shouldReturnAllInactiveVersions() throws Exception {
+        ApplicationEntity app1 = applicationRepository.save(givenApplication(APP1_NAME));
+
+        ApiEntity testAPi100 = givenApiEntity(API_NAME, API_VERSION_1);
+        ApiEntity testAPi200 = givenApiEntity(API_NAME, API_VERSION_2);
+
+        ApiDeploymentEntity testAPi100OnApp1 = givenApiDeployment(testAPi100, app1, INACTIVE);
+        ApiDeploymentEntity testAPi200OnApp1 = givenApiDeployment(testAPi200, app1, DECOMMISSIONED);
+
+        testAPi100.setApiDeploymentEntities(asList(testAPi100OnApp1));
+        testAPi200.setApiDeploymentEntities(asList(testAPi200OnApp1));
+
+        apiRepository.save(asList(testAPi100, testAPi200));
+
+        ResponseEntity<String> responseEntity = restTemplate.getForEntity(
+            "/apis/" + API_NAME + "/versions?lifecycle_state=INACTIVE", String.class);
+
+        final String response = responseEntity.getBody();
+        assertThat(response, hasJsonPath("$.versions", hasSize(1)));
+        assertThat(response, hasJsonPath("$.versions[0].lifecycle_state", equalTo(INACTIVE.name())));
+    }
+
+    @Test
+    public void shouldReturnAllDecommissionedVersions() throws Exception {
+        ApplicationEntity app1 = applicationRepository.save(givenApplication(APP1_NAME));
+
+        ApiEntity testAPi100 = givenApiEntity(API_NAME, API_VERSION_1);
+        ApiEntity testAPi200 = givenApiEntity(API_NAME, API_VERSION_2);
+
+        ApiDeploymentEntity testAPi100OnApp1 = givenApiDeployment(testAPi100, app1, DECOMMISSIONED);
+        ApiDeploymentEntity testAPi200OnApp1 = givenApiDeployment(testAPi200, app1, INACTIVE);
+
+        testAPi100.setApiDeploymentEntities(asList(testAPi100OnApp1));
+        testAPi200.setApiDeploymentEntities(asList(testAPi200OnApp1));
+
+        apiRepository.save(asList(testAPi100, testAPi200));
+
+        ResponseEntity<String> responseEntity = restTemplate.getForEntity(
+            "/apis/" + API_NAME + "/versions?lifecycle_state=DECOMMISSIONED", String.class);
+
+        final String response = responseEntity.getBody();
+        assertThat(response, hasJsonPath("$.versions", hasSize(1)));
+        assertThat(response, hasJsonPath("$.versions[0].lifecycle_state", equalTo(DECOMMISSIONED.name())));
     }
 
     private UriComponentsBuilder localUriBuilder() {

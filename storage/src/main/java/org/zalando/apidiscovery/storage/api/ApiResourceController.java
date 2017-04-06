@@ -50,11 +50,16 @@ public class ApiResourceController {
     }
 
     @GetMapping("/{api_id}/versions")
-    public ResponseEntity<VersionListDto> getApiVersions(@PathVariable("api_id") String apiId, UriComponentsBuilder builder) {
-        List<VersionsDto> versions = apiService.getVersionsForApi(apiId);
+    public ResponseEntity<VersionListDto> getApiVersions(@PathVariable("api_id") String apiId,
+                                                         @RequestParam(value = "lifecycle_state", required = false) ApiLifecycleState lifecycleState,
+                                                         UriComponentsBuilder builder) {
+        List<VersionsDto> versions = loadVersions(apiId, lifecycleState);
         buildAndSetApplicationLinks(versions, builder);
         return ResponseEntity.ok(new VersionListDto(versions));
+    }
 
+    private List<VersionsDto> loadVersions(String apiId, ApiLifecycleState lifecycleState) {
+        return lifecycleState == null ? apiService.getVersionsForApi(apiId) : apiService.getVersionsForApi(apiId, lifecycleState);
     }
 
     private ApiDto buildAndSetLinks(ApiDto api, UriComponentsBuilder builder) {

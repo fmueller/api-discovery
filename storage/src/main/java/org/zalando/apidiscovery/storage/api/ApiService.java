@@ -86,4 +86,10 @@ public class ApiService {
         List<ApiEntity> apiEntities = apiRepository.findByApiName(apiId);
         return apiEntities.isEmpty() ? Collections.emptyList() : toVersionDtoList(apiEntities);
     }
+
+    public List<VersionsDto> getVersionsForApi(String apiId, ApiLifecycleState lifecycleState) {
+        return getVersionsForApi(apiId).stream()
+            .filter(versionsDto -> lifecycleState.equals(versionsDto.getLifecycleState()))
+            .collect(toList());
+    }
 }
