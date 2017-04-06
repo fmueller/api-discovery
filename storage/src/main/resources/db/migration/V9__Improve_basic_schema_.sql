@@ -37,3 +37,6 @@ ALTER TABLE api_version
 
 ALTER TABLE api_version
   DROP COLUMN last_content_change;
+
+ALTER TABLE api_version
+  ADD COLUMN definition_type TEXT;

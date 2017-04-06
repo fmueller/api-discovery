@@ -1,5 +1,6 @@
 package org.zalando.apidiscovery.storage.api;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -8,11 +9,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
-public class ApiListDto {
+public class ApplicationDto {
 
-    private List<ApiDto> apis;
+    private String name;
+    private String appUrl;
+    private List<DeploymentLinkDto> definitions;
+    private OffsetDateTime created;
 
 }
