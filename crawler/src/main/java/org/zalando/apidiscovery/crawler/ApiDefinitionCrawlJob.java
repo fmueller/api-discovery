@@ -17,19 +17,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
-import org.zalando.apidiscovery.crawler.storage.ApiDefinition;
-import org.zalando.apidiscovery.crawler.storage.ApiDiscoveryStorageClient;
+import org.zalando.apidiscovery.crawler.storage.LegacyApiDefinition;
+import org.zalando.apidiscovery.crawler.storage.LegacyApiDiscoveryStorageClient;
 import org.zalando.stups.clients.kio.ApplicationBase;
 
 class ApiDefinitionCrawlJob implements Callable<Void> {
 
     private static final Logger LOG = LoggerFactory.getLogger(ApiDefinitionCrawlJob.class);
 
-    private final ApiDiscoveryStorageClient storageClient;
+    private final LegacyApiDiscoveryStorageClient storageClient;
     private final RestTemplate schemaClient;
     private final ApplicationBase app;
 
-    ApiDefinitionCrawlJob(ApiDiscoveryStorageClient storageClient, RestTemplate schemaClient, ApplicationBase app) {
+    ApiDefinitionCrawlJob(LegacyApiDiscoveryStorageClient storageClient, RestTemplate schemaClient, ApplicationBase app) {
         this.storageClient = storageClient;
         this.schemaClient = schemaClient;
         this.app = app;
@@ -51,7 +51,7 @@ class ApiDefinitionCrawlJob implements Callable<Void> {
                 final String schemaType = schemaDiscoveryInformation.get("schema_type").asText("");
                 final JsonNode apiDefinition = retrieveApiDefinition(serviceUrl + apiDefinitionUrl);
 
-                final ApiDefinition updateApiDefinitionRequest = new ApiDefinition(
+                final LegacyApiDefinition updateLegacyApiDefinitionRequest = new LegacyApiDefinition(
                         "SUCCESS",
                         schemaType,
                         apiDefinition.get("info").get("title").asText(),
@@ -62,15 +62,15 @@ class ApiDefinitionCrawlJob implements Callable<Void> {
                         apiDefinition.toString()
                 );
 
-                storageClient.createOrUpdateApiDefintion(updateApiDefinitionRequest, app.getId());
+                storageClient.createOrUpdateApiDefintion(updateLegacyApiDefinitionRequest, app.getId());
                 LOG.info("Successfully crawled api definition of {}", app.getId());
             } else {
-                storageClient.createOrUpdateApiDefintion(ApiDefinition.UNSUCCESSFUL, app.getId());
+                storageClient.createOrUpdateApiDefintion(LegacyApiDefinition.UNSUCCESSFUL, app.getId());
                 LOG.info("Api definition unavailable for {}", app.getId());
             }
             return null;
         } catch (Exception e) {
-            storageClient.createOrUpdateApiDefintion(ApiDefinition.UNSUCCESSFUL, app.getId());
+            storageClient.createOrUpdateApiDefintion(LegacyApiDefinition.UNSUCCESSFUL, app.getId());
             LOG.info("Could not crawl {}: {}", app.getId(), e.getMessage());
             return null;
         }

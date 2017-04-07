@@ -4,9 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ApiDefinition {
+public class LegacyApiDefinition {
 
-    public static ApiDefinition UNSUCCESSFUL = new ApiDefinition(
+    public static LegacyApiDefinition UNSUCCESSFUL = new LegacyApiDefinition(
             "UNSUCCESSFUL", null, null, null, null, null, null, null
     );
 
@@ -34,13 +34,13 @@ public class ApiDefinition {
     @JsonProperty("definition")
     private String definition;
 
-    public ApiDefinition() {
+    public LegacyApiDefinition() {
     }
 
-    public ApiDefinition(String status, String type,
-                         String name, String version,
-                         String serviceUrl, String schemaUrl,
-                         String uiLink, String definition) {
+    public LegacyApiDefinition(String status, String type,
+                               String name, String version,
+                               String serviceUrl, String schemaUrl,
+                               String uiLink, String definition) {
         this.status = status;
         this.type = type;
         this.name = name;

@@ -8,17 +8,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public class ApiDiscoveryStorageClient {
+public class LegacyApiDiscoveryStorageClient {
 
     private final RestOperations restOperations;
     private final String baseUrl;
 
-    public ApiDiscoveryStorageClient(RestOperations restOperations, String baseUrl) {
+    public LegacyApiDiscoveryStorageClient(RestOperations restOperations, String baseUrl) {
         this.restOperations = restOperations;
         this.baseUrl = baseUrl;
     }
 
-    public void createOrUpdateApiDefintion(ApiDefinition request, String applicationId) {
+    public void createOrUpdateApiDefintion(LegacyApiDefinition request, String applicationId) {
         Assert.hasText(applicationId, "applicationId must not be blank");
 
         final Map<String, String> uriVariables = new HashMap<>();
@@ -26,9 +26,9 @@ public class ApiDiscoveryStorageClient {
         restOperations.put(baseUrl + "/apps/{applicationId}", request, uriVariables);
     }
 
-    public Optional<ApiDefinition> getApiDefinition(String applicationId) {
+    public Optional<LegacyApiDefinition> getApiDefinition(String applicationId) {
         Assert.hasText(applicationId, "applicationId must not be blank");
 
-        return Optional.ofNullable(restOperations.getForObject(URI.create(baseUrl + "/apps/" + applicationId), ApiDefinition.class));
+        return Optional.ofNullable(restOperations.getForObject(URI.create(baseUrl + "/apps/" + applicationId), LegacyApiDefinition.class));
     }
 }
