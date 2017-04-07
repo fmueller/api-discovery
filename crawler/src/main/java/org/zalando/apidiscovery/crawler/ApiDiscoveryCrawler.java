@@ -16,6 +16,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
+import org.zalando.apidiscovery.crawler.storage.ApiDiscoveryStorageClient;
 import org.zalando.apidiscovery.crawler.storage.LegacyApiDiscoveryStorageClient;
 import org.zalando.stups.clients.kio.ApplicationBase;
 import org.zalando.stups.clients.kio.KioOperations;
@@ -26,16 +27,19 @@ public class ApiDiscoveryCrawler {
     private static final Logger LOG = LoggerFactory.getLogger(ApiDiscoveryCrawler.class);
 
     private final KioOperations kioClient;
-    private final LegacyApiDiscoveryStorageClient storageClient;
+    private final LegacyApiDiscoveryStorageClient legacyStorageClient;
+    private final ApiDiscoveryStorageClient storageClient;
     private final RestTemplate schemaClient;
     private final ExecutorService fixedPool;
 
     @Autowired
     public ApiDiscoveryCrawler(KioOperations kioClient,
-                               LegacyApiDiscoveryStorageClient storageClient,
+                               LegacyApiDiscoveryStorageClient legacyStorageClient,
+                               ApiDiscoveryStorageClient storageClient,
                                RestTemplate schemaClient,
                                @Value("${crawler.jobs.pool}") int jobsPoolSize) {
         this.kioClient = kioClient;
+        this.legacyStorageClient = legacyStorageClient;
         this.storageClient = storageClient;
         this.schemaClient = schemaClient;
         fixedPool = Executors.newFixedThreadPool(jobsPoolSize);
@@ -50,7 +54,7 @@ public class ApiDiscoveryCrawler {
 
         final List<Callable<Void>> crawlJobs = applications.stream()
                 .filter(app -> !StringUtils.isEmpty(app.getServiceUrl()))
-                .map(app -> new ApiDefinitionCrawlJob(storageClient, schemaClient, app))
+                .map(app -> new ApiDefinitionCrawlJob(legacyStorageClient, storageClient, schemaClient, app))
                 .collect(Collectors.toList());
         LOG.info("Crawling {} api definitions", crawlJobs.size());
 

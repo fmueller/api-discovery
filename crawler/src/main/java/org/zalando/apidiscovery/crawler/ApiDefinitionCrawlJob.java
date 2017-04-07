@@ -17,6 +17,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
+import org.zalando.apidiscovery.crawler.storage.ApiDefinition;
+import org.zalando.apidiscovery.crawler.storage.ApiDiscoveryStorageClient;
 import org.zalando.apidiscovery.crawler.storage.LegacyApiDefinition;
 import org.zalando.apidiscovery.crawler.storage.LegacyApiDiscoveryStorageClient;
 import org.zalando.stups.clients.kio.ApplicationBase;
@@ -25,11 +27,14 @@ class ApiDefinitionCrawlJob implements Callable<Void> {
 
     private static final Logger LOG = LoggerFactory.getLogger(ApiDefinitionCrawlJob.class);
 
-    private final LegacyApiDiscoveryStorageClient storageClient;
+    private final LegacyApiDiscoveryStorageClient legacyStorageClient;
+    private final ApiDiscoveryStorageClient storageClient;
     private final RestTemplate schemaClient;
     private final ApplicationBase app;
 
-    ApiDefinitionCrawlJob(LegacyApiDiscoveryStorageClient storageClient, RestTemplate schemaClient, ApplicationBase app) {
+    ApiDefinitionCrawlJob(LegacyApiDiscoveryStorageClient legacyStorageClient, ApiDiscoveryStorageClient storageClient,
+                          RestTemplate schemaClient, ApplicationBase app) {
+        this.legacyStorageClient = legacyStorageClient;
         this.storageClient = storageClient;
         this.schemaClient = schemaClient;
         this.app = app;
@@ -37,43 +42,71 @@ class ApiDefinitionCrawlJob implements Callable<Void> {
 
     @Override
     public Void call() throws Exception {
+        LegacyApiDefinition legacyDefinition = LegacyApiDefinition.UNSUCCESSFUL;
+        ApiDefinition definition = ApiDefinition.UNSUCCESSFUL;
+
         try {
             final String serviceUrl = app.getServiceUrl().endsWith("/") ? app.getServiceUrl() : app.getServiceUrl() + "/";
             final Optional<JsonNode> schemaDiscovery = retrieveSchemaDiscovery(serviceUrl);
 
             if (schemaDiscovery.isPresent()) {
-                final JsonNode schemaDiscoveryInformation = schemaDiscovery.get();
-                String apiDefinitionUrl = schemaDiscoveryInformation.get("schema_url").asText();
-                if (apiDefinitionUrl.startsWith("/")) {
-                    apiDefinitionUrl = apiDefinitionUrl.substring(1);
-                }
-
-                final String schemaType = schemaDiscoveryInformation.get("schema_type").asText("");
-                final JsonNode apiDefinition = retrieveApiDefinition(serviceUrl + apiDefinitionUrl);
-
-                final LegacyApiDefinition updateLegacyApiDefinitionRequest = new LegacyApiDefinition(
-                        "SUCCESS",
-                        schemaType,
-                        apiDefinition.get("info").get("title").asText(),
-                        apiDefinition.get("info").get("version").asText(),
-                        serviceUrl,
-                        apiDefinitionUrl,
-                        schemaDiscoveryInformation.has("ui_url") ? schemaDiscoveryInformation.get("ui_url").asText() : null,
-                        apiDefinition.toString()
-                );
-
-                storageClient.createOrUpdateApiDefintion(updateLegacyApiDefinitionRequest, app.getId());
+                legacyDefinition = constructLegacyApiDefinition(schemaDiscovery.get(), serviceUrl);
+                definition = constructApiDefinition(schemaDiscovery.get(), serviceUrl, app.getId());
                 LOG.info("Successfully crawled api definition of {}", app.getId());
             } else {
-                storageClient.createOrUpdateApiDefintion(LegacyApiDefinition.UNSUCCESSFUL, app.getId());
                 LOG.info("Api definition unavailable for {}", app.getId());
             }
-            return null;
         } catch (Exception e) {
-            storageClient.createOrUpdateApiDefintion(LegacyApiDefinition.UNSUCCESSFUL, app.getId());
             LOG.info("Could not crawl {}: {}", app.getId(), e.getMessage());
-            return null;
+        } finally {
+            legacyStorageClient.createOrUpdateApiDefintion(legacyDefinition, app.getId());
+            storageClient.pushApiDefintion(definition);
         }
+        return null;
+    }
+
+    protected ApiDefinition constructApiDefinition(JsonNode schemaDiscovery, String serviceUrl, String appName) throws Exception {
+        String apiDefinitionUrl = schemaDiscovery.get("schema_url").asText();
+        if (apiDefinitionUrl.startsWith("/")) {
+            apiDefinitionUrl = apiDefinitionUrl.substring(1);
+        }
+
+        final String schemaType = schemaDiscovery.get("schema_type").asText("");
+        final JsonNode apiDefinition = retrieveApiDefinition(serviceUrl + apiDefinitionUrl);
+
+        return new ApiDefinition(
+                "SUCCESS",
+                schemaType,
+                apiDefinition.get("info").get("title").asText(),
+                appName,
+                apiDefinition.get("info").get("version").asText(),
+                serviceUrl,
+                apiDefinitionUrl,
+                schemaDiscovery.has("ui_url") ? schemaDiscovery.get("ui_url").asText() : null,
+                apiDefinition.toString()
+        );
+
+    }
+
+    private LegacyApiDefinition constructLegacyApiDefinition(JsonNode schemaDiscovery, String serviceUrl) throws Exception {
+        String apiDefinitionUrl = schemaDiscovery.get("schema_url").asText();
+        if (apiDefinitionUrl.startsWith("/")) {
+            apiDefinitionUrl = apiDefinitionUrl.substring(1);
+        }
+
+        final String schemaType = schemaDiscovery.get("schema_type").asText("");
+        final JsonNode apiDefinition = retrieveApiDefinition(serviceUrl + apiDefinitionUrl);
+
+        return new LegacyApiDefinition(
+                "SUCCESS",
+                schemaType,
+                apiDefinition.get("info").get("title").asText(),
+                apiDefinition.get("info").get("version").asText(),
+                serviceUrl,
+                apiDefinitionUrl,
+                schemaDiscovery.has("ui_url") ? schemaDiscovery.get("ui_url").asText() : null,
+                apiDefinition.toString()
+        );
     }
 
     private Optional<JsonNode> retrieveSchemaDiscovery(String serviceUrl) {
