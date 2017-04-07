@@ -1,6 +1,5 @@
 package org.zalando.apidiscovery.storage.api;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -13,6 +12,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import org.zalando.apidiscovery.storage.utils.SwaggerParseException;
 
 import java.net.URI;
+import java.security.NoSuchAlgorithmException;
 
 import static java.lang.String.valueOf;
 
@@ -29,8 +29,9 @@ public class ApiDefinitionResourceController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> postCrawledApiDefinition(@RequestBody CrawledApiDefinitionDto crawledAPIDefinitionDto,
-                                                         UriComponentsBuilder builder) throws SwaggerParseException {
+    public ResponseEntity<Void> postCrawledApiDefinition(@RequestBody CrawledApiDefinitionDto crawledAPIDefinitionDto, UriComponentsBuilder builder)
+            throws SwaggerParseException, NoSuchAlgorithmException {
+
         final ApiEntity api = apiDefinitionProcessingService.processCrawledApiDefinition(crawledAPIDefinitionDto);
 
         final DefinitionDeploymentLinkBuilder linkBuilder = new DefinitionDeploymentLinkBuilder(

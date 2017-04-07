@@ -283,6 +283,7 @@ public class ApiResourceIntegrationTest {
         return ApiEntity.builder()
             .apiName(name)
             .apiVersion(version)
+            .definitionHash("1")
             .definitionType("swagger")
             .created(now(UTC))
             .build();

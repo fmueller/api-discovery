@@ -30,7 +30,6 @@ import static org.zalando.apidiscovery.storage.TestDataHelper.invalidCrawledApi;
 import static org.zalando.apidiscovery.storage.TestDataHelper.minimalCrawledApi;
 import static org.zalando.apidiscovery.storage.TestDataHelper.crawlerUberApi;
 
-
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 public class APIDefinitionRestIntegrationTest {
@@ -87,6 +86,7 @@ public class APIDefinitionRestIntegrationTest {
                 .apiName("uber-api")
                 .apiVersion("v1")
                 .definition("{\"info\":{\"title\":\"Uber API\",\"version\":\"v1\"}}")
+                .definitionHash("cc9aa34e0c8343df59218a410e58a69a01a711d285ee0bd2ff5c4c8207a634e7")
                 .build();
         apiRepository.saveAndFlush(apiEntity);
 
@@ -124,7 +124,7 @@ public class APIDefinitionRestIntegrationTest {
     }
 
     @Test
-    public void shouldReturnBadRequestWhenProvidingUnparsableDefinition() throws Exception {
+    public void shouldReturnBadRequestWhenProvidingNotParsableDefinition() throws Exception {
         final ResponseEntity<Void> response =
                 restTemplate.exchange("/api-definitions", HttpMethod.POST, httpEntity(invalidCrawledApi()), Void.class);
 

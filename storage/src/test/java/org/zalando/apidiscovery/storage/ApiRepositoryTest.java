@@ -47,10 +47,12 @@ public class ApiRepositoryTest {
 
         ApiEntity testAPi100 = ApiEntity.builder().apiName("testAPi")
             .apiVersion("1.0.0")
+            .definitionHash("0")
             .created(now(UTC))
             .build();
         ApiEntity testAPi101 = ApiEntity.builder().apiName("testAPi")
             .apiVersion("1.0.1")
+            .definitionHash("1")
             .created(now(UTC))
             .build();
 

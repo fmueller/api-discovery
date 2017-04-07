@@ -1,5 +1,6 @@
 package org.zalando.apidiscovery.storage.api;
 
+import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,10 @@ import org.zalando.apidiscovery.storage.utils.SwaggerParseException;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import java.io.IOException;
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +45,7 @@ public class ApiDefinitionProcessingService {
     }
 
     @Transactional
-    public ApiEntity processCrawledApiDefinition(final CrawledApiDefinitionDto crawledAPIDefinition) {
+    public ApiEntity processCrawledApiDefinition(final CrawledApiDefinitionDto crawledAPIDefinition) throws NoSuchAlgorithmException {
         setApiNameAndVersion(crawledAPIDefinition);
         final OffsetDateTime now = now(UTC);
 
@@ -74,17 +79,32 @@ public class ApiDefinitionProcessingService {
         return existingApplication.orElse(applicationRepository.save(newApplication(crawledAPIDefinition, now)));
     }
 
-    private ApiEntity createOrUpdateApiVersion(final CrawledApiDefinitionDto crawledAPIDefinition, final OffsetDateTime now) {
-        final List<ApiEntity> existingApis = apiRepository.findByApiNameAndApiVersionAndDefinition(
+    private ApiEntity createOrUpdateApiVersion(final CrawledApiDefinitionDto crawledAPIDefinition, final OffsetDateTime now)
+            throws NoSuchAlgorithmException {
+        final String definitionHash = sha256(crawledAPIDefinition.getDefinition());
+        final List<ApiEntity> existingApis = apiRepository.findByApiNameAndApiVersionAndDefinitionHash(
                 crawledAPIDefinition.getApiName(),
                 crawledAPIDefinition.getVersion(),
-                crawledAPIDefinition.getDefinition());
+                definitionHash);
 
         if (existingApis.isEmpty()) {
-            return apiRepository.save(newApiVersion(crawledAPIDefinition, now));
+            final Session session = entityManager.unwrap(Session.class);
+            final int nextDefinitionId = 1 + (int) session.getNamedQuery("selectLastApiDefinitionId")
+                    .setParameter("apiName", crawledAPIDefinition.getApiName())
+                    .setParameter("apiVersion", crawledAPIDefinition.getVersion())
+                    .getResultList().get(0);
+            final ApiEntity newApi = newApiVersion(crawledAPIDefinition, now, definitionHash, nextDefinitionId);
+
+            return apiRepository.save(newApi);
         } else {
             return existingApis.get(0);
         }
+    }
+
+    private String sha256(String content) throws NoSuchAlgorithmException {
+        MessageDigest md = MessageDigest.getInstance("SHA-256");
+        md.update(content.getBytes(StandardCharsets.UTF_8));
+        return String.format("%064x", new BigInteger(1, md.digest()));
     }
 
     protected void setApiNameAndVersion(final CrawledApiDefinitionDto crawledAPIDefinition) throws SwaggerParseException {
@@ -117,11 +137,14 @@ public class ApiDefinitionProcessingService {
                 .build();
     }
 
-    private ApiEntity newApiVersion(CrawledApiDefinitionDto crawledAPIDefinitionDto, OffsetDateTime now) {
+    private ApiEntity newApiVersion(CrawledApiDefinitionDto crawledAPIDefinitionDto, OffsetDateTime now,
+                                    String definitionHash, int nextDefinitionId) {
         return ApiEntity.builder()
                 .apiName(crawledAPIDefinitionDto.getApiName())
                 .apiVersion(crawledAPIDefinitionDto.getVersion())
                 .definition(crawledAPIDefinitionDto.getDefinition())
+                .definitionHash(definitionHash)
+                .definitionId(nextDefinitionId)
                 .created(now)
                 .apiDeploymentEntities(new ArrayList<>())
                 .build();
