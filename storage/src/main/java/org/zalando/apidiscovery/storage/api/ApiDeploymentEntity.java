@@ -17,6 +17,8 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import static javax.persistence.CascadeType.ALL;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -27,11 +29,11 @@ import javax.persistence.Table;
 public class ApiDeploymentEntity implements Serializable {
 
     @Id
-    @ManyToOne
+    @ManyToOne(cascade = ALL)
     private ApiEntity api;
 
     @Id
-    @ManyToOne
+    @ManyToOne(cascade = ALL)
     private ApplicationEntity application;
 
     private String apiUrl;

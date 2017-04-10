@@ -5,11 +5,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.zalando.apidiscovery.storage.utils.SwaggerDefinitionHelper;
 import org.zalando.apidiscovery.storage.utils.SwaggerParseException;
 
 import javax.persistence.EntityManager;
-import javax.transaction.Transactional;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
@@ -49,18 +49,28 @@ public class ApiDefinitionProcessingService {
         setApiNameAndVersion(crawledAPIDefinition);
         final OffsetDateTime now = now(UTC);
 
-        final ApiEntity apiVersion = createOrUpdateApiVersion(crawledAPIDefinition, now);
-        final ApplicationEntity application = createOrUpdateApplication(crawledAPIDefinition, now);
-        final ApiDeploymentEntity apiDeployment = createOrUpdateApiDeployment(apiVersion, application, now);
+        final ApplicationEntity application = findOrCreateApplication(crawledAPIDefinition, now);
+        final ApiEntity apiVersion = findOrCreateApiDefinition(crawledAPIDefinition, now);
+        final ApiDeploymentEntity apiDeployment = findOfCreateApiDeployment(apiVersion, application, now);
 
+        System.out.println("VERSION: " + apiVersion);
+        System.out.println("APPLICA: " + application);
+        System.out.println("DEPLOYM: " + apiDeployment);
+
+        apiRepository.save(apiVersion);
+        applicationRepository.save(application);
+        entityManager.persist(apiDeployment);
         LOG.info("New crawling information has been processed; api deployment: {}", apiDeployment);
         return apiVersion;
     }
 
-    private ApiDeploymentEntity createOrUpdateApiDeployment(ApiEntity apiVersion, ApplicationEntity application,
-                                                            OffsetDateTime now) {
-        final Optional<ApiDeploymentEntity> existingApiDeployment = Optional.ofNullable(
-                entityManager.find(ApiDeploymentEntity.class, new ApiDeploymentEntity(apiVersion, application)));
+    private ApiDeploymentEntity findOfCreateApiDeployment(ApiEntity apiVersion, ApplicationEntity application,
+                                                          OffsetDateTime now) {
+        final boolean apiDeploymentCanExist = entityManager.contains(apiVersion) && entityManager.contains(application);
+        final Optional<ApiDeploymentEntity> existingApiDeployment = apiDeploymentCanExist ? Optional.ofNullable(
+                entityManager.find(ApiDeploymentEntity.class, new ApiDeploymentEntity(apiVersion, application)))
+                : Optional.empty();
+
         final ApiDeploymentEntity apiDeployment = existingApiDeployment.orElse(newApiDeployment(now));
 
         apiDeployment.setLastCrawled(now);
@@ -68,19 +78,19 @@ public class ApiDefinitionProcessingService {
         apiDeployment.setApplication(application);
         apiDeployment.setApi(apiVersion);
 
-        entityManager.persist(apiDeployment);
         return apiDeployment;
     }
 
-    private ApplicationEntity createOrUpdateApplication(CrawledApiDefinitionDto crawledAPIDefinition, OffsetDateTime now) {
+    private ApplicationEntity findOrCreateApplication(CrawledApiDefinitionDto crawledAPIDefinition, OffsetDateTime now) {
         final Optional<ApplicationEntity> existingApplication =
                 applicationRepository.findOneByName(crawledAPIDefinition.getApplicationName());
 
-        return existingApplication.orElse(applicationRepository.save(newApplication(crawledAPIDefinition, now)));
+        return existingApplication.orElse(newApplication(crawledAPIDefinition, now));
     }
 
-    private ApiEntity createOrUpdateApiVersion(final CrawledApiDefinitionDto crawledAPIDefinition, final OffsetDateTime now)
+    private ApiEntity findOrCreateApiDefinition(final CrawledApiDefinitionDto crawledAPIDefinition, final OffsetDateTime now)
             throws NoSuchAlgorithmException {
+        final ApiEntity api;
         final String definitionHash = sha256(crawledAPIDefinition.getDefinition());
         final List<ApiEntity> existingApis = apiRepository.findByApiNameAndApiVersionAndDefinitionHash(
                 crawledAPIDefinition.getApiName(),
@@ -95,10 +105,11 @@ public class ApiDefinitionProcessingService {
                     .getResultList().get(0);
             final ApiEntity newApi = newApiVersion(crawledAPIDefinition, now, definitionHash, nextDefinitionId);
 
-            return apiRepository.save(newApi);
+            api = newApi;
         } else {
-            return existingApis.get(0);
+            api = existingApis.get(0);
         }
+        return api;
     }
 
     private String sha256(String content) throws NoSuchAlgorithmException {

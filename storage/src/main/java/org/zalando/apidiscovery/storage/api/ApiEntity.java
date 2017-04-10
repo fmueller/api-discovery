@@ -23,6 +23,7 @@ import org.hibernate.annotations.Type;
 
 import static javax.persistence.CascadeType.ALL;
 
+
 @NamedQueries({
         @NamedQuery(
                 name = "selectLastApiDefinitionId",
