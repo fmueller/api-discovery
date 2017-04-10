@@ -79,4 +79,36 @@ public class ApiRepositoryTest {
             .isNotNull()
             .hasSize(2);
     }
+
+    @Test
+    public void shouldPersistAndFetchOffsetDateCorrectly() throws Exception {
+        ApplicationEntity app1 = applicationRepository.save(
+            ApplicationEntity
+                .builder()
+                .name("testApp")
+                .created(now(UTC))
+                .build());
+
+        ApiEntity testAPi100 = ApiEntity.builder().apiName("testAPi")
+            .apiVersion("1.0.0")
+            .created(now(UTC))
+            .build();
+
+
+        ApiDeploymentEntity apiDeploymentEntity1 = ApiDeploymentEntity.builder()
+            .api(testAPi100)
+            .application(app1)
+            .lifecycleState(ApiLifecycleState.ACTIVE)
+            .created(now(UTC))
+            .build();
+
+        testAPi100.setApiDeploymentEntities(asList(apiDeploymentEntity1));
+        app1.setApiDeploymentEntities(asList(apiDeploymentEntity1));
+
+        apiRepository.save(asList(testAPi100));
+
+        ApiEntity persistedApiEntity = apiRepository.findOne(testAPi100.getId());
+        assertThat(persistedApiEntity.getCreated())
+            .isEqualTo(testAPi100.getCreated());
+    }
 }
