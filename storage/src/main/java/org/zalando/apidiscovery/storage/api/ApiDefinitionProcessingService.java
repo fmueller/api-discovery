@@ -53,10 +53,6 @@ public class ApiDefinitionProcessingService {
         final ApiEntity apiVersion = findOrCreateApiDefinition(crawledAPIDefinition, now);
         final ApiDeploymentEntity apiDeployment = findOfCreateApiDeployment(apiVersion, application, now);
 
-        System.out.println("VERSION: " + apiVersion);
-        System.out.println("APPLICA: " + application);
-        System.out.println("DEPLOYM: " + apiDeployment);
-
         apiRepository.save(apiVersion);
         applicationRepository.save(application);
         entityManager.persist(apiDeployment);
