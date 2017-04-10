@@ -88,9 +88,21 @@ public class ApiService {
     }
 
     public List<VersionsDto> getVersionsForApi(String apiId, ApiLifecycleState lifecycleState) {
-        return getVersionsForApi(apiId).stream()
-            .filter(versionsDto -> lifecycleState.equals(versionsDto.getLifecycleState()))
-            .collect(toList());
+        List<ApiEntity> apiEntities = getApiEntityByLifecycleState(apiId, lifecycleState);
+        return apiEntities.isEmpty() ? Collections.emptyList() : toVersionDtoList(apiEntities);
+    }
+
+    private List<ApiEntity> getApiEntityByLifecycleState(String apiId, ApiLifecycleState lifecycleState) {
+        switch (lifecycleState) {
+            case ACTIVE:
+                return apiRepository.findByApiNameAndLifecycleStateIsActive(apiId);
+            case INACTIVE:
+                return apiRepository.findByApiNameAndLifecycleStateIsInactive(apiId);
+            case DECOMMISSIONED:
+                return apiRepository.findByApiNameAndLifecycleStateIsDecommissioned(apiId);
+            default:
+                return new ArrayList<>();
+        }
     }
 
     public Optional<VersionsDto> getVersion(String apiId, String version) {
