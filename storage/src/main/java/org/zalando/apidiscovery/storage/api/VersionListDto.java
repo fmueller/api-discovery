@@ -1,5 +1,6 @@
 package org.zalando.apidiscovery.storage.api;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -11,6 +12,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class VersionListDto {
 
-    private List<VersionsDto> versions;
+    private List<VersionsDto> versions = new ArrayList<>();
 
 }

@@ -67,7 +67,7 @@ public class ApiService {
         List<ApiEntity> apiEntities = apiRepository.findByApiName(apiName);
 
         return apiEntities.stream()
-            .findFirst()
+            .findAny()
             .map(apiEntity ->
                 Optional.of(new ApiDto(apiEntity.getApiName(),
                     aggregateApplicationLifecycleStateForApi(apiEntities),
@@ -96,24 +96,16 @@ public class ApiService {
     public Optional<VersionsDto> getVersion(String apiId, String version) {
         List<ApiEntity> apiEntities = apiRepository.findByApiNameAndApiVersion(apiId, version);
         return toVersionDtoList(apiEntities).stream()
-            .findFirst();
+            .findAny();
     }
 
     public Optional<ApiDefinitionDto> getApiDefinitionDto(String definitionId) {
-        final Long id = saveValueOf(definitionId);
-        if (id == null) {
+        try {
+            Long id = Long.valueOf(definitionId);
+            return Optional.ofNullable(apiRepository.findOne(id))
+                .map(ApiEntityToApiDefinitionConverter::toApiDefinitionDto);
+        } catch (NumberFormatException nfe) {
             return Optional.empty();
         }
-        return Optional.ofNullable(apiRepository.findOne(id))
-            .map(ApiEntityToApiDefinitionConverter::toApiDefinitionDto);
-    }
-
-    private Long saveValueOf(String value) {
-        try {
-            return Long.valueOf(value);
-        } catch (NumberFormatException nfe) {
-            return null;
-        }
-
     }
 }
