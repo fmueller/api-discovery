@@ -57,6 +57,8 @@ public class RestApiIntegrationTest {
         apiDefinition.setApplicationId(serviceId);
         apiDefinition.setStatus("SUCCESS");
         apiDefinition.setDefinition("{\"swagger\": \"some api definition in here\"}");
+        apiDefinition.setName("test-api");
+        apiDefinition.setVersion("version");
     }
 
     @Test
