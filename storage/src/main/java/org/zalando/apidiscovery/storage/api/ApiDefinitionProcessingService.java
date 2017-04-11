@@ -27,6 +27,9 @@ public class ApiDefinitionProcessingService {
 
     private static final Logger LOG = LoggerFactory.getLogger(ApiDefinitionProcessingService.class);
 
+    private final MessageDigest messageDigest;
+
+
     private final ApplicationRepository applicationRepository;
     private final ApiRepository apiRepository;
     private final EntityManager entityManager;
@@ -34,14 +37,15 @@ public class ApiDefinitionProcessingService {
     @Autowired
     public ApiDefinitionProcessingService(final ApplicationRepository appRepository,
                                           final ApiRepository apiRepository,
-                                          final EntityManager entityManager) {
+                                          final EntityManager entityManager) throws NoSuchAlgorithmException {
         this.applicationRepository = appRepository;
         this.apiRepository = apiRepository;
         this.entityManager = entityManager;
+        this.messageDigest = MessageDigest.getInstance("SHA-256");
     }
 
     @Transactional
-    public ApiEntity processDiscoveredApiDefinition(final DiscoveredApiDefinition discoveredApiDefinition) throws NoSuchAlgorithmException {
+    public ApiEntity processDiscoveredApiDefinition(final DiscoveredApiDefinition discoveredApiDefinition) {
         setApiNameAndVersion(discoveredApiDefinition);
         final OffsetDateTime now = now(UTC);
 
@@ -80,8 +84,7 @@ public class ApiDefinitionProcessingService {
         return existingApplication.orElse(newApplication(discoveredApiDefinition, now));
     }
 
-    private ApiEntity findOrCreateApiDefinition(final DiscoveredApiDefinition discoveredApiDefinition, final OffsetDateTime now)
-            throws NoSuchAlgorithmException {
+    private ApiEntity findOrCreateApiDefinition(final DiscoveredApiDefinition discoveredApiDefinition, final OffsetDateTime now) {
         final ApiEntity api;
         final String definitionHash = sha256(discoveredApiDefinition.getDefinition());
         final List<ApiEntity> existingApis = apiRepository.findByApiNameAndApiVersionAndDefinitionHash(
@@ -103,10 +106,9 @@ public class ApiDefinitionProcessingService {
         return api;
     }
 
-    private String sha256(String content) throws NoSuchAlgorithmException {
-        MessageDigest md = MessageDigest.getInstance("SHA-256");
-        md.update(content.getBytes(StandardCharsets.UTF_8));
-        return String.format("%064x", new BigInteger(1, md.digest()));
+    private String sha256(String content) {
+        messageDigest.update(content.getBytes(StandardCharsets.UTF_8));
+        return String.format("%064x", new BigInteger(1, messageDigest.digest()));
     }
 
     protected void setApiNameAndVersion(final DiscoveredApiDefinition discoveredApiDefinition) throws SwaggerParseException {
