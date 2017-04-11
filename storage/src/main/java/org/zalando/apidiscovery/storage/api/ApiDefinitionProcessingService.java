@@ -5,6 +5,7 @@ import org.hsqldb.HsqlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,8 +31,10 @@ public class ApiDefinitionProcessingService {
 
     private static final Logger LOG = LoggerFactory.getLogger(ApiDefinitionProcessingService.class);
 
-    private final MessageDigest messageDigest;
+    @Value("${storage.retries.unique-key-constraint-violation}")
+    private int maxNumberOfRetries = 100;
 
+    private final MessageDigest messageDigest;
 
     private final ApplicationRepository applicationRepository;
     private final ApiRepository apiRepository;
@@ -52,15 +55,17 @@ public class ApiDefinitionProcessingService {
         setApiNameAndVersion(discoveredApiDefinition);
         final OffsetDateTime now = now(UTC);
 
+        // needed in order to implement the retry logic
+        // default FlushModeType.AUTO tries to flush before the transaction ends
         final Session session = entityManager.unwrap(Session.class);
         session.setFlushMode(FlushModeType.COMMIT);
 
         final ApplicationEntity application = findOrCreateApplication(discoveredApiDefinition, now);
         applicationRepository.save(application);
 
-        for (int retryOnUniqueConstraintViolation = 0; retryOnUniqueConstraintViolation < 100; retryOnUniqueConstraintViolation++) {
+        for (int counter = 0; counter < maxNumberOfRetries; counter++) {
             try {
-                ApiEntity apiVersion = findOrCreateApiDefinition(session, discoveredApiDefinition, now);
+                ApiEntity apiVersion = findOrCreateApiDefinition(discoveredApiDefinition, now);
                 final ApiDeploymentEntity apiDeployment = findOfCreateApiDeployment(apiVersion, application, now);
 
                 apiVersion = apiRepository.save(apiVersion);
@@ -72,6 +77,7 @@ public class ApiDefinitionProcessingService {
                 Throwable rootCause = e.getRootCause();
                 if (!(rootCause instanceof HsqlException
                         && rootCause.getMessage().toUpperCase().contains("API_VERSION_API_NAME_VERSION_DEFINITION_ID_IDX"))) {
+                    LOG.warn("could not persist discovered api definition {}", e);
                     throw e;
                 }
             }
@@ -103,7 +109,7 @@ public class ApiDefinitionProcessingService {
         return existingApplication.orElse(newApplication(discoveredApiDefinition, now));
     }
 
-    private ApiEntity findOrCreateApiDefinition(final Session session, final DiscoveredApiDefinition discoveredApiDefinition, final OffsetDateTime now) {
+    private ApiEntity findOrCreateApiDefinition(final DiscoveredApiDefinition discoveredApiDefinition, final OffsetDateTime now) {
         final ApiEntity api;
         final String definitionHash = sha256(discoveredApiDefinition.getDefinition());
         final List<ApiEntity> existingApis = apiRepository.findByApiNameAndApiVersionAndDefinitionHash(
@@ -112,7 +118,7 @@ public class ApiDefinitionProcessingService {
                 definitionHash);
 
         if (existingApis.isEmpty()) {
-            final int nextDefinitionId = nextDefinitionId(session, discoveredApiDefinition);
+            final int nextDefinitionId = nextDefinitionId(discoveredApiDefinition);
             api = newApiVersion(discoveredApiDefinition, now, definitionHash, nextDefinitionId);
         } else {
             api = existingApis.get(0);
@@ -120,7 +126,7 @@ public class ApiDefinitionProcessingService {
         return api;
     }
 
-    protected int nextDefinitionId(Session session, DiscoveredApiDefinition discoveredApiDefinition) {
+    protected int nextDefinitionId(DiscoveredApiDefinition discoveredApiDefinition) {
         return 1 + apiRepository.getLastApiDefinitionId(
                 discoveredApiDefinition.getApiName(),
                 discoveredApiDefinition.getVersion());

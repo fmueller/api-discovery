@@ -1,12 +1,11 @@
 package org.zalando.apidiscovery.storage.api;
 
-import org.hibernate.Session;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
@@ -16,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.zalando.apidiscovery.storage.TestDataHelper.discoveredMetaApi;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:cleanDatabase.sql")
 public class ApiDefinitionProcessingServiceIntegrationTest {
@@ -62,7 +61,7 @@ public class ApiDefinitionProcessingServiceIntegrationTest {
             private int counter = 0;
 
             @Override
-            protected int nextDefinitionId(Session session, DiscoveredApiDefinition discoveredApiDefinition) {
+            protected int nextDefinitionId(DiscoveredApiDefinition discoveredApiDefinition) {
                 return counter++ < 2 ? 1 : 2;
             }
         };
