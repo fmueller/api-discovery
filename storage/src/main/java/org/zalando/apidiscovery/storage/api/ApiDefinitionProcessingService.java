@@ -121,10 +121,9 @@ public class ApiDefinitionProcessingService {
     }
 
     protected int nextDefinitionId(Session session, DiscoveredApiDefinition discoveredApiDefinition) {
-        return 1 + (int) session.getNamedQuery("selectLastApiDefinitionId")
-                .setParameter("apiName", discoveredApiDefinition.getApiName())
-                .setParameter("apiVersion", discoveredApiDefinition.getVersion())
-                .getResultList().get(0);
+        return 1 + apiRepository.getLastApiDefinitionId(
+                discoveredApiDefinition.getApiName(),
+                discoveredApiDefinition.getVersion());
     }
 
     private String sha256(String content) {

@@ -13,8 +13,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.io.Serializable;
@@ -24,13 +22,6 @@ import java.util.List;
 
 import static javax.persistence.CascadeType.ALL;
 
-@NamedQueries({
-        @NamedQuery(
-                name = "selectLastApiDefinitionId",
-                query = "select coalesce(max(a.definitionId), 0) from ApiEntity a " +
-                        "where a.apiName = :apiName and a.apiVersion = :apiVersion"
-        )
-})
 @Data
 @Builder
 @AllArgsConstructor
