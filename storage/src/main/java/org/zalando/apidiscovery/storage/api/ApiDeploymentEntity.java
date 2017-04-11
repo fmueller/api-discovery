@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.Entity;
@@ -41,10 +42,12 @@ public class ApiDeploymentEntity implements Serializable {
     @Enumerated(EnumType.STRING)
     private ApiLifecycleState lifecycleState;
 
-    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentOffsetDateTime")
+    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentOffsetDateTime",
+            parameters = {@Parameter(name = "javaZone", value = "UTC")})
     private OffsetDateTime lastCrawled;
 
-    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentOffsetDateTime")
+    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentOffsetDateTime",
+            parameters = {@Parameter(name = "javaZone", value = "UTC")})
     private OffsetDateTime created;
 
     public ApiDeploymentEntity(ApiEntity api, ApplicationEntity application) {
