@@ -10,7 +10,6 @@ import org.zalando.apidiscovery.storage.utils.SwaggerDefinitionHelper;
 import org.zalando.apidiscovery.storage.utils.SwaggerParseException;
 
 import javax.persistence.EntityManager;
-import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -111,16 +110,9 @@ public class ApiDefinitionProcessingService {
     }
 
     protected void setApiNameAndVersion(final DiscoveredApiDefinition discoveredApiDefinition) throws SwaggerParseException {
-        final String name;
-        final String version;
-
-        try {
-            final SwaggerDefinitionHelper swagger = new SwaggerDefinitionHelper(discoveredApiDefinition.getDefinition());
-            name = swagger.getName();
-            version = swagger.getVersion();
-        } catch (IOException | NullPointerException e) {
-            throw new SwaggerParseException("could not parse swagger definition json", e);
-        }
+        final SwaggerDefinitionHelper swagger = new SwaggerDefinitionHelper(discoveredApiDefinition.getDefinition());
+        final String name = swagger.getName();
+        final String version = swagger.getVersion();
 
         discoveredApiDefinition.setApiName(name);
         discoveredApiDefinition.setVersion(version);
