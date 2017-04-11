@@ -58,10 +58,9 @@ public class ApiDefinitionProcessingService {
         final ApplicationEntity application = findOrCreateApplication(discoveredApiDefinition, now);
         applicationRepository.save(application);
 
-        ApiEntity apiVersion = null;
         for (int retryOnUniqueConstraintViolation = 0; retryOnUniqueConstraintViolation < 100; retryOnUniqueConstraintViolation++) {
             try {
-                apiVersion = findOrCreateApiDefinition(session, discoveredApiDefinition, now);
+                ApiEntity apiVersion = findOrCreateApiDefinition(session, discoveredApiDefinition, now);
                 final ApiDeploymentEntity apiDeployment = findOfCreateApiDeployment(apiVersion, application, now);
 
                 apiVersion = apiRepository.save(apiVersion);
