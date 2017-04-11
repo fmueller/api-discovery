@@ -165,6 +165,7 @@ public class ApiDefinitionProcessingService {
                                     String definitionHash, int nextDefinitionId) {
         return ApiEntity.builder()
                 .apiName(discoveredAPIDefinition.getApiName())
+                .definitionType(discoveredAPIDefinition.getType())
                 .apiVersion(discoveredAPIDefinition.getVersion())
                 .definition(discoveredAPIDefinition.getDefinition())
                 .definitionHash(definitionHash)

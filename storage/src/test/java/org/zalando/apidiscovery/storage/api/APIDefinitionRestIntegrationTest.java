@@ -1,6 +1,5 @@
 package org.zalando.apidiscovery.storage.api;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -50,18 +49,17 @@ public class APIDefinitionRestIntegrationTest extends AbstractIntegrationTest {
     @Value("classpath:minimal-crawler-data.json")
     private Resource minimalCrawledApi;
 
-    @Before
-    public void init() {
-        apiRepository.deleteAll();
-        applicationRepository.deleteAll();
-    }
-
     @Test
     public void shouldCreateANewApplication() throws Exception {
+        assertThat(applicationRepository.findOneByName("uber.api")).isNotPresent();
+
         restTemplate.exchange("/api-definitions", HttpMethod.POST, httpEntity(readResource(discoveredUberApiJson)), Void.class);
 
-        final Optional<ApplicationEntity> app = applicationRepository.findOneByName("uber.api");
-        assertThat(app).isPresent();
+        final Optional<ApplicationEntity> appOption = applicationRepository.findOneByName("uber.api");
+        assertThat(appOption).isPresent();
+        final ApplicationEntity app = appOption.get();
+        assertThat(app.getCreated()).isNotNull();
+        assertThat(app.getAppUrl()).isEqualTo("uber.swagger.io");
     }
 
     @Test
@@ -74,7 +72,7 @@ public class APIDefinitionRestIntegrationTest extends AbstractIntegrationTest {
 
         restTemplate.exchange("/api-definitions", HttpMethod.POST, httpEntity(readResource(discoveredUberApiJson)), Void.class);
 
-        assertThat(applicationRepository.findAll().size()).isEqualTo(1);
+        assertThat(applicationRepository.findOneByName("uber.api")).isPresent();
     }
 
     @Test

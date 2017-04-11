@@ -49,6 +49,7 @@ public final class TestDataHelper {
         return DiscoveredApiDefinition.builder()
                 .applicationName("Meta Application")
                 .apiName("meta-api")
+                .type("swagger")
                 .version(version)
                 .definition("{\"info\":{\"title\":\"Meta API\",\"version\":\"" + version + "\"}, \"diff\":\"" + definitionDiff + "\"}")
                 .build();

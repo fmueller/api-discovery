@@ -25,7 +25,6 @@ public class ApiDefinitionResourceControllerTest {
     @Mock
     private ApiDefinitionProcessingService apiDefinitionService;
 
-
     @Before
     public void setUp() throws Exception {
         apiDefinitionController = new ApiDefinitionResourceController(apiDefinitionService);
@@ -35,7 +34,7 @@ public class ApiDefinitionResourceControllerTest {
     public void shouldReturnHttpCodeCreatedAndLocationHeader() throws Exception {
         final ApiEntity api = ApiEntity.builder().apiName("meta-api").apiVersion("1.0").id(1l).build();
         final UriComponentsBuilder builder = UriComponentsBuilder.fromUri(new URI("http://localhost/"));
-        final String uriPattern = "http://localhost/apis/meta-api/versions/1.0/definitions/\\d+";
+        final String definitionUriPattern = "http://localhost/apis/meta-api/versions/1.0/definitions/\\d+";
         doReturn(Optional.of(api)).when(apiDefinitionService).processDiscoveredApiDefinition(any(DiscoveredApiDefinition.class));
 
         final ResponseEntity<Void> response = apiDefinitionController.postDiscoveredApiDefinition(null, builder);
@@ -43,6 +42,6 @@ public class ApiDefinitionResourceControllerTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(location).isNotNull();
-        assertThat(Pattern.matches(uriPattern, location.toString())).isTrue();
+        assertThat(Pattern.matches(definitionUriPattern, location.toString())).isTrue();
     }
 }
