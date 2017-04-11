@@ -46,7 +46,6 @@ public class ApiResourceController {
         return apiService.getApi(apiId)
             .map(api -> ResponseEntity.ok(buildLinks(api, builder)))
             .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-
     }
 
     private ApiDto buildLinks(ApiDto api, UriComponentsBuilder builder) {
