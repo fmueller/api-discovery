@@ -1,15 +1,18 @@
 package org.zalando.apidiscovery.storage.api;
 
 import org.hibernate.Session;
+import org.hsqldb.HsqlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.zalando.apidiscovery.storage.utils.SwaggerDefinitionHelper;
 import org.zalando.apidiscovery.storage.utils.SwaggerParseException;
 
 import javax.persistence.EntityManager;
+import javax.persistence.FlushModeType;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -45,19 +48,36 @@ public class ApiDefinitionProcessingService {
     }
 
     @Transactional
-    public ApiEntity processDiscoveredApiDefinition(final DiscoveredApiDefinition discoveredApiDefinition) {
+    public Optional<ApiEntity> processDiscoveredApiDefinition(final DiscoveredApiDefinition discoveredApiDefinition) {
         setApiNameAndVersion(discoveredApiDefinition);
         final OffsetDateTime now = now(UTC);
 
-        final ApplicationEntity application = findOrCreateApplication(discoveredApiDefinition, now);
-        final ApiEntity apiVersion = findOrCreateApiDefinition(discoveredApiDefinition, now);
-        final ApiDeploymentEntity apiDeployment = findOfCreateApiDeployment(apiVersion, application, now);
+        final Session session = entityManager.unwrap(Session.class);
+        session.setFlushMode(FlushModeType.COMMIT);
 
-        apiRepository.save(apiVersion);
+        final ApplicationEntity application = findOrCreateApplication(discoveredApiDefinition, now);
         applicationRepository.save(application);
-        entityManager.persist(apiDeployment);
-        LOG.info("New crawling information has been processed; api deployment: {}", apiDeployment);
-        return apiVersion;
+
+        ApiEntity apiVersion = null;
+        for (int retryOnUniqueConstraintViolation = 0; retryOnUniqueConstraintViolation < 100; retryOnUniqueConstraintViolation++) {
+            try {
+                apiVersion = findOrCreateApiDefinition(session, discoveredApiDefinition, now);
+                final ApiDeploymentEntity apiDeployment = findOfCreateApiDeployment(apiVersion, application, now);
+
+                apiVersion = apiRepository.save(apiVersion);
+                entityManager.persist(apiDeployment);
+
+                LOG.info("New crawling information has been processed; api deployment: {}", apiDeployment);
+                return Optional.of(apiVersion);
+            } catch (DataIntegrityViolationException e) {
+                Throwable rootCause = e.getRootCause();
+                if (!(rootCause instanceof HsqlException
+                        && rootCause.getMessage().toUpperCase().contains("API_VERSION_API_NAME_VERSION_DEFINITION_ID_IDX"))) {
+                    throw e;
+                }
+            }
+        }
+        return Optional.empty();
     }
 
     private ApiDeploymentEntity findOfCreateApiDeployment(ApiEntity apiVersion, ApplicationEntity application,
@@ -84,7 +104,7 @@ public class ApiDefinitionProcessingService {
         return existingApplication.orElse(newApplication(discoveredApiDefinition, now));
     }
 
-    private ApiEntity findOrCreateApiDefinition(final DiscoveredApiDefinition discoveredApiDefinition, final OffsetDateTime now) {
+    private ApiEntity findOrCreateApiDefinition(final Session session, final DiscoveredApiDefinition discoveredApiDefinition, final OffsetDateTime now) {
         final ApiEntity api;
         final String definitionHash = sha256(discoveredApiDefinition.getDefinition());
         final List<ApiEntity> existingApis = apiRepository.findByApiNameAndApiVersionAndDefinitionHash(
@@ -93,17 +113,19 @@ public class ApiDefinitionProcessingService {
                 definitionHash);
 
         if (existingApis.isEmpty()) {
-            final Session session = entityManager.unwrap(Session.class);
-            final int nextDefinitionId = 1 + (int) session.getNamedQuery("selectLastApiDefinitionId")
-                    .setParameter("apiName", discoveredApiDefinition.getApiName())
-                    .setParameter("apiVersion", discoveredApiDefinition.getVersion())
-                    .getResultList().get(0);
-
+            final int nextDefinitionId = nextDefinitionId(session, discoveredApiDefinition);
             api = newApiVersion(discoveredApiDefinition, now, definitionHash, nextDefinitionId);
         } else {
             api = existingApis.get(0);
         }
         return api;
+    }
+
+    protected int nextDefinitionId(Session session, DiscoveredApiDefinition discoveredApiDefinition) {
+        return 1 + (int) session.getNamedQuery("selectLastApiDefinitionId")
+                .setParameter("apiName", discoveredApiDefinition.getApiName())
+                .setParameter("apiVersion", discoveredApiDefinition.getVersion())
+                .getResultList().get(0);
     }
 
     private String sha256(String content) {

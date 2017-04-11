@@ -1,6 +1,7 @@
 package org.zalando.apidiscovery.storage.api;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -13,6 +14,7 @@ import org.zalando.apidiscovery.storage.utils.SwaggerParseException;
 
 import java.net.URI;
 import java.security.NoSuchAlgorithmException;
+import java.util.Optional;
 
 import static java.lang.String.valueOf;
 
@@ -32,15 +34,19 @@ public class ApiDefinitionResourceController {
     public ResponseEntity<Void> postDiscoveredApiDefinition(@RequestBody DiscoveredApiDefinition discoveredAPIDefinition, UriComponentsBuilder builder)
             throws SwaggerParseException, NoSuchAlgorithmException {
 
-        final ApiEntity api = apiDefinitionProcessingService.processDiscoveredApiDefinition(discoveredAPIDefinition);
+        final Optional<ApiEntity> apiOption = apiDefinitionProcessingService.processDiscoveredApiDefinition(discoveredAPIDefinition);
 
-        final DefinitionDeploymentLinkBuilder linkBuilder = new DefinitionDeploymentLinkBuilder(
-                api.getApiName(),
-                api.getApiVersion(),
-                valueOf(api.getId()));
-
-        final URI location = builder.path(linkBuilder.buildLink()).build().encode().toUri();
-        return ResponseEntity.created(location).build();
+        if (apiOption.isPresent()) {
+            final ApiEntity api = apiOption.get();
+            final LinkBuilder linkBuilder = new DefinitionDeploymentLinkBuilder(
+                    api.getApiName(),
+                    api.getApiVersion(),
+                    valueOf(api.getId()));
+            final URI location = builder.path(linkBuilder.buildLink()).build().encode().toUri();
+            return ResponseEntity.created(location).build();
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @ExceptionHandler(SwaggerParseException.class)

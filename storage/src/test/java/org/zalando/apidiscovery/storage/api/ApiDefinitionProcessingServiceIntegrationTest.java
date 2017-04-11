@@ -1,12 +1,15 @@
 package org.zalando.apidiscovery.storage.api;
 
-import org.junit.Before;
+import org.hibernate.Session;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -15,6 +18,7 @@ import static org.zalando.apidiscovery.storage.TestDataHelper.discoveredMetaApi;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT)
+@Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:cleanDatabase.sql")
 public class ApiDefinitionProcessingServiceIntegrationTest {
 
     @Autowired
@@ -26,14 +30,11 @@ public class ApiDefinitionProcessingServiceIntegrationTest {
     @Autowired
     private ApiDefinitionProcessingService apiService;
 
-    @Before
-    public void init() {
-        apiRepository.deleteAll();
-        applicationRepository.deleteAll();
-    }
+    @Autowired
+    private EntityManager entityManager;
 
     @Test
-    public void shouldBeAbleToAddFirstDefinitionTest() throws Exception {
+    public void shouldBeAbleToAddFirstDefinition() throws Exception {
         apiService.processDiscoveredApiDefinition(discoveredMetaApi("1.0", "a"));
 
         List<ApiEntity> apis = apiRepository.findByApiName("meta-api");
@@ -43,9 +44,31 @@ public class ApiDefinitionProcessingServiceIntegrationTest {
     }
 
     @Test
-    public void definitionIdShouldGrowTest() throws Exception {
+    public void definitionIdShouldGrow() throws Exception {
         apiService.processDiscoveredApiDefinition(discoveredMetaApi("1.0", "a"));
         apiService.processDiscoveredApiDefinition(discoveredMetaApi("1.0", "b"));
+
+        List<ApiEntity> apis = apiRepository.findByApiName("meta-api");
+
+        assertThat(apis.size()).isEqualTo(2);
+        assertThat(apis.get(0).getDefinitionId()).isEqualTo(1);
+        assertThat(apis.get(1).getDefinitionId()).isEqualTo(2);
+    }
+
+    @Test
+    @Transactional
+    public void shouldBeAbleToHandleUniqueConstraintViolation() throws Exception {
+        ApiDefinitionProcessingService service = new ApiDefinitionProcessingService(applicationRepository, apiRepository, entityManager) {
+            private int counter = 0;
+
+            @Override
+            protected int nextDefinitionId(Session session, DiscoveredApiDefinition discoveredApiDefinition) {
+                return counter++ < 2 ? 1 : 2;
+            }
+        };
+
+        service.processDiscoveredApiDefinition(discoveredMetaApi("1.0", "a"));
+        service.processDiscoveredApiDefinition(discoveredMetaApi("1.0", "b"));
 
         List<ApiEntity> apis = apiRepository.findByApiName("meta-api");
 

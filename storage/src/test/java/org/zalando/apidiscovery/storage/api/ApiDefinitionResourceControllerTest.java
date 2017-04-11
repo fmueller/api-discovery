@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,7 +36,7 @@ public class ApiDefinitionResourceControllerTest {
         final ApiEntity api = ApiEntity.builder().apiName("meta-api").apiVersion("1.0").id(1l).build();
         final UriComponentsBuilder builder = UriComponentsBuilder.fromUri(new URI("http://localhost/"));
         final String uriPattern = "http://localhost/apis/meta-api/versions/1.0/definitions/\\d+";
-        doReturn(api).when(apiDefinitionService).processDiscoveredApiDefinition(any(DiscoveredApiDefinition.class));
+        doReturn(Optional.of(api)).when(apiDefinitionService).processDiscoveredApiDefinition(any(DiscoveredApiDefinition.class));
 
         final ResponseEntity<Void> response = apiDefinitionController.postDiscoveredApiDefinition(null, builder);
         final URI location = response.getHeaders().getLocation();
