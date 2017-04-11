@@ -1,7 +1,6 @@
 package org.zalando.apidiscovery.storage.api;
 
 import org.junit.Test;
-import org.zalando.apidiscovery.storage.utils.SwaggerDefinitionHelper;
 import org.zalando.apidiscovery.storage.utils.SwaggerParseException;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -11,8 +10,8 @@ public class ApiDefinitionProcessingServiceTest {
     @Test
     public void shouldSetNameAndVersionFromTheSwaggerDefinition() throws Exception {
         final ApiDefinitionProcessingService apiDefinitionProcessingService =
-                new ApiDefinitionProcessingService(null, null, null, new SwaggerDefinitionHelper());
-        final CrawledApiDefinitionDto apiDef = CrawledApiDefinitionDto.builder()
+                new ApiDefinitionProcessingService(null, null, null);
+        final DiscoveredApiDefinition apiDef = DiscoveredApiDefinition.builder()
                 .definition("{\"info\": {\"title\": \"Api Name\", \"version\": \"1.0.0\"}}")
                 .build();
 
@@ -25,8 +24,8 @@ public class ApiDefinitionProcessingServiceTest {
     @Test(expected = SwaggerParseException.class)
     public void shouldThrowAnExceptionIfCannotParseSwaggerDefinition() throws Exception {
         final ApiDefinitionProcessingService apiDefinitionProcessingService =
-                new ApiDefinitionProcessingService(null, null, null, new SwaggerDefinitionHelper());
-        final CrawledApiDefinitionDto apiDef = CrawledApiDefinitionDto.builder()
+                new ApiDefinitionProcessingService(null, null, null);
+        final DiscoveredApiDefinition apiDef = DiscoveredApiDefinition.builder()
                 .definition("{\"info\": \"here should be actually a sub-document with version and title of the api\"}")
                 .build();
 

@@ -29,10 +29,10 @@ public class ApiDefinitionResourceController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> postCrawledApiDefinition(@RequestBody CrawledApiDefinitionDto crawledAPIDefinitionDto, UriComponentsBuilder builder)
+    public ResponseEntity<Void> postDiscoveredApiDefinition(@RequestBody DiscoveredApiDefinition discoveredAPIDefinition, UriComponentsBuilder builder)
             throws SwaggerParseException, NoSuchAlgorithmException {
 
-        final ApiEntity api = apiDefinitionProcessingService.processCrawledApiDefinition(crawledAPIDefinitionDto);
+        final ApiEntity api = apiDefinitionProcessingService.processDiscoveredApiDefinition(discoveredAPIDefinition);
 
         final DefinitionDeploymentLinkBuilder linkBuilder = new DefinitionDeploymentLinkBuilder(
                 api.getApiName(),

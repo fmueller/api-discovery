@@ -11,23 +11,21 @@ import static org.zalando.apidiscovery.storage.TestDataHelper.instagramApiDefini
 
 public class SwaggerDefinitionHelperTest {
 
-    private String instagramDefinition;
     private SwaggerDefinitionHelper swagger;
 
     @Before
     public void setUp() throws IOException, URISyntaxException {
-        swagger = new SwaggerDefinitionHelper();
-        instagramDefinition = instagramApiDefinition();
+        swagger = new SwaggerDefinitionHelper(instagramApiDefinition());
     }
 
     @Test
     public void shouldExtractTheVersionTest() throws Exception {
-        assertThat(swagger.versionOf(instagramDefinition)).isEqualTo("v1");
+        assertThat(swagger.getVersion()).isEqualTo("v1");
     }
 
     @Test
     public void shouldExtractAndManipulateTheNameTest() throws Exception {
         // the actual value of the api title is 'Instagram API '
-        assertThat(swagger.nameOf(instagramDefinition)).isEqualTo("instagram-api");
+        assertThat(swagger.getName()).isEqualTo("instagram-api");
     }
 }

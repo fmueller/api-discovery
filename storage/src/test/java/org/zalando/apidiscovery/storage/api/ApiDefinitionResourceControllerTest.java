@@ -35,9 +35,9 @@ public class ApiDefinitionResourceControllerTest {
         final ApiEntity api = ApiEntity.builder().apiName("meta-api").apiVersion("1.0").id(1l).build();
         final UriComponentsBuilder builder = UriComponentsBuilder.fromUri(new URI("http://localhost/"));
         final String uriPattern = "http://localhost/apis/meta-api/versions/1.0/definitions/\\d+";
-        doReturn(api).when(apiDefinitionService).processCrawledApiDefinition(any(CrawledApiDefinitionDto.class));
+        doReturn(api).when(apiDefinitionService).processDiscoveredApiDefinition(any(DiscoveredApiDefinition.class));
 
-        final ResponseEntity<Void> response = apiDefinitionController.postCrawledApiDefinition(null, builder);
+        final ResponseEntity<Void> response = apiDefinitionController.postDiscoveredApiDefinition(null, builder);
         final URI location = response.getHeaders().getLocation();
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);

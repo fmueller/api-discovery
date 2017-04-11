@@ -31,26 +31,23 @@ public class ApiDefinitionProcessingService {
     private final ApplicationRepository applicationRepository;
     private final ApiRepository apiRepository;
     private final EntityManager entityManager;
-    private final SwaggerDefinitionHelper swagger;
 
     @Autowired
     public ApiDefinitionProcessingService(final ApplicationRepository appRepository,
                                           final ApiRepository apiRepository,
-                                          final EntityManager entityManager,
-                                          final SwaggerDefinitionHelper swaggerHelper) {
+                                          final EntityManager entityManager) {
         this.applicationRepository = appRepository;
         this.apiRepository = apiRepository;
         this.entityManager = entityManager;
-        this.swagger = swaggerHelper;
     }
 
     @Transactional
-    public ApiEntity processCrawledApiDefinition(final CrawledApiDefinitionDto crawledAPIDefinition) throws NoSuchAlgorithmException {
-        setApiNameAndVersion(crawledAPIDefinition);
+    public ApiEntity processDiscoveredApiDefinition(final DiscoveredApiDefinition discoveredApiDefinition) throws NoSuchAlgorithmException {
+        setApiNameAndVersion(discoveredApiDefinition);
         final OffsetDateTime now = now(UTC);
 
-        final ApplicationEntity application = findOrCreateApplication(crawledAPIDefinition, now);
-        final ApiEntity apiVersion = findOrCreateApiDefinition(crawledAPIDefinition, now);
+        final ApplicationEntity application = findOrCreateApplication(discoveredApiDefinition, now);
+        final ApiEntity apiVersion = findOrCreateApiDefinition(discoveredApiDefinition, now);
         final ApiDeploymentEntity apiDeployment = findOfCreateApiDeployment(apiVersion, application, now);
 
         apiRepository.save(apiVersion);
@@ -77,31 +74,30 @@ public class ApiDefinitionProcessingService {
         return apiDeployment;
     }
 
-    private ApplicationEntity findOrCreateApplication(CrawledApiDefinitionDto crawledAPIDefinition, OffsetDateTime now) {
+    private ApplicationEntity findOrCreateApplication(DiscoveredApiDefinition discoveredApiDefinition, OffsetDateTime now) {
         final Optional<ApplicationEntity> existingApplication =
-                applicationRepository.findOneByName(crawledAPIDefinition.getApplicationName());
+                applicationRepository.findOneByName(discoveredApiDefinition.getApplicationName());
 
-        return existingApplication.orElse(newApplication(crawledAPIDefinition, now));
+        return existingApplication.orElse(newApplication(discoveredApiDefinition, now));
     }
 
-    private ApiEntity findOrCreateApiDefinition(final CrawledApiDefinitionDto crawledAPIDefinition, final OffsetDateTime now)
+    private ApiEntity findOrCreateApiDefinition(final DiscoveredApiDefinition discoveredApiDefinition, final OffsetDateTime now)
             throws NoSuchAlgorithmException {
         final ApiEntity api;
-        final String definitionHash = sha256(crawledAPIDefinition.getDefinition());
+        final String definitionHash = sha256(discoveredApiDefinition.getDefinition());
         final List<ApiEntity> existingApis = apiRepository.findByApiNameAndApiVersionAndDefinitionHash(
-                crawledAPIDefinition.getApiName(),
-                crawledAPIDefinition.getVersion(),
+                discoveredApiDefinition.getApiName(),
+                discoveredApiDefinition.getVersion(),
                 definitionHash);
 
         if (existingApis.isEmpty()) {
             final Session session = entityManager.unwrap(Session.class);
             final int nextDefinitionId = 1 + (int) session.getNamedQuery("selectLastApiDefinitionId")
-                    .setParameter("apiName", crawledAPIDefinition.getApiName())
-                    .setParameter("apiVersion", crawledAPIDefinition.getVersion())
+                    .setParameter("apiName", discoveredApiDefinition.getApiName())
+                    .setParameter("apiVersion", discoveredApiDefinition.getVersion())
                     .getResultList().get(0);
-            final ApiEntity newApi = newApiVersion(crawledAPIDefinition, now, definitionHash, nextDefinitionId);
 
-            api = newApi;
+            api = newApiVersion(discoveredApiDefinition, now, definitionHash, nextDefinitionId);
         } else {
             api = existingApis.get(0);
         }
@@ -114,19 +110,20 @@ public class ApiDefinitionProcessingService {
         return String.format("%064x", new BigInteger(1, md.digest()));
     }
 
-    protected void setApiNameAndVersion(final CrawledApiDefinitionDto crawledAPIDefinition) throws SwaggerParseException {
+    protected void setApiNameAndVersion(final DiscoveredApiDefinition discoveredApiDefinition) throws SwaggerParseException {
         final String name;
         final String version;
 
         try {
-            name = swagger.nameOf(crawledAPIDefinition.getDefinition());
-            version = swagger.versionOf(crawledAPIDefinition.getDefinition());
+            final SwaggerDefinitionHelper swagger = new SwaggerDefinitionHelper(discoveredApiDefinition.getDefinition());
+            name = swagger.getName();
+            version = swagger.getVersion();
         } catch (IOException | NullPointerException e) {
             throw new SwaggerParseException("could not parse swagger definition json", e);
         }
 
-        crawledAPIDefinition.setApiName(name);
-        crawledAPIDefinition.setVersion(version);
+        discoveredApiDefinition.setApiName(name);
+        discoveredApiDefinition.setVersion(version);
     }
 
     private ApiDeploymentEntity newApiDeployment(OffsetDateTime now) {
@@ -135,21 +132,21 @@ public class ApiDefinitionProcessingService {
                 .build();
     }
 
-    private ApplicationEntity newApplication(CrawledApiDefinitionDto crawledAPIDefinitionDto, OffsetDateTime now) {
+    private ApplicationEntity newApplication(DiscoveredApiDefinition discoveredAPIDefinition, OffsetDateTime now) {
         return ApplicationEntity.builder()
-                .appUrl(crawledAPIDefinitionDto.getServiceUrl())
-                .name(crawledAPIDefinitionDto.getApplicationName())
+                .appUrl(discoveredAPIDefinition.getServiceUrl())
+                .name(discoveredAPIDefinition.getApplicationName())
                 .apiDeploymentEntities(new ArrayList<>())
                 .created(now)
                 .build();
     }
 
-    private ApiEntity newApiVersion(CrawledApiDefinitionDto crawledAPIDefinitionDto, OffsetDateTime now,
+    private ApiEntity newApiVersion(DiscoveredApiDefinition discoveredAPIDefinition, OffsetDateTime now,
                                     String definitionHash, int nextDefinitionId) {
         return ApiEntity.builder()
-                .apiName(crawledAPIDefinitionDto.getApiName())
-                .apiVersion(crawledAPIDefinitionDto.getVersion())
-                .definition(crawledAPIDefinitionDto.getDefinition())
+                .apiName(discoveredAPIDefinition.getApiName())
+                .apiVersion(discoveredAPIDefinition.getVersion())
+                .definition(discoveredAPIDefinition.getDefinition())
                 .definitionHash(definitionHash)
                 .definitionId(nextDefinitionId)
                 .created(now)

@@ -1,7 +1,7 @@
 package org.zalando.apidiscovery.storage;
 
 import org.apache.commons.lang3.RandomStringUtils;
-import org.zalando.apidiscovery.storage.api.CrawledApiDefinitionDto;
+import org.zalando.apidiscovery.storage.api.DiscoveredApiDefinition;
 
 import java.io.IOException;
 import java.net.URI;
@@ -48,8 +48,8 @@ public final class TestDataHelper {
     }
 
 
-    public static CrawledApiDefinitionDto crawledMetaApi(String version, String definitionDiff) {
-        return CrawledApiDefinitionDto.builder()
+    public static DiscoveredApiDefinition discoveredMetaApi(String version, String definitionDiff) {
+        return DiscoveredApiDefinition.builder()
                 .applicationName("Meta Application")
                 .apiName("meta-api")
                 .version(version)
@@ -57,7 +57,7 @@ public final class TestDataHelper {
                 .build();
     }
 
-    public static String crawlerUberApi() throws IOException, URISyntaxException {
+    public static String discoveredUberApi() throws IOException, URISyntaxException {
         return readFile("uber.json");
     }
 

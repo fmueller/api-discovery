@@ -11,7 +11,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
-import static org.zalando.apidiscovery.storage.TestDataHelper.crawledMetaApi;
+import static org.zalando.apidiscovery.storage.TestDataHelper.discoveredMetaApi;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT)
@@ -34,7 +34,7 @@ public class ApiDefinitionProcessingServiceIntegrationTest {
 
     @Test
     public void shouldBeAbleToAddFirstDefinitionTest() throws Exception {
-        apiService.processCrawledApiDefinition(crawledMetaApi("1.0", "a"));
+        apiService.processDiscoveredApiDefinition(discoveredMetaApi("1.0", "a"));
 
         List<ApiEntity> apis = apiRepository.findByApiName("meta-api");
 
@@ -44,8 +44,8 @@ public class ApiDefinitionProcessingServiceIntegrationTest {
 
     @Test
     public void definitionIdShouldGrowTest() throws Exception {
-        apiService.processCrawledApiDefinition(crawledMetaApi("1.0", "a"));
-        apiService.processCrawledApiDefinition(crawledMetaApi("1.0", "b"));
+        apiService.processDiscoveredApiDefinition(discoveredMetaApi("1.0", "a"));
+        apiService.processDiscoveredApiDefinition(discoveredMetaApi("1.0", "b"));
 
         List<ApiEntity> apis = apiRepository.findByApiName("meta-api");
 

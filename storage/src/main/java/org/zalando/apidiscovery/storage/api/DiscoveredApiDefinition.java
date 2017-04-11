@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CrawledApiDefinitionDto {
+public class DiscoveredApiDefinition {
 
     private String status;
     private String type;

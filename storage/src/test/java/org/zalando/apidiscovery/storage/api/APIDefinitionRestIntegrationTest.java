@@ -28,7 +28,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.zalando.apidiscovery.storage.TestDataHelper.invalidCrawledApi;
 import static org.zalando.apidiscovery.storage.TestDataHelper.minimalCrawledApi;
-import static org.zalando.apidiscovery.storage.TestDataHelper.crawlerUberApi;
+import static org.zalando.apidiscovery.storage.TestDataHelper.discoveredUberApi;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT)
@@ -54,7 +54,7 @@ public class APIDefinitionRestIntegrationTest {
 
     @Test
     public void shouldCreateANewApplicationTest() throws Exception {
-        restTemplate.exchange("/api-definitions", HttpMethod.POST, httpEntity(crawlerUberApi()), Void.class);
+        restTemplate.exchange("/api-definitions", HttpMethod.POST, httpEntity(discoveredUberApi()), Void.class);
 
         final Optional<ApplicationEntity> app = applicationRepository.findOneByName("uber.api");
         assertThat(app).isPresent();
@@ -68,14 +68,14 @@ public class APIDefinitionRestIntegrationTest {
                 .build();
         applicationRepository.saveAndFlush(application);
 
-        restTemplate.exchange("/api-definitions", HttpMethod.POST, httpEntity(crawlerUberApi()), Void.class);
+        restTemplate.exchange("/api-definitions", HttpMethod.POST, httpEntity(discoveredUberApi()), Void.class);
 
         assertThat(applicationRepository.findAll().size()).isEqualTo(1);
     }
 
     @Test
     public void shouldCreateANewApiVersionTest() throws Exception {
-        restTemplate.exchange("/api-definitions", HttpMethod.POST, httpEntity(crawlerUberApi()), Void.class);
+        restTemplate.exchange("/api-definitions", HttpMethod.POST, httpEntity(discoveredUberApi()), Void.class);
 
         assertThat(apiRepository.findAll().size()).isEqualTo(1);
     }
@@ -97,7 +97,7 @@ public class APIDefinitionRestIntegrationTest {
 
     @Test
     public void shouldCreateANewApiDeploymentTest() throws Exception {
-        restTemplate.exchange("/api-definitions", HttpMethod.POST, httpEntity(crawlerUberApi()),
+        restTemplate.exchange("/api-definitions", HttpMethod.POST, httpEntity(discoveredUberApi()),
                 Void.class);
 
         final List<ApiEntity> apis = apiRepository.findByApiNameAndApiVersion("uber-api", "1.0.0");
@@ -113,8 +113,8 @@ public class APIDefinitionRestIntegrationTest {
 
     @Test
     public void shouldUseExistingApiDeploymentIfTheLinkAlreadyExistsTest() throws Exception {
-        restTemplate.exchange("/api-definitions", HttpMethod.POST, httpEntity(crawlerUberApi()), Void.class);
-        restTemplate.exchange("/api-definitions", HttpMethod.POST, httpEntity(crawlerUberApi()), Void.class);
+        restTemplate.exchange("/api-definitions", HttpMethod.POST, httpEntity(discoveredUberApi()), Void.class);
+        restTemplate.exchange("/api-definitions", HttpMethod.POST, httpEntity(discoveredUberApi()), Void.class);
 
         final int deployments = entityManager
                 .createNativeQuery("SELECT * FROM api_deployment;", ApiDeploymentEntity.class)
