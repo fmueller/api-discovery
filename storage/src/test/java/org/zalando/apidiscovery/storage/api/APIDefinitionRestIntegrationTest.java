@@ -4,8 +4,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -26,9 +28,7 @@ import static java.time.ZoneOffset.UTC;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
-import static org.zalando.apidiscovery.storage.TestDataHelper.invalidCrawledApi;
-import static org.zalando.apidiscovery.storage.TestDataHelper.minimalCrawledApi;
-import static org.zalando.apidiscovery.storage.TestDataHelper.discoveredUberApi;
+import static org.zalando.apidiscovery.storage.TestDataHelper.readResource;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT)
@@ -46,6 +46,16 @@ public class APIDefinitionRestIntegrationTest {
     @Autowired
     private EntityManager entityManager;
 
+    @Value("classpath:uber.json")
+    private Resource discoveredUberApiJson;
+
+
+    @Value("classpath:invalid-crawler-data.json")
+    private Resource invalidCrawledApi;
+
+    @Value("classpath:minimal-crawler-data.json")
+    private Resource minimalCrawledApi;
+
     @Before
     public void init() {
         apiRepository.deleteAll();
@@ -53,35 +63,35 @@ public class APIDefinitionRestIntegrationTest {
     }
 
     @Test
-    public void shouldCreateANewApplicationTest() throws Exception {
-        restTemplate.exchange("/api-definitions", HttpMethod.POST, httpEntity(discoveredUberApi()), Void.class);
+    public void shouldCreateANewApplication() throws Exception {
+        restTemplate.exchange("/api-definitions", HttpMethod.POST, httpEntity(readResource(discoveredUberApiJson)), Void.class);
 
         final Optional<ApplicationEntity> app = applicationRepository.findOneByName("uber.api");
         assertThat(app).isPresent();
     }
 
     @Test
-    public void shouldLinkToExistingApplicationIfItAlreadyExistsTest() throws Exception {
+    public void shouldLinkToExistingApplicationIfItAlreadyExists() throws Exception {
         final ApplicationEntity application = ApplicationEntity.builder()
                 .name("uber.api")
                 .created(now(UTC))
                 .build();
         applicationRepository.saveAndFlush(application);
 
-        restTemplate.exchange("/api-definitions", HttpMethod.POST, httpEntity(discoveredUberApi()), Void.class);
+        restTemplate.exchange("/api-definitions", HttpMethod.POST, httpEntity(readResource(discoveredUberApiJson)), Void.class);
 
         assertThat(applicationRepository.findAll().size()).isEqualTo(1);
     }
 
     @Test
-    public void shouldCreateANewApiVersionTest() throws Exception {
-        restTemplate.exchange("/api-definitions", HttpMethod.POST, httpEntity(discoveredUberApi()), Void.class);
+    public void shouldCreateANewApiVersion() throws Exception {
+        restTemplate.exchange("/api-definitions", HttpMethod.POST, httpEntity(readResource(discoveredUberApiJson)), Void.class);
 
         assertThat(apiRepository.findAll().size()).isEqualTo(1);
     }
 
     @Test
-    public void shouldUseExistingApiVersionIfItAlreadyExistsTest() throws Exception {
+    public void shouldUseExistingApiVersionIfItAlreadyExists() throws Exception {
         final ApiEntity apiEntity = ApiEntity.builder()
                 .apiName("uber-api")
                 .apiVersion("v1")
@@ -90,14 +100,14 @@ public class APIDefinitionRestIntegrationTest {
                 .build();
         apiRepository.saveAndFlush(apiEntity);
 
-        restTemplate.exchange("/api-definitions", HttpMethod.POST, httpEntity(minimalCrawledApi()), Void.class);
+        restTemplate.exchange("/api-definitions", HttpMethod.POST, httpEntity(readResource(minimalCrawledApi)), Void.class);
 
         assertThat(apiRepository.findAll().size()).isEqualTo(1);
     }
 
     @Test
-    public void shouldCreateANewApiDeploymentTest() throws Exception {
-        restTemplate.exchange("/api-definitions", HttpMethod.POST, httpEntity(discoveredUberApi()),
+    public void shouldCreateANewApiDeployment() throws Exception {
+        restTemplate.exchange("/api-definitions", HttpMethod.POST, httpEntity(readResource(discoveredUberApiJson)),
                 Void.class);
 
         final List<ApiEntity> apis = apiRepository.findByApiNameAndApiVersion("uber-api", "1.0.0");
@@ -112,9 +122,9 @@ public class APIDefinitionRestIntegrationTest {
     }
 
     @Test
-    public void shouldUseExistingApiDeploymentIfTheLinkAlreadyExistsTest() throws Exception {
-        restTemplate.exchange("/api-definitions", HttpMethod.POST, httpEntity(discoveredUberApi()), Void.class);
-        restTemplate.exchange("/api-definitions", HttpMethod.POST, httpEntity(discoveredUberApi()), Void.class);
+    public void shouldUseExistingApiDeploymentIfTheLinkAlreadyExists() throws Exception {
+        restTemplate.exchange("/api-definitions", HttpMethod.POST, httpEntity(readResource(discoveredUberApiJson)), Void.class);
+        restTemplate.exchange("/api-definitions", HttpMethod.POST, httpEntity(readResource(discoveredUberApiJson)), Void.class);
 
         final int deployments = entityManager
                 .createNativeQuery("SELECT * FROM api_deployment;", ApiDeploymentEntity.class)
@@ -126,7 +136,7 @@ public class APIDefinitionRestIntegrationTest {
     @Test
     public void shouldReturnBadRequestWhenProvidingNotParsableDefinition() throws Exception {
         final ResponseEntity<Void> response =
-                restTemplate.exchange("/api-definitions", HttpMethod.POST, httpEntity(invalidCrawledApi()), Void.class);
+                restTemplate.exchange("/api-definitions", HttpMethod.POST, httpEntity(readResource(invalidCrawledApi)), Void.class);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
@@ -134,7 +144,7 @@ public class APIDefinitionRestIntegrationTest {
     @Test
     public void shouldReturnALocationHeader() throws Exception {
         final ResponseEntity<Void> response =
-                restTemplate.exchange("/api-definitions", HttpMethod.POST, httpEntity(minimalCrawledApi()), Void.class);
+                restTemplate.exchange("/api-definitions", HttpMethod.POST, httpEntity(readResource(minimalCrawledApi)), Void.class);
         final URI location = response.getHeaders().getLocation();
         final String uriPattern = "http://localhost(:\\d+)/apis/uber-api/versions/v1/definitions/\\d+";
 

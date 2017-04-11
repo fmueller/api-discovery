@@ -1,43 +1,51 @@
 package org.zalando.apidiscovery.storage.utils;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.zalando.apidiscovery.storage.TestDataHelper.instagramApiDefinition;
+import static org.zalando.apidiscovery.storage.TestDataHelper.readResource;
 
+@RunWith(SpringJUnit4ClassRunner.class)
 public class SwaggerDefinitionHelperTest {
 
+    @Value("classpath:instagram-api-definition.json")
+    private Resource instagramApiDefinition;
+
     @Test
-    public void shouldExtractTheVersionTest() throws Exception {
-        final SwaggerDefinitionHelper swagger = new SwaggerDefinitionHelper(instagramApiDefinition());
+    public void shouldExtractTheVersion() throws Exception {
+        final SwaggerDefinitionHelper swagger = new SwaggerDefinitionHelper(readResource(instagramApiDefinition));
 
         assertThat(swagger.getVersion()).isEqualTo("v1");
     }
 
     @Test
-    public void shouldExtractAndManipulateTheNameTest() throws Exception {
-        final SwaggerDefinitionHelper swagger = new SwaggerDefinitionHelper(instagramApiDefinition());
+    public void shouldExtractAndManipulateTheName() throws Exception {
+        final SwaggerDefinitionHelper swagger = new SwaggerDefinitionHelper(readResource(instagramApiDefinition));
 
         // the actual value of the api title is 'Instagram API '
         assertThat(swagger.getName()).isEqualTo("instagram-api");
     }
 
     @Test(expected = SwaggerParseException.class)
-    public void shouldThrowExceptionIfVersionCannotBeParsedTest() throws Exception {
+    public void shouldThrowExceptionIfVersionCannotBeParsed() throws Exception {
         final SwaggerDefinitionHelper swagger = new SwaggerDefinitionHelper("{\"info\": {\"title\": \"Some Api\"}}");
 
         swagger.getVersion();
     }
 
     @Test(expected = SwaggerParseException.class)
-    public void shouldThrowExceptionIfNameCannotBeParsedTest() throws Exception {
+    public void shouldThrowExceptionIfNameCannotBeParsed() throws Exception {
         final SwaggerDefinitionHelper swagger = new SwaggerDefinitionHelper("{\"info\": {\"version\": \"1.0\"}}");
 
         swagger.getName();
     }
 
     @Test(expected = SwaggerParseException.class)
-    public void shouldThrowExceptionIfDefinitionCannotBeParsedTest() throws Exception {
+    public void shouldThrowExceptionIfDefinitionCannotBeParsed() throws Exception {
         new SwaggerDefinitionHelper("{");
     }
 }

@@ -1,14 +1,11 @@
 package org.zalando.apidiscovery.storage;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.core.io.Resource;
 import org.zalando.apidiscovery.storage.api.DiscoveredApiDefinition;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.stream.Collectors;
 
 import static java.time.OffsetDateTime.now;
@@ -57,25 +54,7 @@ public final class TestDataHelper {
                 .build();
     }
 
-    public static String discoveredUberApi() throws IOException, URISyntaxException {
-        return readFile("uber.json");
-    }
-
-    public static String invalidCrawledApi() throws IOException, URISyntaxException {
-        return readFile("invalid-crawler-data.json");
-    }
-
-    public static String minimalCrawledApi() throws IOException, URISyntaxException {
-        return readFile("minimal-crawler-data.json");
-    }
-
-    public static String instagramApiDefinition() throws IOException, URISyntaxException {
-        return readFile("instagram-api-definition.json");
-    }
-
-    private static String readFile(String fileName) throws URISyntaxException, IOException {
-        URI fileLocation = Thread.currentThread().getContextClassLoader().getResource(fileName).toURI();
-        Path path = Paths.get(fileLocation);
-        return Files.lines(path).collect(Collectors.joining());
+    public static String readResource(Resource resource) throws IOException {
+        return Files.lines(resource.getFile().toPath()).collect(Collectors.joining());
     }
 }
