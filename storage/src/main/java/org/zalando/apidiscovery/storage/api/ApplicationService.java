@@ -11,8 +11,12 @@ import static java.util.stream.Collectors.toList;
 @Service
 public class ApplicationService {
 
+    private final ApplicationRepository applicationRepository;
+
     @Autowired
-    private ApplicationRepository applicationRepository;
+    public ApplicationService(ApplicationRepository applicationRepository) {
+        this.applicationRepository = applicationRepository;
+    }
 
     public List<ApplicationDto> getAllApplications() {
         List<ApplicationEntity> applicationEntityList = applicationRepository.findAll();

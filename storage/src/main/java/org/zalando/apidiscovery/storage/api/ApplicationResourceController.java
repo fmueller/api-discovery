@@ -19,8 +19,12 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RequestMapping("/applications")
 public class ApplicationResourceController {
 
+    private final ApplicationService applicationService;
+
     @Autowired
-    private ApplicationService applicationService;
+    public ApplicationResourceController(ApplicationService applicationService) {
+        this.applicationService = applicationService;
+    }
 
     @GetMapping
     public ResponseEntity<ApplicationListDto> getApplications(UriComponentsBuilder builder) {
