@@ -1,21 +1,11 @@
 package org.zalando.apidiscovery.storage;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.embedded.LocalServerPort;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.web.util.UriComponentsBuilder;
 import org.zalando.apidiscovery.storage.api.ApiDeploymentEntity;
 import org.zalando.apidiscovery.storage.api.ApiEntity;
 import org.zalando.apidiscovery.storage.api.ApiLifecycleState;
-import org.zalando.apidiscovery.storage.api.ApiRepository;
 import org.zalando.apidiscovery.storage.api.ApplicationEntity;
-import org.zalando.apidiscovery.storage.api.ApplicationRepository;
 
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
@@ -27,32 +17,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 import static org.zalando.apidiscovery.storage.ApiLifecycleManager.ACTIVE;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(webEnvironment = RANDOM_PORT)
-public class ApplicationResourceIntegrationTest {
-
-    @Autowired
-    private TestRestTemplate restTemplate;
-
-    @Autowired
-    private ApplicationRepository applicationRepository;
-
-    @Autowired
-    private ApiRepository apiRepository;
-
-
-    @LocalServerPort
-    private int port;
-
-    @Before
-    public void setUp() throws Exception {
-        applicationRepository.deleteAll();
-    }
+public class ApplicationResourceIntegrationTest extends AbstractResourceIntegrationTest {
 
     @Test
     public void shouldReturnAllApplications() throws Exception {
@@ -170,12 +139,4 @@ public class ApplicationResourceIntegrationTest {
             .created(now(UTC))
             .build();
     }
-
-    private UriComponentsBuilder localUriBuilder() {
-        return UriComponentsBuilder.newInstance()
-            .scheme("http")
-            .host("localhost")
-            .port(port);
-    }
-
 }
