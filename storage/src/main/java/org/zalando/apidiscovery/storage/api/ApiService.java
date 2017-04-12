@@ -4,9 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static java.text.MessageFormat.format;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static org.zalando.apidiscovery.storage.api.ApiEntityToVersionConverter.toVersionDtoList;
@@ -65,16 +67,18 @@ public class ApiService {
     public Optional<ApiDto> getApi(String apiName) {
         List<ApiEntity> apiEntities = apiRepository.findByApiName(apiName);
 
-        return apiEntities.stream()
-                .findFirst()
-                .map(apiEntity ->
-                        Optional.of(new ApiDto(apiEntity.getApiName(),
-                                aggregateApplicationLifecycleStateForApi(apiEntities),
-                                toVersionDtoList(apiEntities),
-                                toApplicationDtoList(apiEntities))))
-                .orElse(Optional.empty());
-    }
+        if (!apiEntities.isEmpty()) {
+            ApiLifecycleState lifecycleState = aggregateApplicationLifecycleStateForApi(apiEntities);
+            List<VersionsDto> versions = toVersionDtoList(apiEntities);
+            List<ApplicationDto> applications = toApplicationDtoList(apiEntities);
 
+            return Optional.of(new ApiDto(apiName,
+                lifecycleState,
+                versions,
+                applications));
+        }
+        return Optional.empty();
+    }
 
     private List<ApplicationDto> toApplicationDtoList(List<ApiEntity> apiEntities) {
         return applicationRepository.findByApiIds(apiEntities).stream()
@@ -82,5 +86,42 @@ public class ApiService {
                 .collect(toList());
     }
 
+    public List<VersionsDto> getVersionsForApi(String apiId) {
+        List<ApiEntity> apiEntities = apiRepository.findByApiName(apiId);
+        return apiEntities.isEmpty() ? Collections.emptyList() : toVersionDtoList(apiEntities);
+    }
 
+    public List<VersionsDto> getVersionsForApi(String apiId, ApiLifecycleState lifecycleState) {
+        List<ApiEntity> apiEntities = getApiEntityByLifecycleState(apiId, lifecycleState);
+        return apiEntities.isEmpty() ? Collections.emptyList() : toVersionDtoList(apiEntities);
+    }
+
+    private List<ApiEntity> getApiEntityByLifecycleState(String apiId, ApiLifecycleState lifecycleState) {
+        switch (lifecycleState) {
+            case ACTIVE:
+                return apiRepository.findByApiNameAndLifecycleStateIsActive(apiId);
+            case INACTIVE:
+                return apiRepository.findByApiNameAndLifecycleStateIsInactive(apiId);
+            case DECOMMISSIONED:
+                return apiRepository.findByApiNameAndLifecycleStateIsDecommissioned(apiId);
+            default:
+                throw new UnsupportedOperationException(format("ApiLifecycleState [{0}] not supported!", lifecycleState));
+        }
+    }
+
+    public Optional<VersionsDto> getVersion(String apiId, String version) {
+        List<ApiEntity> apiEntities = apiRepository.findByApiNameAndApiVersion(apiId, version);
+        return toVersionDtoList(apiEntities).stream()
+            .findAny();
+    }
+
+    public Optional<ApiDefinitionDto> getApiDefinitionDto(String definitionId) {
+        try {
+            Long id = Long.valueOf(definitionId);
+            return Optional.ofNullable(apiRepository.findOne(id))
+                .map(ApiEntityToApiDefinitionConverter::toApiDefinitionDto);
+        } catch (NumberFormatException nfe) {
+            return Optional.empty();
+        }
+    }
 }
