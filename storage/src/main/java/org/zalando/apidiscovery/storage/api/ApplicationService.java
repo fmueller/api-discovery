@@ -26,4 +26,9 @@ public class ApplicationService {
         return applicationEntity.map(ApplicationEntityToApplicationDtoConverter::toApplicationDto);
     }
 
+    public List<ApplicationDto> getApplicationsByApiEntities(List<ApiEntity> apiEntities) {
+        return applicationRepository.findByApiIds(apiEntities).stream()
+            .map(ApplicationEntityToApplicationDtoConverter::toApplicationDto)
+            .collect(toList());
+    }
 }

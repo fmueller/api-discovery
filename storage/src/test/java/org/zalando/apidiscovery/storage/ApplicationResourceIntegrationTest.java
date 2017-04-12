@@ -93,7 +93,7 @@ public class ApplicationResourceIntegrationTest extends AbstractResourceIntegrat
             withJsonPath("$.app_url", equalTo("/info")),
             withJsonPath("$.definitions[0].api_ui", equalTo("/ui")),
             withJsonPath("$.definitions[0].api_url", equalTo("/url")),
-// fails because of #101
+//            fails because of #101
 //            withJsonPath("$.created", equalTo(applicationEntity.getCreated().toString())),
 //            withJsonPath("$.definitions[0].created", equalTo(apiDeploymentEntity.getCreated().toString())),
 //            withJsonPath("$.definitions[0].last_updated", equalTo(apiDeploymentEntity.getLastCrawled().toString())),

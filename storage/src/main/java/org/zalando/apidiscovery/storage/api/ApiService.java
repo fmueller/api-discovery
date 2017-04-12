@@ -19,13 +19,13 @@ import static org.zalando.apidiscovery.storage.api.ApiLifecycleState.INACTIVE;
 @Service
 public class ApiService {
 
+    private final ApplicationService applicationService;
     private final ApiRepository apiRepository;
-    private final ApplicationRepository applicationRepository;
 
     @Autowired
-    public ApiService(ApiRepository apiRepository, ApplicationRepository applicationRepository) {
+    public ApiService(ApiRepository apiRepository, ApplicationService applicationService) {
         this.apiRepository = apiRepository;
-        this.applicationRepository = applicationRepository;
+        this.applicationService = applicationService;
     }
 
     public List<ApiDto> getAllApis() {
@@ -69,7 +69,7 @@ public class ApiService {
         if (!apiEntities.isEmpty()) {
             ApiLifecycleState lifecycleState = aggregateApplicationLifecycleStateForApi(apiEntities);
             List<VersionsDto> versions = toVersionDtoList(apiEntities);
-            List<ApplicationDto> applications = toApplicationDtoList(apiEntities);
+            List<ApplicationDto> applications = applicationService.getApplicationsByApiEntities(apiEntities);
 
             return Optional.of(new ApiDto(apiName,
                 lifecycleState,
@@ -77,12 +77,6 @@ public class ApiService {
                 applications));
         }
         return Optional.empty();
-    }
-
-    private List<ApplicationDto> toApplicationDtoList(List<ApiEntity> apiEntities) {
-        return applicationRepository.findByApiIds(apiEntities).stream()
-            .map(ApplicationEntityToApplicationDtoConverter::toApplicationDto)
-            .collect(toList());
     }
 
     public List<VersionsDto> getVersionsForApi(String apiId) {
