@@ -25,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.zalando.apidiscovery.storage.TestDataHelper.readResource;
 
-public class APIDefinitionRestIntegrationTest extends AbstractIntegrationTest {
+public class ApiDefinitionRestIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired
     private ApplicationRepository applicationRepository;
@@ -34,10 +34,10 @@ public class APIDefinitionRestIntegrationTest extends AbstractIntegrationTest {
     private ApiRepository apiRepository;
 
     @Autowired
-    private TestRestTemplate restTemplate;
+    private EntityManager entityManager;
 
     @Autowired
-    private EntityManager entityManager;
+    private TestRestTemplate restTemplate;
 
     @Value("classpath:uber.json")
     private Resource discoveredUberApiJson;
@@ -71,30 +71,43 @@ public class APIDefinitionRestIntegrationTest extends AbstractIntegrationTest {
         applicationRepository.saveAndFlush(application);
 
         restTemplate.exchange("/api-definitions", HttpMethod.POST, httpEntity(readResource(discoveredUberApiJson)), Void.class);
-
-        assertThat(applicationRepository.findOneByName("uber.api")).isPresent();
+        final Optional<ApplicationEntity> appOption = applicationRepository.findOneByName("uber.api");
+        assertThat(appOption).isPresent();
     }
 
     @Test
     public void shouldCreateANewApiVersion() throws Exception {
+        assertThat(apiRepository.findAll().size()).isEqualTo(0);
+
         restTemplate.exchange("/api-definitions", HttpMethod.POST, httpEntity(readResource(discoveredUberApiJson)), Void.class);
 
-        assertThat(apiRepository.findAll().size()).isEqualTo(1);
+        final List<ApiEntity> allApis = apiRepository.findAll();
+        assertThat(allApis.size()).isEqualTo(1);
+        final ApiEntity api = allApis.get(0);
+        assertThat(api.getApiName()).isEqualTo("uber-api");
+        assertThat(api.getApiVersion()).isEqualTo("1.0.0");
+        assertThat(api.getCreated()).isNotNull();
+        assertThat(api.getDefinitionType()).isEqualTo("swagger-2.0");
     }
 
     @Test
     public void shouldUseExistingApiVersionIfItAlreadyExists() throws Exception {
+        assertThat(apiRepository.findAll().size()).isEqualTo(0);
+        final String definitionHash = "cc9aa34e0c8343df59218a410e58a69a01a711d285ee0bd2ff5c4c8207a634e7";
         final ApiEntity apiEntity = ApiEntity.builder()
                 .apiName("uber-api")
                 .apiVersion("v1")
                 .definition("{\"info\":{\"title\":\"Uber API\",\"version\":\"v1\"}}")
-                .definitionHash("cc9aa34e0c8343df59218a410e58a69a01a711d285ee0bd2ff5c4c8207a634e7")
+                .definitionHash(definitionHash)
                 .build();
         apiRepository.saveAndFlush(apiEntity);
 
         restTemplate.exchange("/api-definitions", HttpMethod.POST, httpEntity(readResource(minimalCrawledApi)), Void.class);
 
-        assertThat(apiRepository.findAll().size()).isEqualTo(1);
+        final List<ApiEntity> allApis = apiRepository.findAll();
+        assertThat(allApis.size()).isEqualTo(1);
+        final ApiEntity api = allApis.get(0);
+        assertThat(api.getDefinitionHash()).isEqualTo(definitionHash);
     }
 
     @Test
