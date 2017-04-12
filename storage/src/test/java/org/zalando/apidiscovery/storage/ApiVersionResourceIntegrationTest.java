@@ -200,6 +200,14 @@ public class ApiVersionResourceIntegrationTest extends AbstractResourceIntegrati
     }
 
     @Test
+    public void shouldReturnStatusCode400ForUnknownApiLifecycleState() throws Exception {
+        ResponseEntity<String> responseEntity = restTemplate.getForEntity(
+            "/apis/" + API_NAME + "/versions?lifecycle_state=UNKNOWN", String.class);
+
+        assertThat(responseEntity.getStatusCode(), equalTo(HttpStatus.BAD_REQUEST));
+    }
+
+    @Test
     public void shouldReturnOneVersion() throws Exception {
         ApplicationEntity app1 = applicationRepository.save(givenApplication(APP1_NAME));
 

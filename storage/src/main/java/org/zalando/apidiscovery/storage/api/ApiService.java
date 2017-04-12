@@ -103,7 +103,7 @@ public class ApiService {
             case DECOMMISSIONED:
                 return apiRepository.findByApiNameAndLifecycleStateIsDecommissioned(apiId);
             default:
-                return new ArrayList<>();
+                throw new ApiLifecycleStateNotSupportedException(lifecycleState);
         }
     }
 
