@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import static java.text.MessageFormat.format;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static org.zalando.apidiscovery.storage.api.ApiEntityToVersionConverter.toVersionDtoList;
@@ -103,7 +104,7 @@ public class ApiService {
             case DECOMMISSIONED:
                 return apiRepository.findByApiNameAndLifecycleStateIsDecommissioned(apiId);
             default:
-                throw new ApiLifecycleStateNotSupportedException(lifecycleState);
+                throw new UnsupportedOperationException(format("ApiLifecycleState [{0}] not supported!", lifecycleState));
         }
     }
 
