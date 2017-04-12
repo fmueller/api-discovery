@@ -26,8 +26,8 @@ public class ApplicationService {
     }
 
     public Optional<ApplicationDto> getApplication(String applicationName) {
-        Optional<ApplicationEntity> applicationEntity = applicationRepository.findOne(applicationName);
-        return applicationEntity.map(ApplicationEntityToApplicationDtoConverter::toApplicationDto);
+        return applicationRepository.findOne(applicationName)
+            .map(ApplicationEntityToApplicationDtoConverter::toApplicationDto);
     }
 
     public List<ApplicationDto> getApplicationsByApiEntities(List<ApiEntity> apiEntities) {

@@ -2,7 +2,6 @@ package org.zalando.apidiscovery.storage.api;
 
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -34,8 +33,8 @@ public class ApplicationResourceController {
 
     @GetMapping("/{application_name}")
     public ResponseEntity<ApplicationDto> getApplication(@PathVariable("application_name") String applicationName, UriComponentsBuilder builder) {
-        Optional<ApplicationDto> applicationDto = applicationService.getApplication(applicationName);
-        return applicationDto.map(dto -> ResponseEntity.ok(updateApiDefinitionWithLinks(dto, builder)))
+        return applicationService.getApplication(applicationName)
+            .map(dto -> ResponseEntity.ok(updateApiDefinitionWithLinks(dto, builder)))
             .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
@@ -47,8 +46,8 @@ public class ApplicationResourceController {
     }
 
     private ApplicationDto updateApiDefinitionWithLinks(ApplicationDto applicationDto, UriComponentsBuilder builder) {
-        applicationDto.getDefinitions().
-            forEach(deploymentLinkDto -> deploymentLinkDto.setHref(
+        applicationDto.getDefinitions()
+            .forEach(deploymentLinkDto -> deploymentLinkDto.setHref(
                 builder.cloneBuilder()
                     .path(deploymentLinkDto.getLinkBuilder().buildLink())
                     .toUriString()
