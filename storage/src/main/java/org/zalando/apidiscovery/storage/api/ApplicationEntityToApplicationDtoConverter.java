@@ -2,7 +2,6 @@ package org.zalando.apidiscovery.storage.api;
 
 import java.util.List;
 
-import static java.lang.String.valueOf;
 import static java.util.stream.Collectors.toList;
 
 public class ApplicationEntityToApplicationDtoConverter {
@@ -26,7 +25,7 @@ public class ApplicationEntityToApplicationDtoConverter {
 
     private static DeploymentLinkDto mapApiDeploymentEntityToDefinitionDeploymentLink(ApiDeploymentEntity apiDeploymentEntity) {
         ApiEntity apiEntity = apiDeploymentEntity.getApi();
-        LinkBuilder linkBuilder = new DefinitionDeploymentLinkBuilder(apiEntity.getApiName(), apiEntity.getApiVersion(), valueOf(apiEntity.getId()));
+        LinkBuilder linkBuilder = new DefinitionDeploymentLinkBuilder(apiEntity);
         return new DeploymentLinkDto(apiDeploymentEntity, linkBuilder);
     }
 

@@ -7,6 +7,8 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.zalando.apidiscovery.storage.api.DeploymentDto.DeploymentApplicationDto;
+import org.zalando.apidiscovery.storage.api.DeploymentDto.DeploymentDefinitionDto;
 
 import static java.text.MessageFormat.format;
 import static java.util.stream.Collectors.groupingBy;
@@ -122,5 +124,40 @@ public class ApiService {
         } catch (NumberFormatException nfe) {
             return Optional.empty();
         }
+    }
+
+    public Optional<List<DeploymentDto>> getDeploymentsForApi(String apiId) {
+        List<ApiEntity> apiEntities = apiRepository.findByApiName(apiId);
+
+        if (apiEntities.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(apiEntities.stream()
+            .flatMap(apiEntity -> apiEntityToDeploymentDtoList(apiEntity).stream())
+            .collect(toList()));
+    }
+
+    private List<DeploymentDto> apiEntityToDeploymentDtoList(ApiEntity apiEntity) {
+        return apiEntity.getApiDeploymentEntities().stream()
+            .map(apiDeploymentEntity -> apiDeploymentToDeploymentDto(apiDeploymentEntity))
+            .collect(toList());
+    }
+
+    private DeploymentDto apiDeploymentToDeploymentDto(ApiDeploymentEntity apiDeploymentEntity) {
+        DefinitionDeploymentLinkBuilder deploymentLinkBuilder = new
+            DefinitionDeploymentLinkBuilder(apiDeploymentEntity.getApi());
+
+        ApplicationDeploymentLinkBuilder applicationDeploymentLinkBuilder = new
+            ApplicationDeploymentLinkBuilder(apiDeploymentEntity.getApplication());
+
+        return DeploymentDto.builder()
+            .apiVersion(apiDeploymentEntity.getApi().getApiVersion())
+            .application(new
+                DeploymentApplicationDto(apiDeploymentEntity.getApplication().getName(),
+                applicationDeploymentLinkBuilder))
+            .definition(new
+                DeploymentDefinitionDto(deploymentLinkBuilder))
+            .build();
     }
 }

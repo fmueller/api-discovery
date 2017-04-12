@@ -78,6 +78,21 @@ public class ApiResourceController {
             .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
+    @GetMapping("/{api_id}/deployments")
+    public ResponseEntity<DeploymentListDto> getApiDeployments(@PathVariable("api_id") String apiId,
+                                                               UriComponentsBuilder builder) {
+        return apiService.getDeploymentsForApi(apiId)
+            .map(dtoList -> ResponseEntity.ok(new DeploymentListDto(updateLinks(dtoList, builder))))
+            .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    private List<DeploymentDto> updateLinks(List<DeploymentDto> deploymentDtoList, UriComponentsBuilder builder) {
+        deploymentDtoList.forEach(
+            deploymentDto -> deploymentDto.buildLinks(builder)
+        );
+        return deploymentDtoList;
+    }
+
     private ApiDto buildLinks(ApiDto api, UriComponentsBuilder builder) {
         updateApiDefinitionWithLinks(api.getVersions(), builder);
 

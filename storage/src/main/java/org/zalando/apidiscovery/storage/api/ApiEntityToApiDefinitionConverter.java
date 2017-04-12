@@ -27,7 +27,7 @@ public class ApiEntityToApiDefinitionConverter {
 
     private static DeploymentLinkDto mapApiDeploymentEntityToApplicationDeploymentLink(ApiDeploymentEntity apiDeploymentEntity) {
         return new DeploymentLinkDto(apiDeploymentEntity,
-            new ApplicationDeploymentLinkBuilder(apiDeploymentEntity.getApplication().getName()));
+            new ApplicationDeploymentLinkBuilder(apiDeploymentEntity.getApplication()));
 
     }
 }

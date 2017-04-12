@@ -9,6 +9,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import static java.lang.String.valueOf;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -47,11 +49,24 @@ class ApplicationDeploymentLinkBuilder implements LinkBuilder {
 
     private String applicationName;
 
+    private UriComponentsBuilder uriComponentsBuilder;
+
+    public ApplicationDeploymentLinkBuilder(ApplicationEntity application) {
+        applicationName = application.getName();
+    }
+
     @Override
     public String buildLink() {
-        return UriComponentsBuilder.newInstance()
+        return getUriComponentsBuilder()
             .pathSegment("applications", applicationName)
             .toUriString();
+    }
+
+    private UriComponentsBuilder getUriComponentsBuilder() {
+        if (uriComponentsBuilder != null) {
+            return uriComponentsBuilder;
+        }
+        return UriComponentsBuilder.newInstance();
     }
 }
 
@@ -62,14 +77,28 @@ class DefinitionDeploymentLinkBuilder implements LinkBuilder {
     private String apiName;
     private String apiVersion;
     private String definitionId;
+    private UriComponentsBuilder uriComponentsBuilder;
+
+    public DefinitionDeploymentLinkBuilder(ApiEntity apiEntity) {
+        apiName = apiEntity.getApiName();
+        apiVersion = apiEntity.getApiVersion();
+        definitionId = valueOf(apiEntity.getId());
+    }
 
     @Override
     public String buildLink() {
-        return UriComponentsBuilder.newInstance()
+        return getUriComponentsBuilder()
             .pathSegment("apis", apiName)
             .pathSegment("versions", apiVersion)
             .pathSegment("definitions", definitionId)
             .toUriString();
+    }
+
+    private UriComponentsBuilder getUriComponentsBuilder() {
+        if (uriComponentsBuilder != null) {
+            return uriComponentsBuilder;
+        }
+        return UriComponentsBuilder.newInstance();
     }
 }
 
