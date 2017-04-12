@@ -2,27 +2,18 @@ package org.zalando.apidiscovery.storage.api;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.zalando.apidiscovery.storage.AbstractResourceIntegrationTest;
 
-import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.zalando.apidiscovery.storage.TestDataHelper.discoveredMetaApi;
 
-public class ApiDefinitionProcessingServiceIntegrationTest extends AbstractIntegrationTest {
-
-    @Autowired
-    private ApplicationRepository applicationRepository;
-
-    @Autowired
-    private ApiRepository apiRepository;
+public class ApiDefinitionProcessingServiceIntegrationTest extends AbstractResourceIntegrationTest {
 
     @Autowired
     private ApiDefinitionProcessingService apiService;
-
-    @Autowired
-    private EntityManager entityManager;
 
     @Test
     public void shouldBeAbleToAddFirstDefinition() throws Exception {
