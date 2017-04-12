@@ -26,7 +26,7 @@ public class ApplicationService {
     }
 
     public Optional<ApplicationDto> getApplication(String applicationName) {
-        Optional<ApplicationEntity> applicationEntity = Optional.ofNullable(applicationRepository.findOne(applicationName));
+        Optional<ApplicationEntity> applicationEntity = applicationRepository.findOne(applicationName);
         return applicationEntity.map(ApplicationEntityToApplicationDtoConverter::toApplicationDto);
     }
 
