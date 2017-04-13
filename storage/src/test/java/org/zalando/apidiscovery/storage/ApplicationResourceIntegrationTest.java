@@ -25,15 +25,14 @@ public class ApplicationResourceIntegrationTest extends AbstractResourceIntegrat
 
     @Test
     public void shouldReturnAllApplications() throws Exception {
-        givenApplication("application1");
-        givenApplication("application2");
+        createApplication("application1");
+        createApplication("application2");
 
         ResponseEntity<String> responseEntity = restTemplate.getForEntity(
             "/applications/", String.class);
 
         assertThat(responseEntity.getStatusCode(), equalTo(OK));
-        final String response = responseEntity.getBody();
-        assertThat(response, hasJsonPath("$.applications", hasSize(2)));
+        assertThat(responseEntity.getBody(), hasJsonPath("$.applications", hasSize(2)));
     }
 
     @Test
@@ -42,27 +41,24 @@ public class ApplicationResourceIntegrationTest extends AbstractResourceIntegrat
             "/applications/", String.class);
 
         assertThat(responseEntity.getStatusCode(), equalTo(OK));
-        final String response = responseEntity.getBody();
-        assertThat(response, hasJsonPath("$.applications", hasSize(0)));
+        assertThat(responseEntity.getBody(), hasJsonPath("$.applications", hasSize(0)));
     }
 
     @Test
     public void shouldReturnAllApplicationsWithDeployments() throws Exception {
-        ApplicationEntity applicationEntity = givenApplication("application1");
-        ApiEntity apiEntity = givenApiEntity("api1", "v1");
-        ApiDeploymentEntity apiDeploymentEntity = givenApiDeployment(apiEntity, applicationEntity);
-        apiEntity.setApiDeploymentEntities(asList(apiDeploymentEntity));
-        apiRepository.save(apiEntity);
+        ApplicationEntity applicationEntity = createApplication("application1");
+        ApiEntity apiEntity = createApiEntity("api1", "v1");
+        createApiDeployment(apiEntity, applicationEntity);
 
         ResponseEntity<String> responseEntity = restTemplate.getForEntity(
             "/applications/", String.class);
 
-        assertThat(responseEntity.getStatusCode(), equalTo(OK));
         final String response = responseEntity.getBody();
-        assertThat(response, hasJsonPath("$.applications", hasSize(1)));
         final String expectedHref = localUriBuilder()
             .path("apis/api1/versions/v1/definitions/" + apiEntity.getId())
             .toUriString();
+        assertThat(responseEntity.getStatusCode(), equalTo(OK));
+        assertThat(response, hasJsonPath("$.applications", hasSize(1)));
         assertThat(response, isJson(allOf(
             withJsonPath("$.applications[0].name", equalTo("application1")),
             withJsonPath("$.applications[0].app_url", equalTo("/info")),
@@ -74,20 +70,18 @@ public class ApplicationResourceIntegrationTest extends AbstractResourceIntegrat
 
     @Test
     public void shouldReturnOneApplication() throws Exception {
-        ApplicationEntity applicationEntity = givenApplication("application1");
-        ApiEntity apiEntity = givenApiEntity("api1", "v1");
-        ApiDeploymentEntity apiDeploymentEntity = givenApiDeployment(apiEntity, applicationEntity);
-        apiEntity.setApiDeploymentEntities(asList(apiDeploymentEntity));
-        apiRepository.save(apiEntity);
+        ApplicationEntity applicationEntity = createApplication("application1");
+        ApiEntity apiEntity = createApiEntity("api1", "v1");
+        createApiDeployment(apiEntity, applicationEntity);
 
         ResponseEntity<String> responseEntity = restTemplate.getForEntity(
             "/applications/application1", String.class);
 
-        assertThat(responseEntity.getStatusCode(), equalTo(OK));
         final String response = responseEntity.getBody();
         final String expectedHref = localUriBuilder()
             .path("apis/api1/versions/v1/definitions/" + apiEntity.getId())
             .toUriString();
+        assertThat(responseEntity.getStatusCode(), equalTo(OK));
         assertThat(response, isJson(allOf(
             withJsonPath("$.name", equalTo("application1")),
             withJsonPath("$.app_url", equalTo("/info")),
@@ -109,7 +103,7 @@ public class ApplicationResourceIntegrationTest extends AbstractResourceIntegrat
         assertThat(responseEntity.getStatusCode(), equalTo(NOT_FOUND));
     }
 
-    private ApplicationEntity givenApplication(String name) {
+    private ApplicationEntity createApplication(String name) {
         return applicationRepository.save(
             ApplicationEntity
                 .builder()
@@ -119,8 +113,8 @@ public class ApplicationResourceIntegrationTest extends AbstractResourceIntegrat
                 .build());
     }
 
-    private ApiDeploymentEntity givenApiDeployment(ApiEntity apiEntity, ApplicationEntity applicationEntity) {
-        return ApiDeploymentEntity.builder()
+    private ApiDeploymentEntity createApiDeployment(ApiEntity apiEntity, ApplicationEntity applicationEntity) {
+        ApiDeploymentEntity apiDeploymentEntity = ApiDeploymentEntity.builder()
             .api(apiEntity)
             .application(applicationEntity)
             .apiUi("/ui")
@@ -129,9 +123,13 @@ public class ApplicationResourceIntegrationTest extends AbstractResourceIntegrat
             .created(now(UTC))
             .lastCrawled(now(UTC))
             .build();
+
+        apiEntity.setApiDeploymentEntities(asList(apiDeploymentEntity));
+        apiRepository.save(apiEntity);
+        return apiDeploymentEntity;
     }
 
-    private ApiEntity givenApiEntity(String name, String version) {
+    private ApiEntity createApiEntity(String name, String version) {
         return ApiEntity.builder()
             .apiName(name)
             .apiVersion(version)
