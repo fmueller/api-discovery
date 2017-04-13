@@ -17,6 +17,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Type;
 
 import static javax.persistence.CascadeType.ALL;
@@ -39,9 +40,12 @@ public class ApiEntity implements Serializable {
     private String apiVersion;
     private String definition;
     private String definitionType;
+
     @OneToMany(mappedBy = "api", cascade = ALL)
     private List<ApiDeploymentEntity> apiDeploymentEntities = new ArrayList<>();
-    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentOffsetDateTime")
+
+    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentOffsetDateTime",
+        parameters = {@Parameter(name = "javaZone", value = "UTC")})
     private OffsetDateTime created;
 
 }

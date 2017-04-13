@@ -8,7 +8,7 @@ import org.zalando.apidiscovery.storage.api.ApplicationEntity;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.zalando.apidiscovery.storage.DomainObjectGen.APP_NAME;
+import static org.zalando.apidiscovery.storage.DomainObjectGen.APP1_NAME;
 import static org.zalando.apidiscovery.storage.DomainObjectGen.APP_URL;
 import static org.zalando.apidiscovery.storage.DomainObjectGen.NOW;
 import static org.zalando.apidiscovery.storage.DomainObjectGen.givenApiDeployment;
@@ -25,7 +25,7 @@ public class ApplicationEntityToApplicationDtoConverterTest {
         ApplicationDto dto = toApplicationDto(applicationEntity);
 
         assertThat(dto.getAppUrl()).isEqualTo(APP_URL);
-        assertThat(dto.getName()).isEqualTo(APP_NAME);
+        assertThat(dto.getName()).isEqualTo(APP1_NAME);
         assertThat(dto.getCreated()).isEqualTo(NOW);
     }
 
