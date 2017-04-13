@@ -20,10 +20,11 @@ public class ApplicationService {
     }
 
     public List<ApplicationDto> getAllApplications() {
-        Stream<ApplicationEntity> applicationEntityList = applicationRepository.findAll();
-        return applicationEntityList
-            .map(ApplicationEntityToApplicationDtoConverter::toApplicationDto)
-            .collect(toList());
+        try (Stream<ApplicationEntity> applicationEntityList = applicationRepository.findAll()) {
+            return applicationEntityList
+                .map(ApplicationEntityToApplicationDtoConverter::toApplicationDto)
+                .collect(toList());
+        }
     }
 
     public Optional<ApplicationDto> getApplication(String applicationName) {
