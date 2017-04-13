@@ -52,7 +52,7 @@ public class ApiDefinitionProcessingService {
     }
 
     @Transactional
-    public ApiEntity processDiscoveredApiDefinition(final DiscoveredApiDefinition discoveredApiDefinition) {
+    public ApiEntity processDiscoveredApiDefinition(final DiscoveredApiDefinition discoveredApiDefinition) throws SwaggerParseException {
         setApiNameAndVersion(discoveredApiDefinition);
         final OffsetDateTime now = now(UTC);
         final String definitionHash = sha256(discoveredApiDefinition.getDefinition());
@@ -124,9 +124,8 @@ public class ApiDefinitionProcessingService {
     }
 
     protected int nextDefinitionId(DiscoveredApiDefinition discoveredApiDefinition) {
-        return 1 + apiRepository.getLastApiDefinitionId(
-                discoveredApiDefinition.getApiName(),
-                discoveredApiDefinition.getVersion());
+        return apiRepository.getLastApiDefinitionId(discoveredApiDefinition.getApiName(), discoveredApiDefinition.getVersion())
+                + 1;
     }
 
     private String sha256(String content) {
@@ -137,11 +136,8 @@ public class ApiDefinitionProcessingService {
 
     protected void setApiNameAndVersion(final DiscoveredApiDefinition discoveredApiDefinition) throws SwaggerParseException {
         final SwaggerDefinitionHelper swagger = new SwaggerDefinitionHelper(discoveredApiDefinition.getDefinition());
-        final String name = swagger.getName();
-        final String version = swagger.getVersion();
-
-        discoveredApiDefinition.setApiName(name);
-        discoveredApiDefinition.setVersion(version);
+        discoveredApiDefinition.setApiName(swagger.getName());
+        discoveredApiDefinition.setVersion(swagger.getVersion());
     }
 
     private ApiDeploymentEntity newApiDeployment(OffsetDateTime now) {
