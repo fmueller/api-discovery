@@ -1,5 +1,6 @@
 package org.zalando.apidiscovery.storage;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.ResponseEntity;
 import org.zalando.apidiscovery.storage.api.ApiDeploymentEntity;
@@ -16,20 +17,29 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 public class ApiDeploymentResourceIntegrationTest extends AbstractResourceIntegrationTest {
 
+    private ApplicationEntity application;
+    private ApiEntity api1;
+    private ApiEntity api1_1;
+    private ApiEntity api2;
+
+    @Before
+    public void setUp() throws Exception {
+        application = createApplication("application1");
+        api1 = createApiEntity("api1", "v1");
+        api1_1 = createApiEntity("api1", "v1");
+        api2 = createApiEntity("api1", "v2");
+
+        createApiDeployment(api1, application);
+        createApiDeployment(api1_1, application);
+        createApiDeployment(api2, application);
+    }
+
     @Test
     public void shouldReturnAllDeployments() throws Exception {
-        ApplicationEntity application = givenApplication("application1");
-        ApiEntity api1 = givenApiEntity("api1", "v1");
-        ApiEntity api1_1 = givenApiEntity("api1", "v1");
-        ApiEntity api2 = givenApiEntity("api1", "v2");
-
-        givenApiDeployment(api1, application);
-        givenApiDeployment(api1_1, application);
-        givenApiDeployment(api2, application);
-
         ResponseEntity<String> responseEntity = restTemplate.getForEntity(
             "/apis/api1/deployments", String.class);
 
@@ -55,13 +65,21 @@ public class ApiDeploymentResourceIntegrationTest extends AbstractResourceIntegr
             )));
     }
 
+    @Test
+    public void shouldReturn404NotFound() throws Exception {
+        ResponseEntity<String> responseEntity = restTemplate.getForEntity(
+            "/apis/UNKNOWN/deployments", String.class);
+        assertThat(responseEntity.getStatusCode(), equalTo(NOT_FOUND));
+
+    }
+
     private String expectedDefinitionHref(String version, long apiDefinitionId) {
         return localUriBuilder()
             .path("apis/api1/versions/" + version + "/definitions/" + apiDefinitionId)
             .toUriString();
     }
 
-    private ApiDeploymentEntity givenApiDeployment(ApiEntity apiEntity, ApplicationEntity applicationEntity) {
+    private ApiDeploymentEntity createApiDeployment(ApiEntity apiEntity, ApplicationEntity applicationEntity) {
         ApiDeploymentEntity apiDeploymentEntity = ApiDeploymentEntity.builder()
             .api(apiEntity)
             .application(applicationEntity)
@@ -77,7 +95,7 @@ public class ApiDeploymentResourceIntegrationTest extends AbstractResourceIntegr
         return apiDeploymentEntity;
     }
 
-    private ApiEntity givenApiEntity(String name, String version) {
+    private ApiEntity createApiEntity(String name, String version) {
         return ApiEntity.builder()
             .apiName(name)
             .apiVersion(version)
@@ -86,7 +104,7 @@ public class ApiDeploymentResourceIntegrationTest extends AbstractResourceIntegr
             .build();
     }
 
-    private ApplicationEntity givenApplication(String name) {
+    private ApplicationEntity createApplication(String name) {
         return applicationRepository.save(
             ApplicationEntity
                 .builder()
