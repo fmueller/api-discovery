@@ -29,11 +29,11 @@ import static javax.persistence.CascadeType.ALL;
 public class ApiDeploymentEntity implements Serializable {
 
     @Id
-    @ManyToOne(cascade = ALL)
+    @ManyToOne
     private ApiEntity api;
 
     @Id
-    @ManyToOne(cascade = ALL)
+    @ManyToOne
     private ApplicationEntity application;
 
     private String apiUrl;
