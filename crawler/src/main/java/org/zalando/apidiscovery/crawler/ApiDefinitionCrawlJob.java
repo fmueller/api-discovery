@@ -1,10 +1,5 @@
 package org.zalando.apidiscovery.crawler;
 
-import java.io.IOException;
-import java.net.UnknownHostException;
-import java.util.Optional;
-import java.util.concurrent.Callable;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
@@ -22,6 +17,11 @@ import org.zalando.apidiscovery.crawler.storage.ApiDiscoveryStorageClient;
 import org.zalando.apidiscovery.crawler.storage.LegacyApiDefinition;
 import org.zalando.apidiscovery.crawler.storage.LegacyApiDiscoveryStorageClient;
 import org.zalando.stups.clients.kio.ApplicationBase;
+
+import java.io.IOException;
+import java.net.UnknownHostException;
+import java.util.Optional;
+import java.util.concurrent.Callable;
 
 class ApiDefinitionCrawlJob implements Callable<Void> {
 
@@ -42,16 +42,25 @@ class ApiDefinitionCrawlJob implements Callable<Void> {
 
     @Override
     public Void call() throws Exception {
-        LegacyApiDefinition legacyDefinition = LegacyApiDefinition.UNSUCCESSFUL;
-        ApiDefinition definition = ApiDefinition.UNSUCCESSFUL;
+        LegacyApiDefinition legacyApiDefinition = LegacyApiDefinition.UNSUCCESSFUL;
+        ApiDefinition apiDefinition = ApiDefinition.UNSUCCESSFUL;
 
         try {
             final String serviceUrl = app.getServiceUrl().endsWith("/") ? app.getServiceUrl() : app.getServiceUrl() + "/";
             final Optional<JsonNode> schemaDiscovery = retrieveSchemaDiscovery(serviceUrl);
 
             if (schemaDiscovery.isPresent()) {
-                legacyDefinition = constructLegacyApiDefinition(schemaDiscovery.get(), serviceUrl);
-                definition = constructApiDefinition(schemaDiscovery.get(), serviceUrl, app.getId());
+                final JsonNode schemaDiscoveryNode = schemaDiscovery.get();
+                String apiDefinitionUrl = schemaDiscoveryNode.get("schema_url").asText();
+                if (apiDefinitionUrl.startsWith("/")) {
+                    apiDefinitionUrl = apiDefinitionUrl.substring(1);
+                }
+
+                final String schemaType = schemaDiscoveryNode.get("schema_type").asText("");
+                final JsonNode apiDefinitionNode = retrieveApiDefinition(serviceUrl + apiDefinitionUrl);
+
+                legacyApiDefinition = constructLegacyApiDefinition(schemaDiscoveryNode, apiDefinitionNode, schemaType, apiDefinitionUrl, serviceUrl);
+                apiDefinition = constructApiDefinition(schemaDiscoveryNode, apiDefinitionNode, schemaType, app.getId(), apiDefinitionUrl, serviceUrl);
                 LOG.info("Successfully crawled api definition of {}", app.getId());
             } else {
                 LOG.info("Api definition unavailable for {}", app.getId());
@@ -59,21 +68,14 @@ class ApiDefinitionCrawlJob implements Callable<Void> {
         } catch (Exception e) {
             LOG.info("Could not crawl {}: {}", app.getId(), e.getMessage());
         } finally {
-            legacyStorageClient.createOrUpdateApiDefintion(legacyDefinition, app.getId());
-            storageClient.pushApiDefintion(definition);
+            legacyStorageClient.createOrUpdateApiDefintion(legacyApiDefinition, app.getId());
+            storageClient.pushApiDefinition(apiDefinition);
         }
         return null;
     }
 
-    protected ApiDefinition constructApiDefinition(JsonNode schemaDiscovery, String serviceUrl, String appName) throws Exception {
-        String apiDefinitionUrl = schemaDiscovery.get("schema_url").asText();
-        if (apiDefinitionUrl.startsWith("/")) {
-            apiDefinitionUrl = apiDefinitionUrl.substring(1);
-        }
-
-        final String schemaType = schemaDiscovery.get("schema_type").asText("");
-        final JsonNode apiDefinition = retrieveApiDefinition(serviceUrl + apiDefinitionUrl);
-
+    static protected ApiDefinition constructApiDefinition(JsonNode schemaDiscovery, JsonNode apiDefinition, String schemaType,
+                                                          String appName, String apiDefinitionUrl, String serviceUrl) throws Exception {
         return new ApiDefinition(
                 "SUCCESS",
                 schemaType,
@@ -88,15 +90,8 @@ class ApiDefinitionCrawlJob implements Callable<Void> {
 
     }
 
-    private LegacyApiDefinition constructLegacyApiDefinition(JsonNode schemaDiscovery, String serviceUrl) throws Exception {
-        String apiDefinitionUrl = schemaDiscovery.get("schema_url").asText();
-        if (apiDefinitionUrl.startsWith("/")) {
-            apiDefinitionUrl = apiDefinitionUrl.substring(1);
-        }
-
-        final String schemaType = schemaDiscovery.get("schema_type").asText("");
-        final JsonNode apiDefinition = retrieveApiDefinition(serviceUrl + apiDefinitionUrl);
-
+    static protected LegacyApiDefinition constructLegacyApiDefinition(JsonNode schemaDiscovery, JsonNode apiDefinition, String schemaType,
+                                                                      String apiDefinitionUrl, String serviceUrl) throws Exception {
         return new LegacyApiDefinition(
                 "SUCCESS",
                 schemaType,

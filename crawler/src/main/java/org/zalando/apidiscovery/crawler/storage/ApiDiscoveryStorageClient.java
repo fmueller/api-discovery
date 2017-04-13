@@ -12,7 +12,7 @@ public class ApiDiscoveryStorageClient {
         this.baseUrl = baseUrl;
     }
 
-    public void pushApiDefintion(ApiDefinition request) {
+    public void pushApiDefinition(ApiDefinition request) {
         restOperations.postForLocation(baseUrl + "/api-definitions", request);
     }
 }
