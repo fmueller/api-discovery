@@ -17,8 +17,6 @@ import javax.persistence.Table;
 import java.io.Serializable;
 import java.time.OffsetDateTime;
 
-import static javax.persistence.CascadeType.ALL;
-
 @Data
 @Builder
 @AllArgsConstructor
