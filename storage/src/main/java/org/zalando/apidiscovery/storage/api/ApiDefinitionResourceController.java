@@ -13,7 +13,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import org.zalando.apidiscovery.storage.utils.SwaggerParseException;
 
 import java.net.URI;
-import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
 
 import static java.lang.String.valueOf;
@@ -32,7 +31,7 @@ public class ApiDefinitionResourceController {
 
     @PostMapping
     public ResponseEntity<Void> postDiscoveredApiDefinition(@RequestBody DiscoveredApiDefinition discoveredAPIDefinition, UriComponentsBuilder builder)
-            throws SwaggerParseException, NoSuchAlgorithmException {
+            throws SwaggerParseException {
 
         final Optional<ApiEntity> apiOption = apiDefinitionProcessingService.processDiscoveredApiDefinition(discoveredAPIDefinition);
 
