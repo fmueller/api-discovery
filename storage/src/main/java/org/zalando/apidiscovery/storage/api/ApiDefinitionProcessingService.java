@@ -66,7 +66,7 @@ public class ApiDefinitionProcessingService {
         for (int counter = 0; counter < maxNumberOfRetries; counter++) {
             try {
                 ApiEntity apiVersion = findOrCreateApiDefinition(discoveredApiDefinition, now);
-                final ApiDeploymentEntity apiDeployment = findOfCreateApiDeployment(apiVersion, application, now);
+                final ApiDeploymentEntity apiDeployment = findOrCreateApiDeployment(apiVersion, application, now);
 
                 apiVersion = apiRepository.save(apiVersion);
                 entityManager.persist(apiDeployment);
@@ -85,7 +85,7 @@ public class ApiDefinitionProcessingService {
         return Optional.empty();
     }
 
-    private ApiDeploymentEntity findOfCreateApiDeployment(ApiEntity apiVersion, ApplicationEntity application,
+    private ApiDeploymentEntity findOrCreateApiDeployment(ApiEntity apiVersion, ApplicationEntity application,
                                                           OffsetDateTime now) {
         final boolean apiDeploymentCanExist = entityManager.contains(apiVersion) && entityManager.contains(application);
         final Optional<ApiDeploymentEntity> existingApiDeployment = apiDeploymentCanExist ? Optional.ofNullable(
@@ -133,6 +133,7 @@ public class ApiDefinitionProcessingService {
     }
 
     private String sha256(String content) {
+        messageDigest.reset();
         messageDigest.update(content.getBytes(StandardCharsets.UTF_8));
         return String.format("%064x", new BigInteger(1, messageDigest.digest()));
     }
