@@ -21,14 +21,13 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 public class ApiDeploymentResourceIntegrationTest extends AbstractResourceIntegrationTest {
 
-    private ApplicationEntity application;
     private ApiEntity api1;
     private ApiEntity api1_1;
     private ApiEntity api2;
 
     @Before
     public void setUp() throws Exception {
-        application = createApplication("application1");
+        ApplicationEntity application = createApplication("application1");
         api1 = createApiEntity("api1", "v1");
         api1_1 = createApiEntity("api1", "v1");
         api2 = createApiEntity("api1", "v2");
