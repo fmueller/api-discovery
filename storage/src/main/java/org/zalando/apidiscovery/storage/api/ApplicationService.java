@@ -2,6 +2,7 @@ package org.zalando.apidiscovery.storage.api;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,8 +20,8 @@ public class ApplicationService {
     }
 
     public List<ApplicationDto> getAllApplications() {
-        List<ApplicationEntity> applicationEntityList = applicationRepository.findAll();
-        return applicationEntityList.stream()
+        Stream<ApplicationEntity> applicationEntityList = applicationRepository.findAll();
+        return applicationEntityList
             .map(ApplicationEntityToApplicationDtoConverter::toApplicationDto)
             .collect(toList());
     }

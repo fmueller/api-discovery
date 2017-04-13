@@ -2,6 +2,7 @@ package org.zalando.apidiscovery.storage.api;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
@@ -19,7 +20,7 @@ public interface ApplicationRepository extends Repository<ApplicationEntity, Str
 
     void deleteAll();
 
-    List<ApplicationEntity> findAll();
+    Stream<ApplicationEntity> findAll();
 
     ApplicationEntity save(ApplicationEntity applicationEntity);
 }
