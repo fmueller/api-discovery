@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.zalando.apidiscovery.storage.utils.ApiStoragePersistenceException;
 import org.zalando.apidiscovery.storage.utils.SwaggerDefinitionHelper;
 import org.zalando.apidiscovery.storage.utils.SwaggerParseException;
 
@@ -51,9 +52,10 @@ public class ApiDefinitionProcessingService {
     }
 
     @Transactional
-    public Optional<ApiEntity> processDiscoveredApiDefinition(final DiscoveredApiDefinition discoveredApiDefinition) {
+    public ApiEntity processDiscoveredApiDefinition(final DiscoveredApiDefinition discoveredApiDefinition) {
         setApiNameAndVersion(discoveredApiDefinition);
         final OffsetDateTime now = now(UTC);
+        final String definitionHash = sha256(discoveredApiDefinition.getDefinition());
 
         // needed in order to implement the retry logic
         // default FlushModeType.AUTO tries to flush before the transaction ends
@@ -63,16 +65,20 @@ public class ApiDefinitionProcessingService {
         final ApplicationEntity application = findOrCreateApplication(discoveredApiDefinition, now);
         applicationRepository.save(application);
 
+        Optional<ApiEntity> apiVersionOption = findApiDefinition(discoveredApiDefinition.getApiName(),
+                discoveredApiDefinition.getVersion(), definitionHash);
+
         for (int counter = 0; counter < maxNumberOfRetries; counter++) {
             try {
-                ApiEntity apiVersion = findOrCreateApiDefinition(discoveredApiDefinition, now);
+                ApiEntity apiVersion = apiVersionOption.orElse(
+                        newApiVersion(discoveredApiDefinition, now, definitionHash, nextDefinitionId(discoveredApiDefinition)));
                 final ApiDeploymentEntity apiDeployment = findOrCreateApiDeployment(apiVersion, application, now);
 
                 apiVersion = apiRepository.save(apiVersion);
                 entityManager.persist(apiDeployment);
 
                 LOG.info("New crawling information has been processed; api deployment: {}", apiDeployment);
-                return Optional.of(apiVersion);
+                return apiVersion;
             } catch (DataIntegrityViolationException e) {
                 Throwable rootCause = e.getRootCause();
                 if (!(rootCause instanceof HsqlException
@@ -82,7 +88,8 @@ public class ApiDefinitionProcessingService {
                 }
             }
         }
-        return Optional.empty();
+        LOG.warn("could not persist discovered api definition: {}", discoveredApiDefinition);
+        throw new ApiStoragePersistenceException("could not persist discovered api definition");
     }
 
     private ApiDeploymentEntity findOrCreateApiDeployment(ApiEntity apiVersion, ApplicationEntity application,
@@ -109,21 +116,11 @@ public class ApiDefinitionProcessingService {
         return existingApplication.orElse(newApplication(discoveredApiDefinition, now));
     }
 
-    private ApiEntity findOrCreateApiDefinition(final DiscoveredApiDefinition discoveredApiDefinition, final OffsetDateTime now) {
-        final ApiEntity api;
-        final String definitionHash = sha256(discoveredApiDefinition.getDefinition());
+    private Optional<ApiEntity> findApiDefinition(String apiName, String apiVersion, String definitionHash) {
         final List<ApiEntity> existingApis = apiRepository.findByApiNameAndApiVersionAndDefinitionHash(
-                discoveredApiDefinition.getApiName(),
-                discoveredApiDefinition.getVersion(),
-                definitionHash);
+                apiName, apiVersion, definitionHash);
 
-        if (existingApis.isEmpty()) {
-            final int nextDefinitionId = nextDefinitionId(discoveredApiDefinition);
-            api = newApiVersion(discoveredApiDefinition, now, definitionHash, nextDefinitionId);
-        } else {
-            api = existingApis.get(0);
-        }
-        return api;
+        return existingApis.isEmpty() ? Optional.empty() : Optional.of(existingApis.get(0));
     }
 
     protected int nextDefinitionId(DiscoveredApiDefinition discoveredApiDefinition) {
