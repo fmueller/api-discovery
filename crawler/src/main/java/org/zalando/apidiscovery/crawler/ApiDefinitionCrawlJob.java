@@ -57,10 +57,10 @@ class ApiDefinitionCrawlJob implements Callable<Void> {
                 }
 
                 final String schemaType = schemaDiscoveryInformation.get("schema_type").asText("");
-                final JsonNode apiDefinitionNode = retrieveApiDefinition(serviceUrl + apiDefinitionUrl);
+                final JsonNode apiDefinitionInformation = retrieveApiDefinition(serviceUrl + apiDefinitionUrl);
 
-                legacyApiDefinition = constructLegacyApiDefinition(schemaDiscoveryInformation, apiDefinitionNode, schemaType, apiDefinitionUrl, serviceUrl);
-                apiDefinition = constructApiDefinition(schemaDiscoveryInformation, apiDefinitionNode, schemaType, app.getId(), apiDefinitionUrl, serviceUrl);
+                legacyApiDefinition = constructLegacyApiDefinition(schemaDiscoveryInformation, apiDefinitionInformation, schemaType, apiDefinitionUrl, serviceUrl);
+                apiDefinition = constructApiDefinition(schemaDiscoveryInformation, apiDefinitionInformation, schemaType, app.getId(), apiDefinitionUrl, serviceUrl);
                 LOG.info("Successfully crawled api definition of {}", app.getId());
             } else {
                 LOG.info("Api definition unavailable for {}", app.getId());
