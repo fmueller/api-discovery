@@ -1,5 +1,6 @@
 package org.zalando.apidiscovery.storage.api;
 
+
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -12,8 +13,8 @@ public interface ApplicationRepository extends Repository<ApplicationEntity, Str
 
 
     @Query("SELECT DISTINCT a FROM ApplicationEntity a " +
-        "INNER JOIN a.apiDeploymentEntities dep " +
-        "WHERE dep.api in (:apiEntities)")
+            "INNER JOIN a.apiDeploymentEntities dep " +
+            "WHERE dep.api in (:apiEntities)")
     List<ApplicationEntity> findByApiIds(@Param("apiEntities") List<ApiEntity> apiEntities);
 
     Optional<ApplicationEntity> findOne(String name);
@@ -23,4 +24,9 @@ public interface ApplicationRepository extends Repository<ApplicationEntity, Str
     Stream<ApplicationEntity> findAll();
 
     ApplicationEntity save(ApplicationEntity applicationEntity);
+
+    ApplicationEntity saveAndFlush(ApplicationEntity applicationEntity);
+
+    Optional<ApplicationEntity> findOneByName(String name);
+
 }

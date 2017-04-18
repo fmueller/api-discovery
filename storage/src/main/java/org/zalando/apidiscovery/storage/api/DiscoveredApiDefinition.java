@@ -5,16 +5,19 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ApiDefinitionDto {
+public class DiscoveredApiDefinition {
 
-    private String id;
+    private String status;
     private String type;
+    private String apiName;
+    private String version;
+    private String applicationName;
+    private String serviceUrl;
+    private String url;
+    private String ui;
     private String definition;
-    private List<DeploymentLinkDto> applications;
 }

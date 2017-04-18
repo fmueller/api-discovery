@@ -51,16 +51,16 @@ class ApiDefinitionCrawlJob implements Callable<Void> {
                 final String schemaType = schemaDiscoveryInformation.get("schema_type").asText("");
                 final JsonNode apiDefinition = retrieveApiDefinition(serviceUrl + apiDefinitionUrl);
 
-                final ApiDefinition updateApiDefinitionRequest = new ApiDefinition(
-                        "SUCCESS",
-                        schemaType,
-                        apiDefinition.get("info").get("title").asText(),
-                        apiDefinition.get("info").get("version").asText(),
-                        serviceUrl,
-                        apiDefinitionUrl,
-                        schemaDiscoveryInformation.has("ui_url") ? schemaDiscoveryInformation.get("ui_url").asText() : null,
-                        apiDefinition.toString()
-                );
+                final ApiDefinition updateApiDefinitionRequest = ApiDefinition.builder()
+                        .status("SUCCESS")
+                        .type(schemaType)
+                        .name(apiDefinition.get("info").get("title").asText())
+                        .version(apiDefinition.get("info").get("version").asText())
+                        .serviceUrl(serviceUrl)
+                        .schemaUrl(apiDefinitionUrl)
+                        .uiLink(schemaDiscoveryInformation.has("ui_url") ? schemaDiscoveryInformation.get("ui_url").asText() : null)
+                        .definition(apiDefinition.toString())
+                        .build();
 
                 storageClient.createOrUpdateApiDefintion(updateApiDefinitionRequest, app.getId());
                 LOG.info("Successfully crawled api definition of {}", app.getId());
