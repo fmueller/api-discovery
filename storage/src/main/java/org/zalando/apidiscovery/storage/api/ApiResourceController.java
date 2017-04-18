@@ -1,6 +1,8 @@
 package org.zalando.apidiscovery.storage.api;
 
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,8 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import java.util.List;
 
 import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.toList;
@@ -78,10 +78,10 @@ public class ApiResourceController {
     }
 
     @GetMapping("/{api_id}/deployments")
-    public ResponseEntity<DeploymentListDto> getApiDeployments(@PathVariable("api_id") String apiId,
-                                                               UriComponentsBuilder builder) {
+    public ResponseEntity<DeploymentsDto> getApiDeployments(@PathVariable("api_id") String apiId,
+                                                            UriComponentsBuilder builder) {
         return apiService.getDeploymentsForApi(apiId)
-            .map(dtoList -> ResponseEntity.ok(new DeploymentListDto(updateLinks(dtoList, builder))))
+            .map(dtoList -> ResponseEntity.ok(new DeploymentsDto(updateLinks(dtoList, builder))))
             .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 

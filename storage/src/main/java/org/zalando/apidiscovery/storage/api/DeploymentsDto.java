@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class DeploymentListDto {
+public class DeploymentsDto {
 
     private List<DeploymentDto> deployments = new ArrayList<>();
 }
