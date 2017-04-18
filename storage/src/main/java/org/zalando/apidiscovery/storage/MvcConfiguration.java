@@ -2,7 +2,6 @@ package org.zalando.apidiscovery.storage;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +21,7 @@ public class MvcConfiguration extends WebMvcConfigurerAdapter {
 
     @Override
     public void configureMessageConverters(final List<HttpMessageConverter<?>> converters) {
-        converters.addAll(messageConverters().getConverters().stream().collect(Collectors.toList()));
+        converters.addAll(messageConverters().getConverters());
     }
 
     @Bean
