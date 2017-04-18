@@ -71,7 +71,7 @@ class ApiDefinitionCrawlJob implements Callable<Void> {
     protected static ApiDefinition constructApiDefinition(JsonNode schemaDiscovery, JsonNode apiDefinition,
                                                           String appName, String serviceUrl) throws Exception {
         return ApiDefinition.builder()
-                .status("SUCCESS")
+                .status("SUCCESSFUL")
                 .type(schemaDiscovery.get("schema_type").asText(""))
                 .apiName(apiDefinition.get("info").get("title").asText())
                 .appName(appName)

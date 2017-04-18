@@ -56,7 +56,7 @@ public class ApiDefinitionCrawlJobTest {
             .definition("{\"info\":{\"version\":\"1.0\",\"title\":\"meta-api\"}}")
             .schemaUrl("swagger.json")
             .serviceUrl("https://meta.api/")
-            .status("SUCCESS")
+            .status("SUCCESSFUL")
             .type("swagger-2.0")
             .uiLink("/ui")
             .version("1.0")
