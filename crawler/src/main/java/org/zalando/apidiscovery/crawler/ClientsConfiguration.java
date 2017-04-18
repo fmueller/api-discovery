@@ -1,13 +1,12 @@
 package org.zalando.apidiscovery.crawler;
 
-import java.nio.charset.Charset;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
+import org.zalando.apidiscovery.crawler.storage.ApiDiscoveryStorageClient;
 import org.zalando.apidiscovery.crawler.storage.LegacyApiDiscoveryStorageClient;
 import org.zalando.stups.clients.kio.KioOperations;
 import org.zalando.stups.clients.kio.spring.RestTemplateKioOperations;
@@ -16,6 +15,8 @@ import org.zalando.stups.oauth2.spring.client.StupsTokensAccessTokenProvider;
 import org.zalando.stups.spring.http.client.ClientHttpRequestFactorySelector;
 import org.zalando.stups.spring.http.client.TimeoutConfig;
 import org.zalando.stups.tokens.AccessTokens;
+
+import java.nio.charset.Charset;
 
 @Configuration
 public class ClientsConfiguration {
@@ -38,8 +39,13 @@ public class ClientsConfiguration {
     }
 
     @Bean
-    public LegacyApiDiscoveryStorageClient storageOperations(@Value("${storage.url}") String storageBaseUrl) {
+    public LegacyApiDiscoveryStorageClient legacyStorageOperations(@Value("${storage.url}") String storageBaseUrl) {
         return new LegacyApiDiscoveryStorageClient(buildOAuth2RestTemplate("storage"), storageBaseUrl);
+    }
+
+    @Bean
+    public ApiDiscoveryStorageClient storageOperations(@Value("${storage.url}") String storageBaseUrl) {
+        return new ApiDiscoveryStorageClient(buildOAuth2RestTemplate("storage"), storageBaseUrl);
     }
 
     @Bean
