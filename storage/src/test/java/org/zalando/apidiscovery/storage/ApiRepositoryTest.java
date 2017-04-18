@@ -2,11 +2,11 @@ package org.zalando.apidiscovery.storage;
 
 import java.util.List;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.zalando.apidiscovery.storage.api.ApiDeploymentEntity;
 import org.zalando.apidiscovery.storage.api.ApiEntity;
@@ -22,6 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:cleanDatabase.sql")
 public class ApiRepositoryTest {
 
     @Autowired
@@ -29,12 +30,6 @@ public class ApiRepositoryTest {
 
     @Autowired
     private ApplicationRepository applicationRepository;
-
-    @Before
-    public void cleanDatabase() {
-        applicationRepository.deleteAll();
-        apiRepository.deleteAll();
-    }
 
     @Test
     public void shouldReturnAllApis() throws Exception {

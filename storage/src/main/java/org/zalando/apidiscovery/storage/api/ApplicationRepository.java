@@ -19,8 +19,6 @@ public interface ApplicationRepository extends Repository<ApplicationEntity, Str
 
     Optional<ApplicationEntity> findOne(String name);
 
-    void deleteAll();
-
     Stream<ApplicationEntity> findAll();
 
     ApplicationEntity save(ApplicationEntity applicationEntity);
