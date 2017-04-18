@@ -12,22 +12,23 @@ public class ApiEntityToApiDefinitionConverter {
         List<DeploymentLinkDto> deploymentLinkDtos = null;
         if (apiEntity.getApiDeploymentEntities() != null) {
             deploymentLinkDtos = apiEntity.getApiDeploymentEntities().stream()
-                .map(ApiEntityToApiDefinitionConverter::mapApiDeploymentEntityToApplicationDeploymentLink)
-                .collect(toList());
+                    .map(ApiEntityToApiDefinitionConverter::mapApiDeploymentEntityToApplicationDeploymentLink)
+                    .collect(toList());
         }
 
         return ApiDefinitionDto.builder()
-            .id(valueOf(apiEntity.getId()))
-            .definition(apiEntity.getDefinition())
-            .type(apiEntity.getDefinitionType())
-            .applications(deploymentLinkDtos)
-            .build();
+                .id(valueOf(apiEntity.getId()))
+                .definition(apiEntity.getDefinition())
+                .type(apiEntity.getDefinitionType())
+                .applications(deploymentLinkDtos)
+                .build();
 
     }
 
     private static DeploymentLinkDto mapApiDeploymentEntityToApplicationDeploymentLink(ApiDeploymentEntity apiDeploymentEntity) {
         return new DeploymentLinkDto(apiDeploymentEntity,
             new ApplicationDeploymentLinkBuilder(apiDeploymentEntity.getApplication()));
+
 
     }
 }

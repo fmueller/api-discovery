@@ -35,8 +35,8 @@ public class ApiVersionResourceIntegrationTest extends AbstractResourceIntegrati
     public void shouldGroupVersionOfGivenApi() throws Exception {
         ApplicationEntity app1 = applicationRepository.save(givenApplication(APP1_NAME));
 
-        ApiEntity testAPi100 = givenApiEntity(API_NAME, API_VERSION_1);
-        ApiEntity testAPi200 = givenApiEntity(API_NAME, API_VERSION_1);
+        ApiEntity testAPi100 = givenApiEntity(API_NAME, API_VERSION_1, 1);
+        ApiEntity testAPi200 = givenApiEntity(API_NAME, API_VERSION_1, 2);
         testAPi200.setDefinition("definition2");
 
         ApiDeploymentEntity testAPi100OnApp1 = givenApiDeployment(testAPi100, app1);
@@ -48,7 +48,7 @@ public class ApiVersionResourceIntegrationTest extends AbstractResourceIntegrati
         apiRepository.save(asList(testAPi100, testAPi200));
 
         ResponseEntity<String> responseEntity = restTemplate.getForEntity(
-            "/apis/" + API_NAME + "/versions", String.class);
+                "/apis/" + API_NAME + "/versions", String.class);
 
         final String response = responseEntity.getBody();
         assertThat(response, hasJsonPath("$.versions", hasSize(1)));
@@ -63,8 +63,8 @@ public class ApiVersionResourceIntegrationTest extends AbstractResourceIntegrati
     public void shouldGroupVersionsOfGivenApi() throws Exception {
         ApplicationEntity app1 = applicationRepository.save(givenApplication(APP1_NAME));
 
-        ApiEntity testAPi100 = givenApiEntity(API_NAME, API_VERSION_1);
-        ApiEntity testAPi200 = givenApiEntity(API_NAME, API_VERSION_2);
+        ApiEntity testAPi100 = givenApiEntity(API_NAME, API_VERSION_1, 1);
+        ApiEntity testAPi200 = givenApiEntity(API_NAME, API_VERSION_2, 1);
 
         ApiDeploymentEntity testAPi100OnApp1 = givenApiDeployment(testAPi100, app1);
         ApiDeploymentEntity testAPi200OnApp1 = givenApiDeployment(testAPi200, app1, INACTIVE);
@@ -75,7 +75,7 @@ public class ApiVersionResourceIntegrationTest extends AbstractResourceIntegrati
         apiRepository.save(asList(testAPi100, testAPi200));
 
         ResponseEntity<String> responseEntity = restTemplate.getForEntity(
-            "/apis/" + API_NAME + "/versions", String.class);
+                "/apis/" + API_NAME + "/versions", String.class);
 
         final String response = responseEntity.getBody();
         assertThat(response, hasJsonPath("$.versions", hasSize(2)));
@@ -90,8 +90,8 @@ public class ApiVersionResourceIntegrationTest extends AbstractResourceIntegrati
     public void shouldReturnAllActiveVersions() throws Exception {
         ApplicationEntity app1 = applicationRepository.save(givenApplication(APP1_NAME));
 
-        ApiEntity testAPi100 = givenApiEntity(API_NAME, API_VERSION_1);
-        ApiEntity testAPi200 = givenApiEntity(API_NAME, API_VERSION_2);
+        ApiEntity testAPi100 = givenApiEntity(API_NAME, API_VERSION_1, 1);
+        ApiEntity testAPi200 = givenApiEntity(API_NAME, API_VERSION_2, 1);
 
         ApiDeploymentEntity testAPi100OnApp1 = givenApiDeployment(testAPi100, app1);
         ApiDeploymentEntity testAPi200OnApp1 = givenApiDeployment(testAPi200, app1, INACTIVE);
@@ -102,7 +102,7 @@ public class ApiVersionResourceIntegrationTest extends AbstractResourceIntegrati
         apiRepository.save(asList(testAPi100, testAPi200));
 
         ResponseEntity<String> responseEntity = restTemplate.getForEntity(
-            "/apis/" + API_NAME + "/versions?lifecycle_state=ACTIVE", String.class);
+                "/apis/" + API_NAME + "/versions?lifecycle_state=ACTIVE", String.class);
 
         final String response = responseEntity.getBody();
         assertThat(response, hasJsonPath("$.versions", hasSize(1)));
@@ -113,8 +113,8 @@ public class ApiVersionResourceIntegrationTest extends AbstractResourceIntegrati
     public void shouldReturnAllInactiveVersions() throws Exception {
         ApplicationEntity app1 = applicationRepository.save(givenApplication(APP1_NAME));
 
-        ApiEntity testAPi100 = givenApiEntity(API_NAME, API_VERSION_1);
-        ApiEntity testAPi200 = givenApiEntity(API_NAME, API_VERSION_2);
+        ApiEntity testAPi100 = givenApiEntity(API_NAME, API_VERSION_1, 1);
+        ApiEntity testAPi200 = givenApiEntity(API_NAME, API_VERSION_2, 1);
 
         ApiDeploymentEntity testAPi100OnApp1 = givenApiDeployment(testAPi100, app1, INACTIVE);
         ApiDeploymentEntity testAPi200OnApp1 = givenApiDeployment(testAPi200, app1, DECOMMISSIONED);
@@ -125,7 +125,7 @@ public class ApiVersionResourceIntegrationTest extends AbstractResourceIntegrati
         apiRepository.save(asList(testAPi100, testAPi200));
 
         ResponseEntity<String> responseEntity = restTemplate.getForEntity(
-            "/apis/" + API_NAME + "/versions?lifecycle_state=INACTIVE", String.class);
+                "/apis/" + API_NAME + "/versions?lifecycle_state=INACTIVE", String.class);
 
         final String response = responseEntity.getBody();
         assertThat(response, hasJsonPath("$.versions", hasSize(1)));
@@ -136,8 +136,8 @@ public class ApiVersionResourceIntegrationTest extends AbstractResourceIntegrati
     public void shouldNotFindInactiveVersion() throws Exception {
         ApplicationEntity app1 = applicationRepository.save(givenApplication(APP1_NAME));
 
-        ApiEntity testAPi100 = givenApiEntity(API_NAME, API_VERSION_1);
-        ApiEntity testAPi100_1 = givenApiEntity(API_NAME, API_VERSION_1);
+        ApiEntity testAPi100 = givenApiEntity(API_NAME, API_VERSION_1, 1);
+        ApiEntity testAPi100_1 = givenApiEntity(API_NAME, API_VERSION_1, 2);
 
         ApiDeploymentEntity testAPi100OnApp1 = givenApiDeployment(testAPi100, app1, INACTIVE);
         ApiDeploymentEntity testAPi200OnApp1 = givenApiDeployment(testAPi100_1, app1, ACTIVE);
@@ -148,7 +148,7 @@ public class ApiVersionResourceIntegrationTest extends AbstractResourceIntegrati
         apiRepository.save(asList(testAPi100, testAPi100_1));
 
         ResponseEntity<String> responseEntity = restTemplate.getForEntity(
-            "/apis/" + API_NAME + "/versions?lifecycle_state=INACTIVE", String.class);
+                "/apis/" + API_NAME + "/versions?lifecycle_state=INACTIVE", String.class);
 
         final String response = responseEntity.getBody();
         assertThat(response, hasJsonPath("$.versions", hasSize(0)));
@@ -158,8 +158,8 @@ public class ApiVersionResourceIntegrationTest extends AbstractResourceIntegrati
     public void shouldReturnAllDecommissionedVersions() throws Exception {
         ApplicationEntity app1 = applicationRepository.save(givenApplication(APP1_NAME));
 
-        ApiEntity testAPi100 = givenApiEntity(API_NAME, API_VERSION_1);
-        ApiEntity testAPi200 = givenApiEntity(API_NAME, API_VERSION_2);
+        ApiEntity testAPi100 = givenApiEntity(API_NAME, API_VERSION_1, 1);
+        ApiEntity testAPi200 = givenApiEntity(API_NAME, API_VERSION_2, 2);
 
         ApiDeploymentEntity testAPi100OnApp1 = givenApiDeployment(testAPi100, app1, DECOMMISSIONED);
         ApiDeploymentEntity testAPi200OnApp1 = givenApiDeployment(testAPi200, app1, DECOMMISSIONED);
@@ -170,7 +170,7 @@ public class ApiVersionResourceIntegrationTest extends AbstractResourceIntegrati
         apiRepository.save(asList(testAPi100, testAPi200));
 
         ResponseEntity<String> responseEntity = restTemplate.getForEntity(
-            "/apis/" + API_NAME + "/versions?lifecycle_state=DECOMMISSIONED", String.class);
+                "/apis/" + API_NAME + "/versions?lifecycle_state=DECOMMISSIONED", String.class);
 
         final String response = responseEntity.getBody();
         assertThat(response, hasJsonPath("$.versions", hasSize(2)));
@@ -181,8 +181,8 @@ public class ApiVersionResourceIntegrationTest extends AbstractResourceIntegrati
     public void shouldNotFindDecommissionedVersion() throws Exception {
         ApplicationEntity app1 = applicationRepository.save(givenApplication(APP1_NAME));
 
-        ApiEntity testAPi100 = givenApiEntity(API_NAME, API_VERSION_1);
-        ApiEntity testAPi100_1 = givenApiEntity(API_NAME, API_VERSION_1);
+        ApiEntity testAPi100 = givenApiEntity(API_NAME, API_VERSION_1, 1);
+        ApiEntity testAPi100_1 = givenApiEntity(API_NAME, API_VERSION_1, 2);
 
         ApiDeploymentEntity testAPi100OnApp1 = givenApiDeployment(testAPi100, app1, DECOMMISSIONED);
         ApiDeploymentEntity testAPi200OnApp1 = givenApiDeployment(testAPi100_1, app1, ACTIVE);
@@ -193,7 +193,7 @@ public class ApiVersionResourceIntegrationTest extends AbstractResourceIntegrati
         apiRepository.save(asList(testAPi100, testAPi100_1));
 
         ResponseEntity<String> responseEntity = restTemplate.getForEntity(
-            "/apis/" + API_NAME + "/versions?lifecycle_state=DECOMMISSIONED", String.class);
+                "/apis/" + API_NAME + "/versions?lifecycle_state=DECOMMISSIONED", String.class);
 
         final String response = responseEntity.getBody();
         assertThat(response, hasJsonPath("$.versions", hasSize(0)));
@@ -202,7 +202,7 @@ public class ApiVersionResourceIntegrationTest extends AbstractResourceIntegrati
     @Test
     public void shouldReturnStatusCode400ForUnknownApiLifecycleState() throws Exception {
         ResponseEntity<String> responseEntity = restTemplate.getForEntity(
-            "/apis/" + API_NAME + "/versions?lifecycle_state=UNKNOWN", String.class);
+                "/apis/" + API_NAME + "/versions?lifecycle_state=UNKNOWN", String.class);
 
         assertThat(responseEntity.getStatusCode(), equalTo(HttpStatus.BAD_REQUEST));
     }
@@ -211,8 +211,8 @@ public class ApiVersionResourceIntegrationTest extends AbstractResourceIntegrati
     public void shouldReturnOneVersion() throws Exception {
         ApplicationEntity app1 = applicationRepository.save(givenApplication(APP1_NAME));
 
-        ApiEntity testAPi100 = givenApiEntity(API_NAME, API_VERSION_1);
-        ApiEntity testAPi200 = givenApiEntity(API_NAME, API_VERSION_2);
+        ApiEntity testAPi100 = givenApiEntity(API_NAME, API_VERSION_1, 1);
+        ApiEntity testAPi200 = givenApiEntity(API_NAME, API_VERSION_2, 1);
 
         ApiDeploymentEntity testAPi100OnApp1 = givenApiDeployment(testAPi100, app1);
         ApiDeploymentEntity testAPi200OnApp1 = givenApiDeployment(testAPi200, app1);
@@ -223,7 +223,7 @@ public class ApiVersionResourceIntegrationTest extends AbstractResourceIntegrati
         apiRepository.save(asList(testAPi100, testAPi200));
 
         ResponseEntity<String> responseEntity = restTemplate.getForEntity(
-            "/apis/" + API_NAME + "/versions/" + API_VERSION_1, String.class);
+                "/apis/" + API_NAME + "/versions/" + API_VERSION_1, String.class);
 
         final String response = responseEntity.getBody();
         assertThat(response, hasJsonPath("$.api_version", equalTo(API_VERSION_1)));
@@ -242,7 +242,7 @@ public class ApiVersionResourceIntegrationTest extends AbstractResourceIntegrati
     @Test
     public void shouldReturn404IfNoVersionFound() throws Exception {
         ResponseEntity<String> responseEntity = restTemplate.getForEntity(
-            "/apis/" + API_NAME + "/versions/" + API_VERSION_1, String.class);
+                "/apis/" + API_NAME + "/versions/" + API_VERSION_1, String.class);
 
         assertThat(responseEntity.getStatusCode(), equalTo(HttpStatus.NOT_FOUND));
     }

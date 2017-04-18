@@ -10,16 +10,16 @@ public class ApplicationEntityToApplicationDtoConverter {
         List<DeploymentLinkDto> deploymentLinkDtos = null;
         if (applicationEntity.getApiDeploymentEntities() != null) {
             deploymentLinkDtos = applicationEntity.getApiDeploymentEntities().stream()
-                .map(ApplicationEntityToApplicationDtoConverter::mapApiDeploymentEntityToDefinitionDeploymentLink)
-                .collect(toList());
+                    .map(ApplicationEntityToApplicationDtoConverter::mapApiDeploymentEntityToDefinitionDeploymentLink)
+                    .collect(toList());
         }
 
         return ApplicationDto.builder()
-            .name(applicationEntity.getName())
-            .appUrl(applicationEntity.getAppUrl())
-            .definitions(deploymentLinkDtos)
-            .created(applicationEntity.getCreated())
-            .build();
+                .name(applicationEntity.getName())
+                .appUrl(applicationEntity.getAppUrl())
+                .definitions(deploymentLinkDtos)
+                .created(applicationEntity.getCreated())
+                .build();
     }
 
 
