@@ -26,9 +26,9 @@ public class ApplicationResourceController {
     }
 
     @GetMapping
-    public ResponseEntity<ApplicationListDto> getApplications(UriComponentsBuilder builder) {
+    public ResponseEntity<ApplicationsDto> getApplications(UriComponentsBuilder builder) {
         List<ApplicationDto> applicationDtoList = applicationService.getAllApplications();
-        return ResponseEntity.ok(new ApplicationListDto(updateApiDefinitionWithLinks(applicationDtoList, builder)));
+        return ResponseEntity.ok(new ApplicationsDto(updateApiDefinitionWithLinks(applicationDtoList, builder)));
     }
 
     @GetMapping("/{application_name}")
