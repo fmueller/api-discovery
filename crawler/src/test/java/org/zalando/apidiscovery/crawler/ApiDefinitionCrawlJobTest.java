@@ -65,7 +65,7 @@ public class ApiDefinitionCrawlJobTest {
     @Test
     public void shouldBeAbleToConstructApiDefinition() throws Exception {
         ApiDefinition apiDefinition = ApiDefinitionCrawlJob.constructApiDefinition(metaApiSchemaDiscovery(), metaApiApiDefinition(),
-                "swagger-2.0", "meta-api-service", "swagger.json", "https://meta.api/");
+                "meta-api-service", "https://meta.api/");
 
         assertThat(apiDefinition).isEqualTo(expectedMetaApiDefinition);
     }
@@ -73,7 +73,7 @@ public class ApiDefinitionCrawlJobTest {
     @Test
     public void shouldBeAbleToConstructLegacyApiDefinition() throws Exception {
         LegacyApiDefinition legacyApiDefinition = ApiDefinitionCrawlJob.constructLegacyApiDefinition(metaApiSchemaDiscovery(),
-                metaApiApiDefinition(), "swagger-2.0", "swagger.json", "https://meta.api/");
+                metaApiApiDefinition(), "https://meta.api/");
 
         assertThat(legacyApiDefinition).isEqualTo(expectedMetaApiLegacyDefinition);
     }

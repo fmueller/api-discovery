@@ -51,16 +51,10 @@ class ApiDefinitionCrawlJob implements Callable<Void> {
 
             if (schemaDiscovery.isPresent()) {
                 final JsonNode schemaDiscoveryInformation = schemaDiscovery.get();
-                String apiDefinitionUrl = schemaDiscoveryInformation.get("schema_url").asText();
-                if (apiDefinitionUrl.startsWith("/")) {
-                    apiDefinitionUrl = apiDefinitionUrl.substring(1);
-                }
+                final JsonNode apiDefinitionInformation = retrieveApiDefinition(serviceUrl + apiDefinitionUrl(schemaDiscoveryInformation));
 
-                final String schemaType = schemaDiscoveryInformation.get("schema_type").asText("");
-                final JsonNode apiDefinitionInformation = retrieveApiDefinition(serviceUrl + apiDefinitionUrl);
-
-                legacyApiDefinition = constructLegacyApiDefinition(schemaDiscoveryInformation, apiDefinitionInformation, schemaType, apiDefinitionUrl, serviceUrl);
-                apiDefinition = constructApiDefinition(schemaDiscoveryInformation, apiDefinitionInformation, schemaType, app.getId(), apiDefinitionUrl, serviceUrl);
+                legacyApiDefinition = constructLegacyApiDefinition(schemaDiscoveryInformation, apiDefinitionInformation, serviceUrl);
+                apiDefinition = constructApiDefinition(schemaDiscoveryInformation, apiDefinitionInformation, app.getId(), serviceUrl);
                 LOG.info("Successfully crawled api definition of {}", app.getId());
             } else {
                 LOG.info("Api definition unavailable for {}", app.getId());
@@ -74,30 +68,37 @@ class ApiDefinitionCrawlJob implements Callable<Void> {
         return null;
     }
 
-    protected static ApiDefinition constructApiDefinition(JsonNode schemaDiscovery, JsonNode apiDefinition, String schemaType,
-                                                          String appName, String apiDefinitionUrl, String serviceUrl) throws Exception {
+    protected static ApiDefinition constructApiDefinition(JsonNode schemaDiscovery, JsonNode apiDefinition,
+                                                          String appName, String serviceUrl) throws Exception {
         return ApiDefinition.builder()
                 .status("SUCCESS")
-                .type(schemaType)
+                .type(schemaDiscovery.get("schema_type").asText(""))
                 .apiName(apiDefinition.get("info").get("title").asText())
                 .appName(appName)
                 .version(apiDefinition.get("info").get("version").asText())
                 .serviceUrl(serviceUrl)
-                .schemaUrl(apiDefinitionUrl)
+                .schemaUrl(apiDefinitionUrl(schemaDiscovery))
                 .uiLink(schemaDiscovery.has("ui_url") ? schemaDiscovery.get("ui_url").asText() : null)
                 .definition(apiDefinition.toString())
                 .build();
     }
 
-    protected static LegacyApiDefinition constructLegacyApiDefinition(JsonNode schemaDiscovery, JsonNode apiDefinition, String schemaType,
-                                                                      String apiDefinitionUrl, String serviceUrl) throws Exception {
+    private static String apiDefinitionUrl(JsonNode schemaDiscovery) {
+        String apiDefinitionUrl = schemaDiscovery.get("schema_url").asText();
+        if (apiDefinitionUrl.startsWith("/")) {
+            apiDefinitionUrl = apiDefinitionUrl.substring(1);
+        }
+        return apiDefinitionUrl;
+    }
+
+    protected static LegacyApiDefinition constructLegacyApiDefinition(JsonNode schemaDiscovery, JsonNode apiDefinition, String serviceUrl) throws Exception {
         return LegacyApiDefinition.builder()
                 .status("SUCCESS")
-                .type(schemaType)
+                .type(schemaDiscovery.get("schema_type").asText(""))
                 .name(apiDefinition.get("info").get("title").asText())
                 .version(apiDefinition.get("info").get("version").asText())
                 .serviceUrl(serviceUrl)
-                .schemaUrl(apiDefinitionUrl)
+                .schemaUrl(apiDefinitionUrl(schemaDiscovery))
                 .uiLink(schemaDiscovery.has("ui_url") ? schemaDiscovery.get("ui_url").asText() : null)
                 .definition(apiDefinition.toString())
                 .build();
