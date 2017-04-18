@@ -11,20 +11,20 @@ public class ApiEntityToVersionConverter {
     public static List<VersionsDto> toVersionDtoList(List<ApiEntity> apiEntities) {
         apiEntitiesMustHaveSameName(apiEntities);
         return apiEntities.stream()
-            .collect(groupingBy(ApiEntity::getApiVersion))
-            .entrySet().stream()
-            .map(entry -> new VersionsDto(entry.getKey(), aggregateApplicationLifecycleStateForApi(entry.getValue()),
-                entry
-                    .getValue().stream()
-                    .map(ApiEntityToApiDefinitionConverter::toApiDefinitionDto)
-                    .collect(toList()))
-            )
-            .collect(toList());
+                .collect(groupingBy(ApiEntity::getApiVersion))
+                .entrySet().stream()
+                .map(entry -> new VersionsDto(entry.getKey(), aggregateApplicationLifecycleStateForApi(entry.getValue()),
+                        entry
+                                .getValue().stream()
+                                .map(ApiEntityToApiDefinitionConverter::toApiDefinitionDto)
+                                .collect(toList()))
+                )
+                .collect(toList());
     }
 
     private static void apiEntitiesMustHaveSameName(List<ApiEntity> apiEntities) {
         if (apiEntities.stream()
-            .collect(groupingBy(ApiEntity::getApiName)).size() > 1) {
+                .collect(groupingBy(ApiEntity::getApiName)).size() > 1) {
             throw new IllegalArgumentException("ApiEntities must have same name");
         }
     }
