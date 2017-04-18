@@ -68,7 +68,7 @@ class ApiDefinitionCrawlJob implements Callable<Void> {
         } catch (Exception e) {
             LOG.info("Could not crawl {}: {}", app.getId(), e.getMessage());
         } finally {
-            legacyStorageClient.createOrUpdateApiDefintion(legacyApiDefinition, app.getId());
+            legacyStorageClient.createOrUpdateApiDefinition(legacyApiDefinition, app.getId());
             storageClient.pushApiDefinition(apiDefinition);
         }
         return null;

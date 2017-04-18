@@ -3,10 +3,8 @@ package org.zalando.apidiscovery.crawler.storage;
 import org.springframework.util.Assert;
 import org.springframework.web.client.RestOperations;
 
-import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 public class LegacyApiDiscoveryStorageClient {
 
@@ -18,7 +16,7 @@ public class LegacyApiDiscoveryStorageClient {
         this.baseUrl = baseUrl;
     }
 
-    public void createOrUpdateApiDefintion(LegacyApiDefinition request, String applicationId) {
+    public void createOrUpdateApiDefinition(LegacyApiDefinition request, String applicationId) {
         Assert.hasText(applicationId, "applicationId must not be blank");
 
         final Map<String, String> uriVariables = new HashMap<>();
@@ -26,9 +24,4 @@ public class LegacyApiDiscoveryStorageClient {
         restOperations.put(baseUrl + "/apps/{applicationId}", request, uriVariables);
     }
 
-    public Optional<LegacyApiDefinition> getApiDefinition(String applicationId) {
-        Assert.hasText(applicationId, "applicationId must not be blank");
-
-        return Optional.ofNullable(restOperations.getForObject(URI.create(baseUrl + "/apps/" + applicationId), LegacyApiDefinition.class));
-    }
 }
