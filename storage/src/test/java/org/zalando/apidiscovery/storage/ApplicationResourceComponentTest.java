@@ -86,10 +86,8 @@ public class ApplicationResourceComponentTest {
     @Test
     public void shouldReturnAllApplications() throws Exception {
         ApplicationEntity applicationEntity1 = createApplication("application1");
-        ApiEntity apiEntity = createApiEntity("api1", "v1");
+        ApiEntity apiEntity = createApiEntity("api1", "v1", "hash");
         createApiDeployment(apiEntity, applicationEntity1);
-
-        System.out.println(mvc.perform(get("/applications")).andReturn().getResponse().getContentAsString());
 
         mvc.perform(get("/applications"))
             .andExpect(status().isOk())
@@ -112,7 +110,7 @@ public class ApplicationResourceComponentTest {
     @Test
     public void shouldReturnOneApplication() throws Exception {
         ApplicationEntity applicationEntity = createApplication("application1");
-        ApiEntity apiEntity = createApiEntity("api1", "v1");
+        ApiEntity apiEntity = createApiEntity("api1", "v1", "hash");
         createApiDeployment(apiEntity, applicationEntity);
 
         mvc.perform(get("/applications/application1"))
@@ -158,10 +156,11 @@ public class ApplicationResourceComponentTest {
         return apiDeploymentEntity;
     }
 
-    private ApiEntity createApiEntity(String name, String version) {
+    private ApiEntity createApiEntity(String name, String version, String definitionHash) {
         return ApiEntity.builder()
             .apiName(name)
             .apiVersion(version)
+            .definitionHash(definitionHash)
             .definitionType("swagger")
             .created(now(UTC))
             .build();
