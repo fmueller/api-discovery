@@ -1,12 +1,12 @@
 package org.zalando.apidiscovery.storage.api;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import static java.text.MessageFormat.format;
 import static java.util.stream.Collectors.groupingBy;
@@ -32,27 +32,27 @@ public class ApiService {
         List<ApiEntity> apiEntities = apiRepository.findAll();
 
         return apiEntities
-            .stream()
-            .collect(groupingBy(ApiEntity::getApiName))
-            .entrySet().stream()
-            .map(entry -> new ApiDto(entry.getKey(), aggregateApplicationLifecycleStateForApi(entry.getValue())))
-            .collect(toList());
+                .stream()
+                .collect(groupingBy(ApiEntity::getApiName))
+                .entrySet().stream()
+                .map(entry -> new ApiDto(entry.getKey(), aggregateApplicationLifecycleStateForApi(entry.getValue())))
+                .collect(toList());
     }
 
     public static ApiLifecycleState aggregateApplicationLifecycleStateForApi(List<ApiEntity> apiEntities) {
         List<ApiDeploymentEntity> apiDeploymentList = apiEntities.stream()
-            .flatMap(apiEntity ->
-                apiEntity.getApiDeploymentEntities() != null ? apiEntity.getApiDeploymentEntities().stream() : new ArrayList<ApiDeploymentEntity>().stream())
-            .collect(toList());
+                .flatMap(apiEntity ->
+                        apiEntity.getApiDeploymentEntities() != null ? apiEntity.getApiDeploymentEntities().stream() : new ArrayList<ApiDeploymentEntity>().stream())
+                .collect(toList());
         return aggregateApplicationLifecycleStateForDeploymentEntities(apiDeploymentList);
     }
 
     public static ApiLifecycleState aggregateApplicationLifecycleStateForDeploymentEntities(List<ApiDeploymentEntity> apiDeploymentEntities) {
         if (apiDeploymentEntities.stream()
-            .filter(apiEntity -> ACTIVE.equals(apiEntity.getLifecycleState())).count() > 0) {
+                .filter(apiEntity -> ACTIVE.equals(apiEntity.getLifecycleState())).count() > 0) {
             return ACTIVE;
         } else if (apiDeploymentEntities.stream()
-            .filter(apiEntity -> INACTIVE.equals(apiEntity.getLifecycleState())).count() > 0) {
+                .filter(apiEntity -> INACTIVE.equals(apiEntity.getLifecycleState())).count() > 0) {
             return INACTIVE;
         }
         return DECOMMISSIONED;
@@ -60,12 +60,13 @@ public class ApiService {
 
     public List<ApiDto> getAllApis(ApiLifecycleState filterByLifecycleState) {
         return getAllApis().stream()
-            .filter(api -> filterByLifecycleState.equals(api.getApiMetaData().getLifecycleState()))
-            .collect(toList());
+                .filter(api -> filterByLifecycleState.equals(api.getApiMetaData().getLifecycleState()))
+                .collect(toList());
     }
 
     public Optional<ApiDto> getApi(String apiName) {
         List<ApiEntity> apiEntities = apiRepository.findByApiName(apiName);
+
         if (!apiEntities.isEmpty()) {
             ApiLifecycleState lifecycleState = aggregateApplicationLifecycleStateForApi(apiEntities);
             List<VersionsDto> versions = toVersionDtoList(apiEntities);
@@ -81,8 +82,8 @@ public class ApiService {
 
     private List<ApplicationDto> toApplicationDtoList(List<ApiEntity> apiEntities) {
         return applicationRepository.findByApiIds(apiEntities).stream()
-            .map(ApplicationEntityToApplicationDtoConverter::toApplicationDto)
-            .collect(toList());
+                .map(ApplicationEntityToApplicationDtoConverter::toApplicationDto)
+                .collect(toList());
     }
 
     public List<VersionsDto> getVersionsForApi(String apiId) {

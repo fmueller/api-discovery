@@ -1,5 +1,14 @@
 package org.zalando.apidiscovery.storage.api;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import org.hibernate.annotations.Parameter;
+import org.hibernate.annotations.Type;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -11,17 +20,7 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
-import org.hibernate.annotations.Parameter;
-import org.hibernate.annotations.Type;
-
 import static javax.persistence.CascadeType.ALL;
-
 
 @Data
 @Builder
@@ -38,6 +37,8 @@ public class ApiEntity implements Serializable {
     private long id;
     private String apiName;
     private String apiVersion;
+    private int definitionId;
+    private String definitionHash;
     private String definition;
     private String definitionType;
 
@@ -45,7 +46,7 @@ public class ApiEntity implements Serializable {
     private List<ApiDeploymentEntity> apiDeploymentEntities = new ArrayList<>();
 
     @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentOffsetDateTime",
-        parameters = {@Parameter(name = "javaZone", value = "UTC")})
+            parameters = {@Parameter(name = "javaZone", value = "UTC")})
     private OffsetDateTime created;
 
 }

@@ -57,11 +57,13 @@ public class DomainObjectGen {
         return givenApiEntity(DEFINITION_ID, API_NAME, API_VERSION_1);
     }
 
-    public static ApiEntity givenApiEntity(String name, String version) {
+    public static ApiEntity givenApiEntity(String name, String version, int definitionId) {
         return ApiEntity.builder()
             .apiName(name)
             .apiVersion(version)
             .definitionType(DEFINITION_TYPE)
+            .definitionHash("f1")
+            .definitionId(definitionId)
             .created(NOW)
             .definition(DEFINITION)
             .build();

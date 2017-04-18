@@ -1,3 +1,5 @@
+storage.retries.unique-key-constraint-violation: 100
+
 twintip:
   mapping: /api
   yaml: "classpath:/api/storage-api.yaml"

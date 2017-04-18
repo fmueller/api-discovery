@@ -29,7 +29,7 @@ public class ApiDefinitionResourceIntegrationTest extends AbstractResourceIntegr
     public void shouldReturnOneApiDefinition() throws Exception {
         ApplicationEntity app1 = applicationRepository.save(givenApplication(APP1_NAME));
 
-        ApiEntity testAPi100 = givenApiEntity(API_NAME, API_VERSION_1);
+        ApiEntity testAPi100 = givenApiEntity(API_NAME, API_VERSION_1, 1);
 
         ApiDeploymentEntity testAPi100OnApp1 = givenApiDeployment(testAPi100, app1);
 
