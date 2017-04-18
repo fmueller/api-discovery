@@ -50,17 +50,17 @@ class ApiDefinitionCrawlJob implements Callable<Void> {
             final Optional<JsonNode> schemaDiscovery = retrieveSchemaDiscovery(serviceUrl);
 
             if (schemaDiscovery.isPresent()) {
-                final JsonNode schemaDiscoveryNode = schemaDiscovery.get();
-                String apiDefinitionUrl = schemaDiscoveryNode.get("schema_url").asText();
+                final JsonNode schemaDiscoveryInformation = schemaDiscovery.get();
+                String apiDefinitionUrl = schemaDiscoveryInformation.get("schema_url").asText();
                 if (apiDefinitionUrl.startsWith("/")) {
                     apiDefinitionUrl = apiDefinitionUrl.substring(1);
                 }
 
-                final String schemaType = schemaDiscoveryNode.get("schema_type").asText("");
+                final String schemaType = schemaDiscoveryInformation.get("schema_type").asText("");
                 final JsonNode apiDefinitionNode = retrieveApiDefinition(serviceUrl + apiDefinitionUrl);
 
-                legacyApiDefinition = constructLegacyApiDefinition(schemaDiscoveryNode, apiDefinitionNode, schemaType, apiDefinitionUrl, serviceUrl);
-                apiDefinition = constructApiDefinition(schemaDiscoveryNode, apiDefinitionNode, schemaType, app.getId(), apiDefinitionUrl, serviceUrl);
+                legacyApiDefinition = constructLegacyApiDefinition(schemaDiscoveryInformation, apiDefinitionNode, schemaType, apiDefinitionUrl, serviceUrl);
+                apiDefinition = constructApiDefinition(schemaDiscoveryInformation, apiDefinitionNode, schemaType, app.getId(), apiDefinitionUrl, serviceUrl);
                 LOG.info("Successfully crawled api definition of {}", app.getId());
             } else {
                 LOG.info("Api definition unavailable for {}", app.getId());
