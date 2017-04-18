@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.time.OffsetDateTime;
+import java.util.Objects;
 
 import org.hibernate.annotations.Type;
 
@@ -155,29 +156,19 @@ class ApiDefinition {
 
         ApiDefinition that = (ApiDefinition) o;
 
-        if (!applicationId.equals(that.applicationId)) return false;
-        if (!status.equals(that.status)) return false;
-        if (type != null ? !type.equals(that.type) : that.type != null) return false;
-        if (name != null ? !name.equals(that.name) : that.name != null) return false;
-        if (version != null ? !version.equals(that.version) : that.version != null) return false;
-        if (serviceUrl != null ? !serviceUrl.equals(that.serviceUrl) : that.serviceUrl != null) return false;
-        if (url != null ? !url.equals(that.url) : that.url != null) return false;
-        if (ui != null ? !ui.equals(that.ui) : that.ui != null) return false;
-        return definition != null ? definition.equals(that.definition) : that.definition == null;
-
+        return Objects.equals(applicationId, that.applicationId) &&
+                Objects.equals(status, that.status) &&
+                Objects.equals(type, that.type) &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(version, that.version) &&
+                Objects.equals(serviceUrl, that.serviceUrl) &&
+                Objects.equals(url, that.url) &&
+                Objects.equals(ui, that.ui) &&
+                Objects.equals(definition, that.definition);
     }
 
     @Override
     public int hashCode() {
-        int result = applicationId.hashCode();
-        result = 31 * result + status.hashCode();
-        result = 31 * result + (type != null ? type.hashCode() : 0);
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (version != null ? version.hashCode() : 0);
-        result = 31 * result + (serviceUrl != null ? serviceUrl.hashCode() : 0);
-        result = 31 * result + (url != null ? url.hashCode() : 0);
-        result = 31 * result + (ui != null ? ui.hashCode() : 0);
-        result = 31 * result + (definition != null ? definition.hashCode() : 0);
-        return result;
+        return Objects.hash(applicationId, status, type, name, version, serviceUrl, url, ui, definition);
     }
 }

@@ -30,9 +30,6 @@ import static org.zalando.apidiscovery.storage.TestDataHelper.createInactiveApiD
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 public class RestApiIntegrationTest {
 
-    @Value("${local.server.port}")
-    private int port;
-
     @Autowired
     private ApiDefinitionRepository repository;
 
