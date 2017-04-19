@@ -34,27 +34,27 @@ public class ApiService {
         List<ApiEntity> apiEntities = apiRepository.findAll();
 
         return apiEntities
-                .stream()
-                .collect(groupingBy(ApiEntity::getApiName))
-                .entrySet().stream()
-                .map(entry -> new ApiDto(entry.getKey(), aggregateApplicationLifecycleStateForApi(entry.getValue())))
-                .collect(toList());
+            .stream()
+            .collect(groupingBy(ApiEntity::getApiName))
+            .entrySet().stream()
+            .map(entry -> new ApiDto(entry.getKey(), aggregateApplicationLifecycleStateForApi(entry.getValue())))
+            .collect(toList());
     }
 
     public static ApiLifecycleState aggregateApplicationLifecycleStateForApi(List<ApiEntity> apiEntities) {
         List<ApiDeploymentEntity> apiDeploymentList = apiEntities.stream()
-                .flatMap(apiEntity ->
-                        apiEntity.getApiDeploymentEntities() != null ? apiEntity.getApiDeploymentEntities().stream() : new ArrayList<ApiDeploymentEntity>().stream())
-                .collect(toList());
+            .flatMap(apiEntity ->
+                apiEntity.getApiDeploymentEntities() != null ? apiEntity.getApiDeploymentEntities().stream() : new ArrayList<ApiDeploymentEntity>().stream())
+            .collect(toList());
         return aggregateApplicationLifecycleStateForDeploymentEntities(apiDeploymentList);
     }
 
     public static ApiLifecycleState aggregateApplicationLifecycleStateForDeploymentEntities(List<ApiDeploymentEntity> apiDeploymentEntities) {
         if (apiDeploymentEntities.stream()
-                .filter(apiEntity -> ACTIVE.equals(apiEntity.getLifecycleState())).count() > 0) {
+            .filter(apiEntity -> ACTIVE.equals(apiEntity.getLifecycleState())).count() > 0) {
             return ACTIVE;
         } else if (apiDeploymentEntities.stream()
-                .filter(apiEntity -> INACTIVE.equals(apiEntity.getLifecycleState())).count() > 0) {
+            .filter(apiEntity -> INACTIVE.equals(apiEntity.getLifecycleState())).count() > 0) {
             return INACTIVE;
         }
         return DECOMMISSIONED;
@@ -62,8 +62,8 @@ public class ApiService {
 
     public List<ApiDto> getAllApis(ApiLifecycleState filterByLifecycleState) {
         return getAllApis().stream()
-                .filter(api -> filterByLifecycleState.equals(api.getApiMetaData().getLifecycleState()))
-                .collect(toList());
+            .filter(api -> filterByLifecycleState.equals(api.getApiMetaData().getLifecycleState()))
+            .collect(toList());
     }
 
     public Optional<ApiDto> getApi(String apiName) {
@@ -142,11 +142,9 @@ public class ApiService {
 
         return DeploymentDto.builder()
             .apiVersion(apiDeploymentEntity.getApi().getApiVersion())
-            .application(new
-                DeploymentApplicationDto(apiDeploymentEntity.getApplication().getName(),
+            .application(new DeploymentApplicationDto(apiDeploymentEntity.getApplication().getName(),
                 applicationDeploymentLinkBuilder))
-            .definition(new
-                DeploymentDefinitionDto(deploymentLinkBuilder))
+            .definition(new DeploymentDefinitionDto(deploymentLinkBuilder))
             .build();
     }
 }
