@@ -134,17 +134,10 @@ public class ApiService {
     }
 
     private DeploymentDto apiDeploymentToDeploymentDto(ApiDeploymentEntity apiDeploymentEntity) {
-        DefinitionDeploymentLinkBuilder deploymentLinkBuilder = new
-            DefinitionDeploymentLinkBuilder(apiDeploymentEntity.getApi());
-
-        ApplicationDeploymentLinkBuilder applicationDeploymentLinkBuilder = new
-            ApplicationDeploymentLinkBuilder(apiDeploymentEntity.getApplication());
-
         return DeploymentDto.builder()
             .apiVersion(apiDeploymentEntity.getApi().getApiVersion())
-            .application(new DeploymentApplicationDto(apiDeploymentEntity.getApplication().getName(),
-                applicationDeploymentLinkBuilder))
-            .definition(new DeploymentDefinitionDto(deploymentLinkBuilder))
+            .application(new DeploymentApplicationDto(apiDeploymentEntity.getApplication().getName()))
+            .definition(new DeploymentDefinitionDto(apiDeploymentEntity.getApi()))
             .build();
     }
 }

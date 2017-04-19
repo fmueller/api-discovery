@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import static org.zalando.apidiscovery.storage.api.LinkBuilderUtil.buildLink;
+
 @CrossOrigin
 @RestController
 @RequestMapping("/applications")
@@ -48,9 +50,7 @@ public class ApplicationResourceController {
     private ApplicationDto updateApiDefinitionWithLinks(ApplicationDto applicationDto, UriComponentsBuilder builder) {
         applicationDto.getDefinitions()
             .forEach(deploymentLinkDto -> deploymentLinkDto.setHref(
-                builder.cloneBuilder()
-                    .path(deploymentLinkDto.getLinkBuilder().buildLink())
-                    .toUriString()
+                buildLink(builder.cloneBuilder(), deploymentLinkDto).toUriString()
             ));
 
         return applicationDto;

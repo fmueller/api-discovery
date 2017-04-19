@@ -7,6 +7,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import static java.lang.String.valueOf;
+import static org.zalando.apidiscovery.storage.api.LinkBuilderUtil.buildApplicationDeploymentLink;
+import static org.zalando.apidiscovery.storage.api.LinkBuilderUtil.buildDefinitionDeploymentLink;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,8 +25,8 @@ public class DeploymentDto {
 
 
     public void buildLinks(UriComponentsBuilder builder) {
-        definition.buildLink(builder.cloneBuilder());
         application.buildLink(builder.cloneBuilder());
+        definition.buildLink(builder.cloneBuilder());
     }
 
     @Data
@@ -31,19 +35,12 @@ public class DeploymentDto {
         private String name;
         private String href;
 
-        @JsonIgnore
-        private ApplicationDeploymentLinkBuilder linkBuilder;
-
-        public DeploymentApplicationDto(String name, ApplicationDeploymentLinkBuilder linkBuilder) {
+        public DeploymentApplicationDto(String name) {
             this.name = name;
-            this.linkBuilder = linkBuilder;
         }
 
         public void buildLink(UriComponentsBuilder builder) {
-            if (linkBuilder != null) {
-                linkBuilder.setUriComponentsBuilder(builder);
-                href = linkBuilder.buildLink();
-            }
+            href = buildApplicationDeploymentLink(builder, name).toUriString();
         }
 
     }
@@ -54,17 +51,22 @@ public class DeploymentDto {
         private String href;
 
         @JsonIgnore
-        private DefinitionDeploymentLinkBuilder linkBuilder;
+        private String apiName;
 
-        public DeploymentDefinitionDto(DefinitionDeploymentLinkBuilder linkBuilder) {
-            this.linkBuilder = linkBuilder;
+        @JsonIgnore
+        private String apiVersion;
+
+        @JsonIgnore
+        private String apiDefinitionId;
+
+        public DeploymentDefinitionDto(ApiEntity apiEntity) {
+            apiName = apiEntity.getApiName();
+            apiVersion = apiEntity.getApiVersion();
+            apiDefinitionId = valueOf(apiEntity.getDefinitionId());
         }
 
         public void buildLink(UriComponentsBuilder builder) {
-            if (linkBuilder != null) {
-                linkBuilder.setUriComponentsBuilder(builder);
-                href = linkBuilder.buildLink();
-            }
+            href = buildDefinitionDeploymentLink(builder, apiName, apiVersion, apiDefinitionId).toUriString();
         }
 
     }

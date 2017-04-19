@@ -16,6 +16,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.toList;
+import static org.zalando.apidiscovery.storage.api.LinkBuilderUtil.buildLink;
 
 @CrossOrigin
 @RestController
@@ -32,8 +33,8 @@ public class ApiResourceController {
     @GetMapping
     public ResponseEntity<ApiListDto> getApis(@RequestParam(value = "lifecycle_state", required = false) ApiLifecycleState lifecycleState) {
         List<ApiDto> apiList = loadApis(lifecycleState).stream()
-                .sorted(comparing(api -> api.getApiMetaData().getName()))
-                .collect(toList());
+            .sorted(comparing(api -> api.getApiMetaData().getName()))
+            .collect(toList());
         return ResponseEntity.ok(new ApiListDto(apiList));
     }
 
@@ -44,8 +45,8 @@ public class ApiResourceController {
     @GetMapping("/{api_id}")
     public ResponseEntity<ApiDto> getApi(@PathVariable("api_id") String apiId, UriComponentsBuilder builder) {
         return apiService.getApi(apiId)
-                .map(api -> ResponseEntity.ok(buildLinks(api, builder)))
-                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+            .map(api -> ResponseEntity.ok(buildLinks(api, builder)))
+            .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @GetMapping("/{api_id}/versions")
@@ -96,12 +97,10 @@ public class ApiResourceController {
         updateApiDefinitionWithLinks(api.getVersions(), builder);
 
         api.getApplications()
-                .forEach(applicationDto -> applicationDto.getDefinitions()
-                        .forEach(deploymentLinkDto -> deploymentLinkDto.setHref(
-                                builder.cloneBuilder()
-                                        .path(deploymentLinkDto.getLinkBuilder().buildLink())
-                                        .toUriString()))
-                );
+            .forEach(applicationDto -> applicationDto.getDefinitions()
+                .forEach(deploymentLinkDto -> deploymentLinkDto.setHref(
+                    buildLink(builder.cloneBuilder(), deploymentLinkDto).toUriString()
+                )));
 
         return api;
     }
@@ -122,9 +121,8 @@ public class ApiResourceController {
     private ApiDefinitionDto updateApiDefinitionWithLinks(ApiDefinitionDto apiDefinitionDto, UriComponentsBuilder builder) {
         apiDefinitionDto.getApplications()
             .forEach(deploymentLinkDto -> deploymentLinkDto.setHref(
-                builder.cloneBuilder()
-                    .path(deploymentLinkDto.getLinkBuilder().buildLink())
-                    .toUriString()));
+                buildLink(builder.cloneBuilder(), deploymentLinkDto).toUriString()
+            ));
 
         return apiDefinitionDto;
     }
