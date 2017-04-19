@@ -49,11 +49,4 @@ public class ApiEntity implements Serializable {
             parameters = {@Parameter(name = "javaZone", value = "UTC")})
     private OffsetDateTime created;
 
-    public void addApiDeploymentEntity(ApiDeploymentEntity apiDeploymentEntity) {
-        if (apiDeploymentEntities == null) {
-            apiDeploymentEntities = new ArrayList<>();
-            apiDeploymentEntities.add(apiDeploymentEntity);
-        }
-        apiDeploymentEntities.add(apiDeploymentEntity);
-    }
 }

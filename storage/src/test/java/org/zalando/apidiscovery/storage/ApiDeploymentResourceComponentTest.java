@@ -1,5 +1,7 @@
 package org.zalando.apidiscovery.storage;
 
+import java.util.ArrayList;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -137,7 +139,7 @@ public class ApiDeploymentResourceComponentTest {
             .lastCrawled(now(UTC))
             .build();
 
-        apiEntity.addApiDeploymentEntity(apiDeploymentEntity);
+        apiEntity.getApiDeploymentEntities().add(apiDeploymentEntity);
         apiRepository.save(apiEntity);
         return apiDeploymentEntity;
     }
@@ -150,6 +152,7 @@ public class ApiDeploymentResourceComponentTest {
             .definitionId(definitionId)
             .definitionType("swagger")
             .created(now(UTC))
+            .apiDeploymentEntities(new ArrayList<>())
             .build();
     }
 
