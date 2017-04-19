@@ -1,13 +1,12 @@
 package org.zalando.apidiscovery.storage.api;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.zalando.apidiscovery.storage.api.DeploymentDto.DeploymentApplicationDto;
 import org.zalando.apidiscovery.storage.api.DeploymentDto.DeploymentDefinitionDto;
 
@@ -122,16 +121,10 @@ public class ApiService {
         }
     }
 
-    public Optional<List<DeploymentDto>> getDeploymentsForApi(String apiId) {
-        List<ApiEntity> apiEntities = apiRepository.findByApiName(apiId);
-
-        if (apiEntities.isEmpty()) {
-            return Optional.empty();
-        }
-
-        return Optional.of(apiEntities.stream()
+    public List<DeploymentDto> getDeploymentsForApi(String apiId) {
+        return apiRepository.findByApiName(apiId).stream()
             .flatMap(apiEntity -> apiEntityToDeploymentDtoList(apiEntity).stream())
-            .collect(toList()));
+            .collect(toList());
     }
 
     private List<DeploymentDto> apiEntityToDeploymentDtoList(ApiEntity apiEntity) {

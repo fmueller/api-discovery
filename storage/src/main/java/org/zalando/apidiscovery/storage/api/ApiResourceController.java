@@ -80,9 +80,12 @@ public class ApiResourceController {
     @GetMapping("/{api_id}/deployments")
     public ResponseEntity<DeploymentsDto> getApiDeployments(@PathVariable("api_id") String apiId,
                                                             UriComponentsBuilder builder) {
-        return apiService.getDeploymentsForApi(apiId)
-            .map(dtoList -> ResponseEntity.ok(new DeploymentsDto(updateLinks(dtoList, builder))))
-            .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        List<DeploymentDto> deploymentsForApi = apiService.getDeploymentsForApi(apiId);
+        if (deploymentsForApi.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return ResponseEntity.ok(new DeploymentsDto(updateLinks(deploymentsForApi, builder)));
+
     }
 
     private List<DeploymentDto> updateLinks(List<DeploymentDto> deploymentDtoList, UriComponentsBuilder builder) {
