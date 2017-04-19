@@ -1,5 +1,10 @@
 package org.zalando.apidiscovery.crawler;
 
+import java.io.IOException;
+import java.net.UnknownHostException;
+import java.util.Optional;
+import java.util.concurrent.Callable;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
@@ -13,26 +18,21 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 import org.zalando.apidiscovery.crawler.storage.ApiDefinition;
-import org.zalando.apidiscovery.crawler.storage.ApiDiscoveryStorageClient;
+import org.zalando.apidiscovery.crawler.storage.ApiDiscoveryStorageGateway;
 import org.zalando.apidiscovery.crawler.storage.LegacyApiDefinition;
-import org.zalando.apidiscovery.crawler.storage.LegacyApiDiscoveryStorageClient;
+import org.zalando.apidiscovery.crawler.storage.LegacyApiDiscoveryStorageGateway;
 import org.zalando.stups.clients.kio.ApplicationBase;
-
-import java.io.IOException;
-import java.net.UnknownHostException;
-import java.util.Optional;
-import java.util.concurrent.Callable;
 
 class ApiDefinitionCrawlJob implements Callable<Void> {
 
     private static final Logger LOG = LoggerFactory.getLogger(ApiDefinitionCrawlJob.class);
 
-    private final LegacyApiDiscoveryStorageClient legacyStorageClient;
-    private final ApiDiscoveryStorageClient storageClient;
+    private final LegacyApiDiscoveryStorageGateway legacyStorageClient;
+    private final ApiDiscoveryStorageGateway storageClient;
     private final RestTemplate schemaClient;
     private final ApplicationBase app;
 
-    ApiDefinitionCrawlJob(LegacyApiDiscoveryStorageClient legacyStorageClient, ApiDiscoveryStorageClient storageClient,
+    ApiDefinitionCrawlJob(LegacyApiDiscoveryStorageGateway legacyStorageClient, ApiDiscoveryStorageGateway storageClient,
                           RestTemplate schemaClient, ApplicationBase app) {
         this.legacyStorageClient = legacyStorageClient;
         this.storageClient = storageClient;
@@ -61,11 +61,24 @@ class ApiDefinitionCrawlJob implements Callable<Void> {
             }
         } catch (Exception e) {
             LOG.info("Could not crawl {}: {}", app.getId(), e.getMessage());
-        } finally {
-            legacyStorageClient.createOrUpdateApiDefinition(legacyApiDefinition, app.getId());
-            storageClient.pushApiDefinition(apiDefinition);
         }
+
+        pushApiDefinitionsToLegacyAndNewEndpoint(apiDefinition, legacyApiDefinition, app.getId());
         return null;
+    }
+
+    private void pushApiDefinitionsToLegacyAndNewEndpoint(ApiDefinition apiDefinition, LegacyApiDefinition legacyApiDefinition, String appId) {
+        try {
+            legacyStorageClient.createOrUpdateApiDefinition(legacyApiDefinition, appId);
+        } catch (Exception e) {
+            LOG.warn("Could not send {} api definition to legacy endpoint: {}", app.getId(), e.getMessage());
+        }
+
+        try {
+            storageClient.pushApiDefinition(apiDefinition);
+        } catch (Exception e) {
+            LOG.warn("Could not send api definition: {}", e.getMessage());
+        }
     }
 
     protected static ApiDefinition constructApiDefinition(JsonNode schemaDiscovery, JsonNode apiDefinition,
@@ -77,8 +90,8 @@ class ApiDefinitionCrawlJob implements Callable<Void> {
                 .appName(appName)
                 .version(apiDefinition.get("info").get("version").asText())
                 .serviceUrl(serviceUrl)
-                .schemaUrl(apiDefinitionUrl(schemaDiscovery))
-                .uiLink(schemaDiscovery.has("ui_url") ? schemaDiscovery.get("ui_url").asText() : null)
+                .url(apiDefinitionUrl(schemaDiscovery))
+                .ui(schemaDiscovery.has("ui_url") ? schemaDiscovery.get("ui_url").asText() : null)
                 .definition(apiDefinition.toString())
                 .build();
     }
@@ -98,8 +111,8 @@ class ApiDefinitionCrawlJob implements Callable<Void> {
                 .name(apiDefinition.get("info").get("title").asText())
                 .version(apiDefinition.get("info").get("version").asText())
                 .serviceUrl(serviceUrl)
-                .schemaUrl(apiDefinitionUrl(schemaDiscovery))
-                .uiLink(schemaDiscovery.has("ui_url") ? schemaDiscovery.get("ui_url").asText() : null)
+                .url(apiDefinitionUrl(schemaDiscovery))
+                .ui(schemaDiscovery.has("ui_url") ? schemaDiscovery.get("ui_url").asText() : null)
                 .definition(apiDefinition.toString())
                 .build();
     }

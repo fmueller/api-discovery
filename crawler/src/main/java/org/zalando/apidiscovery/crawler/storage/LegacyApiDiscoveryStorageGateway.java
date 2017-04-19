@@ -6,12 +6,12 @@ import org.springframework.web.client.RestOperations;
 import java.util.HashMap;
 import java.util.Map;
 
-public class LegacyApiDiscoveryStorageClient {
+public class LegacyApiDiscoveryStorageGateway {
 
     private final RestOperations restOperations;
     private final String baseUrl;
 
-    public LegacyApiDiscoveryStorageClient(RestOperations restOperations, String baseUrl) {
+    public LegacyApiDiscoveryStorageGateway(RestOperations restOperations, String baseUrl) {
         this.restOperations = restOperations;
         this.baseUrl = baseUrl;
     }

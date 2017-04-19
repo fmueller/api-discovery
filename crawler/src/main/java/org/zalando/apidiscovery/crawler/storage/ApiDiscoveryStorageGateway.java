@@ -2,12 +2,12 @@ package org.zalando.apidiscovery.crawler.storage;
 
 import org.springframework.web.client.RestOperations;
 
-public class ApiDiscoveryStorageClient {
+public class ApiDiscoveryStorageGateway {
 
     private final RestOperations restOperations;
     private final String baseUrl;
 
-    public ApiDiscoveryStorageClient(RestOperations restOperations, String baseUrl) {
+    public ApiDiscoveryStorageGateway(RestOperations restOperations, String baseUrl) {
         this.restOperations = restOperations;
         this.baseUrl = baseUrl;
     }

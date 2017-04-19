@@ -16,8 +16,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
-import org.zalando.apidiscovery.crawler.storage.ApiDiscoveryStorageClient;
-import org.zalando.apidiscovery.crawler.storage.LegacyApiDiscoveryStorageClient;
+import org.zalando.apidiscovery.crawler.storage.ApiDiscoveryStorageGateway;
+import org.zalando.apidiscovery.crawler.storage.LegacyApiDiscoveryStorageGateway;
 import org.zalando.stups.clients.kio.ApplicationBase;
 import org.zalando.stups.clients.kio.KioOperations;
 
@@ -27,15 +27,15 @@ public class ApiDiscoveryCrawler {
     private static final Logger LOG = LoggerFactory.getLogger(ApiDiscoveryCrawler.class);
 
     private final KioOperations kioClient;
-    private final LegacyApiDiscoveryStorageClient legacyStorageClient;
-    private final ApiDiscoveryStorageClient storageClient;
+    private final LegacyApiDiscoveryStorageGateway legacyStorageClient;
+    private final ApiDiscoveryStorageGateway storageClient;
     private final RestTemplate schemaClient;
     private final ExecutorService fixedPool;
 
     @Autowired
     public ApiDiscoveryCrawler(KioOperations kioClient,
-                               LegacyApiDiscoveryStorageClient legacyStorageClient,
-                               ApiDiscoveryStorageClient storageClient,
+                               LegacyApiDiscoveryStorageGateway legacyStorageClient,
+                               ApiDiscoveryStorageGateway storageClient,
                                RestTemplate schemaClient,
                                @Value("${crawler.jobs.pool}") int jobsPoolSize) {
         this.kioClient = kioClient;

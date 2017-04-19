@@ -13,9 +13,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 import org.zalando.apidiscovery.crawler.storage.ApiDefinition;
-import org.zalando.apidiscovery.crawler.storage.ApiDiscoveryStorageClient;
+import org.zalando.apidiscovery.crawler.storage.ApiDiscoveryStorageGateway;
 import org.zalando.apidiscovery.crawler.storage.LegacyApiDefinition;
-import org.zalando.apidiscovery.crawler.storage.LegacyApiDiscoveryStorageClient;
+import org.zalando.apidiscovery.crawler.storage.LegacyApiDiscoveryStorageGateway;
 import org.zalando.stups.clients.kio.ApplicationBase;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,10 +31,10 @@ public class ApiDefinitionCrawlJobTest {
     private JsonNodeFactory factory = JsonNodeFactory.instance;
 
     @Mock
-    private LegacyApiDiscoveryStorageClient legacyStorageClient;
+    private LegacyApiDiscoveryStorageGateway legacyStorageClient;
 
     @Mock
-    private ApiDiscoveryStorageClient storageClient;
+    private ApiDiscoveryStorageGateway storageClient;
 
     @Mock
     private RestTemplate schemaClient;
@@ -42,11 +42,11 @@ public class ApiDefinitionCrawlJobTest {
     private LegacyApiDefinition expectedMetaApiLegacyDefinition = LegacyApiDefinition.builder()
             .name("meta-api")
             .definition("{\"info\":{\"version\":\"1.0\",\"title\":\"meta-api\"}}")
-            .schemaUrl("swagger.json")
+            .url("swagger.json")
             .serviceUrl("https://meta.api/")
             .status("SUCCESS")
             .type("swagger-2.0")
-            .uiLink("/ui")
+            .ui("/ui")
             .version("1.0")
             .build();
 
@@ -54,16 +54,16 @@ public class ApiDefinitionCrawlJobTest {
             .apiName("meta-api")
             .appName("meta-api-service")
             .definition("{\"info\":{\"version\":\"1.0\",\"title\":\"meta-api\"}}")
-            .schemaUrl("swagger.json")
+            .url("swagger.json")
             .serviceUrl("https://meta.api/")
             .status("SUCCESSFUL")
             .type("swagger-2.0")
-            .uiLink("/ui")
+            .ui("/ui")
             .version("1.0")
             .build();
 
     @Test
-    public void shouldBeAbleToConstructApiDefinition() throws Exception {
+    public void shouldBeAbleToMapSchemaDiscoveryAndDefinitionToApiDefinition() throws Exception {
         ApiDefinition apiDefinition = ApiDefinitionCrawlJob.constructApiDefinition(metaApiSchemaDiscovery(), metaApiApiDefinition(),
                 "meta-api-service", "https://meta.api/");
 
@@ -71,7 +71,7 @@ public class ApiDefinitionCrawlJobTest {
     }
 
     @Test
-    public void shouldBeAbleToConstructLegacyApiDefinition() throws Exception {
+    public void shouldBeAbleToMapSchemaDiscoveryAndDefinitionToLegacyApiDefinition() throws Exception {
         LegacyApiDefinition legacyApiDefinition = ApiDefinitionCrawlJob.constructLegacyApiDefinition(metaApiSchemaDiscovery(),
                 metaApiApiDefinition(), "https://meta.api/");
 
