@@ -81,9 +81,6 @@ public class ApiResourceController {
     public ResponseEntity<DeploymentsDto> getApiDeployments(@PathVariable("api_id") String apiId,
                                                             UriComponentsBuilder builder) {
         List<DeploymentDto> deploymentsForApi = apiService.getDeploymentsForApi(apiId);
-        if (deploymentsForApi.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
         return ResponseEntity.ok(new DeploymentsDto(updateLinks(deploymentsForApi, builder)));
 
     }

@@ -114,9 +114,10 @@ public class ApiDeploymentResourceComponentTest {
     }
 
     @Test
-    public void shouldReturn404NotFound() throws Exception {
+    public void shouldReturnEmptyList() throws Exception {
         mvc.perform(get("/apis/UNKNOWN/deployments"))
-            .andExpect(status().isNotFound());
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.deployments", hasSize(0)));
     }
 
     private String expectedDefinitionHref(String version, long apiDefinitionId) {
