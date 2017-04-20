@@ -3,19 +3,15 @@ package org.zalando.apidiscovery.storage;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa;
 import org.springframework.boot.test.context.ConfigFileApplicationContextInitializer;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.zalando.apidiscovery.storage.api.ApiDeploymentEntity;
 import org.zalando.apidiscovery.storage.api.ApiEntity;
 import org.zalando.apidiscovery.storage.api.ApiLifecycleState;
@@ -53,18 +49,9 @@ public class ApplicationResourceComponentTest {
     @Autowired
     private MockMvc mvc;
 
-    @Configuration
-    @Import(value = {JacksonConfiguration.class, MvcConfiguration.class, ApplicationResourceController.class})
-    @EnableWebMvc
-    @AutoConfigureDataJpa
+    @TestConfiguration
+    @Import(value = {ComponentTestConfig.class, ApplicationResourceController.class})
     static class TestConfig {
-
-        @Bean
-        public MockMvc mockMvc(final WebApplicationContext context) throws Exception {
-            return MockMvcBuilders
-                .webAppContextSetup(context)
-                .build();
-        }
 
         @Bean
         public ApplicationService applicationService(ApplicationRepository applicationRepository) {
