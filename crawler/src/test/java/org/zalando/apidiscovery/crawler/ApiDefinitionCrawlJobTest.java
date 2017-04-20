@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 import org.zalando.apidiscovery.crawler.storage.ApiDiscoveryStorageGateway;
 import org.zalando.apidiscovery.crawler.storage.LegacyApiDiscoveryStorageGateway;
+import org.zalando.stups.clients.kio.ApplicationBase;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
@@ -35,14 +36,16 @@ public class ApiDefinitionCrawlJobTest {
     @Mock
     private RestTemplate schemaClient;
 
+    private ApplicationBase metaApiApplication = metaApiApplication();
+
     @Test
     public void shouldBeAbleToProcessUnsuccessfulCrawling() throws Exception {
-        ApiDefinitionCrawlJob job = new ApiDefinitionCrawlJob(legacyStorageClient, storageClient, schemaClient, metaApiApplication());
+        ApiDefinitionCrawlJob job = new ApiDefinitionCrawlJob(legacyStorageClient, storageClient, schemaClient, metaApiApplication);
 
         assertThat(job.call()).isNull();
 
-        verify(legacyStorageClient).createOrUpdateApiDefinition(eq(null), eq(null), anyObject());
-        verify(storageClient).pushApiDefinition(eq(null), eq(null), anyObject());
+        verify(legacyStorageClient).createOrUpdateApiDefinition(eq(null), eq(null), eq(metaApiApplication));
+        verify(storageClient).pushApiDefinition(eq(null), eq(null), eq(metaApiApplication));
     }
 
     @Test
@@ -53,12 +56,12 @@ public class ApiDefinitionCrawlJobTest {
         doReturn(schema).when(schemaClient).exchange(eq("https://meta.api/.well-known/schema-discovery"), eq(HttpMethod.GET), any(HttpEntity.class), eq(JsonNode.class));
         doReturn(api).when(schemaClient).exchange(eq("https://meta.api/swagger.json"), eq(HttpMethod.GET), anyObject(), eq(JsonNode.class));
 
-        ApiDefinitionCrawlJob job = new ApiDefinitionCrawlJob(legacyStorageClient, storageClient, schemaClient, metaApiApplication());
+        ApiDefinitionCrawlJob job = new ApiDefinitionCrawlJob(legacyStorageClient, storageClient, schemaClient, metaApiApplication);
 
         assertThat(job.call()).isNull();
 
-        verify(legacyStorageClient).createOrUpdateApiDefinition(eq(metaApiSchemaDiscovery()), eq(metaApiDefinition()), anyObject());
-        verify(storageClient).pushApiDefinition(eq(metaApiSchemaDiscovery()), eq(metaApiDefinition()), anyObject());
+        verify(legacyStorageClient).createOrUpdateApiDefinition(eq(metaApiSchemaDiscovery()), eq(metaApiDefinition()), eq(metaApiApplication));
+        verify(storageClient).pushApiDefinition(eq(metaApiSchemaDiscovery()), eq(metaApiDefinition()), eq(metaApiApplication));
     }
 
 }
