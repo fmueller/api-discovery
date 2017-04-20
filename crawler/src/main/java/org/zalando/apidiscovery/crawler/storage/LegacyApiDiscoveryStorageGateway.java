@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 import org.springframework.web.client.RestOperations;
 import org.zalando.stups.clients.kio.ApplicationBase;
@@ -13,8 +11,6 @@ import org.zalando.stups.clients.kio.ApplicationBase;
 import static org.zalando.apidiscovery.crawler.Utils.extractApiDefinitionUrl;
 
 public class LegacyApiDiscoveryStorageGateway {
-
-    private static final Logger LOG = LoggerFactory.getLogger(LegacyApiDiscoveryStorageGateway.class);
 
     private final RestOperations restOperations;
     private final String baseUrl;
@@ -27,12 +23,11 @@ public class LegacyApiDiscoveryStorageGateway {
     public void createOrUpdateApiDefinition(JsonNode schemaDiscoveryInformation, JsonNode apiDefinitionInformation, ApplicationBase app) {
         Assert.hasText(app.getId(), "applicationId must not be blank");
 
-        LegacyApiDefinition apiDefinition = LegacyApiDefinition.UNSUCCESSFUL;
-        try {
-            final String serviceUrl = app.getServiceUrl().endsWith("/") ? app.getServiceUrl() : app.getServiceUrl() + "/";
-            apiDefinition = constructLegacyApiDefinition(schemaDiscoveryInformation, apiDefinitionInformation, serviceUrl);
-        } catch (Exception e) {
-            LOG.info("Could not construct legacy api definition request for {}: {}", app.getId(), e);
+        LegacyApiDefinition apiDefinition;
+        if (schemaDiscoveryInformation == null || apiDefinitionInformation == null) {
+            apiDefinition = LegacyApiDefinition.UNSUCCESSFUL;
+        } else {
+            apiDefinition = constructLegacyApiDefinition(schemaDiscoveryInformation, apiDefinitionInformation, app);
         }
 
         final Map<String, String> uriVariables = new HashMap<>();
@@ -41,7 +36,9 @@ public class LegacyApiDiscoveryStorageGateway {
         restOperations.put(baseUrl + "/apps/{applicationId}", apiDefinition, uriVariables);
     }
 
-    protected static LegacyApiDefinition constructLegacyApiDefinition(JsonNode schemaDiscovery, JsonNode apiDefinition, String serviceUrl) throws Exception {
+    protected static LegacyApiDefinition constructLegacyApiDefinition(JsonNode schemaDiscovery, JsonNode apiDefinition, ApplicationBase app) {
+        String serviceUrl = app.getServiceUrl().endsWith("/") ? app.getServiceUrl() : app.getServiceUrl() + "/";
+
         return LegacyApiDefinition.builder()
                 .status("SUCCESS")
                 .type(schemaDiscovery.get("schema_type").asText(""))

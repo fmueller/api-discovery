@@ -17,7 +17,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.zalando.apidiscovery.crawler.TestData.metaApiApplication;
@@ -42,8 +41,8 @@ public class ApiDefinitionCrawlJobTest {
 
         assertThat(job.call()).isNull();
 
-        verify(legacyStorageClient).createOrUpdateApiDefinition(isNull(JsonNode.class), isNull(JsonNode.class), eq(metaApiApplication()));
-        verify(storageClient).pushApiDefinition(isNull(JsonNode.class), isNull(JsonNode.class), eq(metaApiApplication()));
+        verify(legacyStorageClient).createOrUpdateApiDefinition(eq(null), eq(null), anyObject());
+        verify(storageClient).pushApiDefinition(eq(null), eq(null), anyObject());
     }
 
     @Test
@@ -58,8 +57,8 @@ public class ApiDefinitionCrawlJobTest {
 
         assertThat(job.call()).isNull();
 
-        verify(legacyStorageClient).createOrUpdateApiDefinition(eq(metaApiSchemaDiscovery()), eq(metaApiDefinition()), eq(metaApiApplication()));
-        verify(storageClient).pushApiDefinition(eq(metaApiSchemaDiscovery()), eq(metaApiDefinition()), eq(metaApiApplication()));
+        verify(legacyStorageClient).createOrUpdateApiDefinition(eq(metaApiSchemaDiscovery()), eq(metaApiDefinition()), anyObject());
+        verify(storageClient).pushApiDefinition(eq(metaApiSchemaDiscovery()), eq(metaApiDefinition()), anyObject());
     }
 
 }

@@ -2,7 +2,6 @@ package org.zalando.apidiscovery.crawler;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
-import java.util.Optional;
 import java.util.concurrent.Callable;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -14,7 +13,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 import org.zalando.apidiscovery.crawler.storage.ApiDiscoveryStorageGateway;
@@ -42,42 +40,25 @@ class ApiDefinitionCrawlJob implements Callable<Void> {
 
     @Override
     public Void call() throws Exception {
-        JsonNode apiDefinitionInformation = null;
-        JsonNode schemaDiscoveryInformation = null;
-        try {
-            final String serviceUrl = app.getServiceUrl().endsWith("/") ? app.getServiceUrl() : app.getServiceUrl() + "/";
-            final Optional<JsonNode> schemaDiscovery = retrieveSchemaDiscovery(serviceUrl);
+        final String serviceUrl = app.getServiceUrl().endsWith("/") ? app.getServiceUrl() : app.getServiceUrl() + "/";
+        final JsonNode schemaDiscovery = retrieveSchemaDiscovery(serviceUrl);
 
-            if (schemaDiscovery.isPresent()) {
-                schemaDiscoveryInformation = schemaDiscovery.get();
-                apiDefinitionInformation = retrieveApiDefinition(serviceUrl + extractApiDefinitionUrl(schemaDiscoveryInformation));
-
-                LOG.info("Successfully crawled api definition of {}", app.getId());
-            } else {
-                LOG.info("Api definition unavailable for {}", app.getId());
-            }
-        } catch (Exception e) {
-            LOG.info("Could not crawl {}: {}", app.getId(), e.getMessage());
+        if (schemaDiscovery == null) {
+            LOG.info("Api definition unavailable for {}", app.getId());
+            pushApiDefinitionToLegacyAndNewEndpoint(null, null, app);
+        } else {
+            LOG.info("Successfully crawled api definition of {}", app.getId());
+            pushApiDefinitionToLegacyAndNewEndpoint(schemaDiscovery, retrieveApiDefinition(serviceUrl + extractApiDefinitionUrl(schemaDiscovery)), app);
         }
-        pushApiDefinitionsToLegacyAndNewEndpoint(schemaDiscoveryInformation, apiDefinitionInformation, app);
         return null;
     }
 
-    private void pushApiDefinitionsToLegacyAndNewEndpoint(JsonNode schemaDiscoveryInformation, JsonNode apiDefinitionInformation, ApplicationBase app) {
-        try {
-            legacyStorageClient.createOrUpdateApiDefinition(schemaDiscoveryInformation, apiDefinitionInformation, app);
-        } catch (Exception e) {
-            LOG.info("Could not send {} api definition to legacy endpoint: {}", app.getId(), e.getMessage());
-        }
-
-        try {
-            storageClient.pushApiDefinition(schemaDiscoveryInformation, apiDefinitionInformation, app);
-        } catch (Exception e) {
-            LOG.info("Could not send api definition: {}", e.getMessage());
-        }
+    private void pushApiDefinitionToLegacyAndNewEndpoint(JsonNode schemaDiscovery, JsonNode apiDefinition, ApplicationBase app) {
+        legacyStorageClient.createOrUpdateApiDefinition(schemaDiscovery, apiDefinition, app);
+        storageClient.pushApiDefinition(schemaDiscovery, apiDefinition, app);
     }
 
-    private Optional<JsonNode> retrieveSchemaDiscovery(String serviceUrl) {
+    private JsonNode retrieveSchemaDiscovery(String serviceUrl) {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.set("Accept", "*/*");
@@ -85,7 +66,7 @@ class ApiDefinitionCrawlJob implements Callable<Void> {
                     serviceUrl + ".well-known/schema-discovery", HttpMethod.GET, new HttpEntity<>(headers), JsonNode.class);
 
             if (responseEntity.getStatusCode().is2xxSuccessful()) {
-                return Optional.of(responseEntity.getBody());
+                return responseEntity.getBody();
             } else if (responseEntity.getStatusCode().value() == 404) {
                 LOG.info("Service {} does not implement api discovery", app.getId());
             } else {
@@ -100,7 +81,7 @@ class ApiDefinitionCrawlJob implements Callable<Void> {
         } catch (Exception e) {
             LOG.info("Could not load api discovery info for service {}: {}", app.getId(), e.getMessage());
         }
-        return Optional.empty();
+        return null;
     }
 
     private JsonNode retrieveApiDefinition(String url) throws Exception {
@@ -109,9 +90,12 @@ class ApiDefinitionCrawlJob implements Callable<Void> {
             headers.set("Accept", "*/*");
             ResponseEntity<JsonNode> responseEntity = schemaClient.exchange(url, HttpMethod.GET, new HttpEntity<>(headers), JsonNode.class);
 
-            return responseEntity.getStatusCode().is2xxSuccessful()
-                    ? responseEntity.getBody()
-                    : tryRetrieveApiDefinitionAsYaml(url);
+            if (responseEntity.getStatusCode().is2xxSuccessful()) {
+                return responseEntity.getBody();
+            } else {
+                LOG.info("Try to load api definition as json for service {}", app.getId());
+                return tryRetrieveApiDefinitionAsYaml(url);
+            }
         } catch (Exception e) {
             return tryRetrieveApiDefinitionAsYaml(url);
         }
@@ -125,7 +109,8 @@ class ApiDefinitionCrawlJob implements Callable<Void> {
         ResponseEntity<String> yamlApiDefinition = schemaClient.exchange(url, HttpMethod.GET, new HttpEntity(headers), String.class);
 
         if (!yamlApiDefinition.getStatusCode().is2xxSuccessful()) {
-            throw new HttpClientErrorException(yamlApiDefinition.getStatusCode(), "Could not load yaml api definition");
+            LOG.info("Could not load yaml api definition");
+            return null;
         }
         return new ObjectMapper(new YAMLFactory()).readValue(yamlApiDefinition.getBody(), JsonNode.class);
     }
