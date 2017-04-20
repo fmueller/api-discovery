@@ -13,15 +13,15 @@ public class ApiEntityToApiDefinitionConverter {
         if (apiEntity.getApiDeploymentEntities() != null) {
             deploymentLinkDtos = apiEntity.getApiDeploymentEntities().stream()
                 .map(apiDeploymentEntity -> new DeploymentLinkDto.ApplicationLinkDto(apiDeploymentEntity))
-                    .collect(toList());
+                .collect(toList());
         }
 
         return ApiDefinitionDto.builder()
-                .id(valueOf(apiEntity.getId()))
-                .definition(apiEntity.getDefinition())
-                .type(apiEntity.getDefinitionType())
-                .applications(deploymentLinkDtos)
-                .build();
+            .id(valueOf(apiEntity.getId()))
+            .definition(apiEntity.getDefinition())
+            .type(apiEntity.getDefinitionType())
+            .applications(deploymentLinkDtos)
+            .build();
 
     }
 
