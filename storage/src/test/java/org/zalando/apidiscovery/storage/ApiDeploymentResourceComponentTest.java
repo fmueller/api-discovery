@@ -1,5 +1,7 @@
 package org.zalando.apidiscovery.storage;
 
+import java.util.ArrayList;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,29 +18,29 @@ import org.zalando.apidiscovery.storage.api.ApiDeploymentEntity;
 import org.zalando.apidiscovery.storage.api.ApiEntity;
 import org.zalando.apidiscovery.storage.api.ApiLifecycleState;
 import org.zalando.apidiscovery.storage.api.ApiRepository;
+import org.zalando.apidiscovery.storage.api.ApiResourceController;
 import org.zalando.apidiscovery.storage.api.ApiService;
 import org.zalando.apidiscovery.storage.api.ApplicationEntity;
 import org.zalando.apidiscovery.storage.api.ApplicationRepository;
-import org.zalando.apidiscovery.storage.api.ApplicationResourceController;
 import org.zalando.apidiscovery.storage.api.ApplicationService;
 
 import static java.time.OffsetDateTime.now;
 import static java.time.ZoneOffset.UTC;
-import static java.util.Arrays.asList;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.zalando.apidiscovery.storage.ApiLifecycleManager.ACTIVE;
-
+import static org.springframework.web.util.UriComponentsBuilder.newInstance;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(initializers = ConfigFileApplicationContextInitializer.class)
 @WebAppConfiguration
 @Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:cleanDatabase.sql")
-public class ApplicationResourceComponentTest {
+public class ApiDeploymentResourceComponentTest {
 
     @Autowired
     protected ApplicationRepository applicationRepository;
@@ -50,7 +52,7 @@ public class ApplicationResourceComponentTest {
     private MockMvc mvc;
 
     @TestConfiguration
-    @Import(value = {ComponentTestConfig.class, ApplicationResourceController.class})
+    @Import(value = {ComponentTestConfig.class, ApiResourceController.class})
     static class TestConfig {
 
         @Bean
@@ -66,51 +68,79 @@ public class ApplicationResourceComponentTest {
     }
 
     @Test
-    public void shouldReturnAllApplications() throws Exception {
-        ApplicationEntity applicationEntity1 = createApplication("application1");
-        ApiEntity apiEntity = createApiEntity("api1", "v1", 1);
-        createApiDeployment(apiEntity, applicationEntity1);
+    public void shouldReturnAllDeployments() throws Exception {
+        ApplicationEntity application = createApplication("application1");
+        ApiEntity api1 = createApiEntity("api1", "v1", "api1", 1);
+        ApiEntity api1_1 = createApiEntity("api1", "v1", "api1_1", 2);
+        ApiEntity api2 = createApiEntity("api1", "v2", "api2", 1);
 
-        mvc.perform(get("/applications"))
+        createApiDeployment(api1, application);
+        createApiDeployment(api1_1, application);
+        createApiDeployment(api2, application);
+
+        String expectedApplicationLink = newInstance()
+            .fromPath("applications/application1")
+            .toUriString();
+
+        mvc.perform(get("/apis/api1/deployments"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.applications", hasSize(1)))
-            .andExpect(jsonPath("$.applications[0].name", equalTo("application1")))
-            .andExpect(jsonPath("$.applications[0].app_url", equalTo("/info")))
-            .andExpect(jsonPath("$.applications[0].definitions[0].api_ui", equalTo("/ui")))
-            .andExpect(jsonPath("$.applications[0].definitions[0].api_url", equalTo("/url")))
-            .andExpect(jsonPath("$.applications[0].definitions[0].href", endsWith("apis/api1/versions/v1/definitions/" + apiEntity.getDefinitionId())))
-            .andExpect(jsonPath("$.applications[0].definitions[0].lifecycle_state", equalTo(ACTIVE)));
+            .andExpect(jsonPath("$.deployments", hasSize(3)))
+            .andExpect(jsonPath("$..api_version", containsInAnyOrder("v1", "v1", "v2")))
+            .andExpect(jsonPath("$.deployments[0].application.name", equalTo("application1")))
+            .andExpect(jsonPath("$..definition.href",
+                containsInAnyOrder(
+                    endsWith(expectedDefinitionHref("v1", api1.getDefinitionId())),
+                    endsWith(expectedDefinitionHref("v1", api1_1.getDefinitionId())),
+                    endsWith(expectedDefinitionHref("v2", api2.getDefinitionId()))
+                )))
+            .andExpect(jsonPath("$..application.href",
+                contains(
+                    endsWith(expectedApplicationLink),
+                    endsWith(expectedApplicationLink),
+                    endsWith(expectedApplicationLink)
+                )));
     }
 
     @Test
-    public void shouldReturnEmptyApplicationList() throws Exception {
-        mvc.perform(get("/applications"))
+    public void shouldReturnEmptyList() throws Exception {
+        mvc.perform(get("/apis/UNKNOWN/deployments"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.applications", hasSize(0)));
+            .andExpect(jsonPath("$.deployments", hasSize(0)));
     }
 
-    @Test
-    public void shouldReturnOneApplication() throws Exception {
-        ApplicationEntity applicationEntity = createApplication("application1");
-        ApiEntity apiEntity = createApiEntity("api1", "v1", 1);
-        createApiDeployment(apiEntity, applicationEntity);
-
-        mvc.perform(get("/applications/application1"))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.name", equalTo("application1")))
-            .andExpect(jsonPath("$.app_url", equalTo("/info")))
-            .andExpect(jsonPath("$.definitions[0].api_ui", equalTo("/ui")))
-            .andExpect(jsonPath("$.definitions[0].api_url", equalTo("/url")))
-            .andExpect(jsonPath("$.definitions[0].href", endsWith("apis/api1/versions/v1/definitions/" + apiEntity.getDefinitionId())))
-            .andExpect(jsonPath("$.definitions[0].lifecycle_state", equalTo(ACTIVE)));
+    private String expectedDefinitionHref(String version, long apiDefinitionId) {
+        return newInstance()
+            .path("apis/api1/versions/" + version + "/definitions/" + apiDefinitionId)
+            .toUriString();
     }
 
-    @Test
-    public void shouldReturn404ApplicationNotFound() throws Exception {
-        mvc.perform(get("/applications/app"))
-            .andExpect(status().isNotFound());
+    private ApiDeploymentEntity createApiDeployment(ApiEntity apiEntity, ApplicationEntity applicationEntity) {
+        ApiDeploymentEntity apiDeploymentEntity = ApiDeploymentEntity.builder()
+            .api(apiEntity)
+            .application(applicationEntity)
+            .apiUi("/ui")
+            .apiUrl("/api")
+            .lifecycleState(ApiLifecycleState.ACTIVE)
+            .created(now(UTC))
+            .lastCrawled(now(UTC))
+            .build();
+
+        apiEntity.getApiDeploymentEntities().add(apiDeploymentEntity);
+        apiRepository.save(apiEntity);
+        return apiDeploymentEntity;
     }
 
+    private ApiEntity createApiEntity(String name, String version, String hash, int definitionId) {
+        return ApiEntity.builder()
+            .apiName(name)
+            .apiVersion(version)
+            .definitionHash(hash)
+            .definitionId(definitionId)
+            .definitionType("swagger")
+            .created(now(UTC))
+            .apiDeploymentEntities(new ArrayList<>())
+            .build();
+    }
 
     private ApplicationEntity createApplication(String name) {
         return applicationRepository.save(
@@ -120,32 +150,5 @@ public class ApplicationResourceComponentTest {
                 .appUrl("/info")
                 .created(now(UTC))
                 .build());
-    }
-
-    private ApiDeploymentEntity createApiDeployment(ApiEntity apiEntity, ApplicationEntity applicationEntity) {
-        ApiDeploymentEntity apiDeploymentEntity = ApiDeploymentEntity.builder()
-            .api(apiEntity)
-            .application(applicationEntity)
-            .apiUi("/ui")
-            .apiUrl("/url")
-            .lifecycleState(ApiLifecycleState.ACTIVE)
-            .created(now(UTC))
-            .lastCrawled(now(UTC))
-            .build();
-
-        apiEntity.setApiDeploymentEntities(asList(apiDeploymentEntity));
-        apiRepository.save(apiEntity);
-        return apiDeploymentEntity;
-    }
-
-    private ApiEntity createApiEntity(String name, String version, int definitionId) {
-        return ApiEntity.builder()
-            .apiName(name)
-            .apiVersion(version)
-            .definitionId(definitionId)
-            .definitionType("swagger")
-            .definitionHash("hash")
-            .created(now(UTC))
-            .build();
     }
 }

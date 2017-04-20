@@ -1,12 +1,12 @@
 package org.zalando.apidiscovery.storage.api;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import static java.text.MessageFormat.format;
 import static java.util.stream.Collectors.groupingBy;
@@ -32,27 +32,27 @@ public class ApiService {
         List<ApiEntity> apiEntities = apiRepository.findAll();
 
         return apiEntities
-                .stream()
-                .collect(groupingBy(ApiEntity::getApiName))
-                .entrySet().stream()
-                .map(entry -> new ApiDto(entry.getKey(), aggregateApplicationLifecycleStateForApi(entry.getValue())))
-                .collect(toList());
+            .stream()
+            .collect(groupingBy(ApiEntity::getApiName))
+            .entrySet().stream()
+            .map(entry -> new ApiDto(entry.getKey(), aggregateApplicationLifecycleStateForApi(entry.getValue())))
+            .collect(toList());
     }
 
     public static ApiLifecycleState aggregateApplicationLifecycleStateForApi(List<ApiEntity> apiEntities) {
         List<ApiDeploymentEntity> apiDeploymentList = apiEntities.stream()
-                .flatMap(apiEntity ->
-                        apiEntity.getApiDeploymentEntities() != null ? apiEntity.getApiDeploymentEntities().stream() : new ArrayList<ApiDeploymentEntity>().stream())
-                .collect(toList());
+            .flatMap(apiEntity ->
+                apiEntity.getApiDeploymentEntities() != null ? apiEntity.getApiDeploymentEntities().stream() : new ArrayList<ApiDeploymentEntity>().stream())
+            .collect(toList());
         return aggregateApplicationLifecycleStateForDeploymentEntities(apiDeploymentList);
     }
 
     public static ApiLifecycleState aggregateApplicationLifecycleStateForDeploymentEntities(List<ApiDeploymentEntity> apiDeploymentEntities) {
         if (apiDeploymentEntities.stream()
-                .filter(apiEntity -> ACTIVE.equals(apiEntity.getLifecycleState())).count() > 0) {
+            .filter(apiEntity -> ACTIVE.equals(apiEntity.getLifecycleState())).count() > 0) {
             return ACTIVE;
         } else if (apiDeploymentEntities.stream()
-                .filter(apiEntity -> INACTIVE.equals(apiEntity.getLifecycleState())).count() > 0) {
+            .filter(apiEntity -> INACTIVE.equals(apiEntity.getLifecycleState())).count() > 0) {
             return INACTIVE;
         }
         return DECOMMISSIONED;
@@ -60,8 +60,8 @@ public class ApiService {
 
     public List<ApiDto> getAllApis(ApiLifecycleState filterByLifecycleState) {
         return getAllApis().stream()
-                .filter(api -> filterByLifecycleState.equals(api.getApiMetaData().getLifecycleState()))
-                .collect(toList());
+            .filter(api -> filterByLifecycleState.equals(api.getApiMetaData().getLifecycleState()))
+            .collect(toList());
     }
 
     public Optional<ApiDto> getApi(String apiName) {
@@ -117,5 +117,25 @@ public class ApiService {
         } catch (NumberFormatException nfe) {
             return Optional.empty();
         }
+    }
+
+    public List<DeploymentDto> getDeploymentsForApi(String apiId) {
+        return apiRepository.findByApiName(apiId).stream()
+            .flatMap(apiEntity -> apiEntityToDeploymentDtoList(apiEntity).stream())
+            .collect(toList());
+    }
+
+    private List<DeploymentDto> apiEntityToDeploymentDtoList(ApiEntity apiEntity) {
+        return apiEntity.getApiDeploymentEntities().stream()
+            .map(apiDeploymentEntity -> apiDeploymentToDeploymentDto(apiDeploymentEntity))
+            .collect(toList());
+    }
+
+    private DeploymentDto apiDeploymentToDeploymentDto(ApiDeploymentEntity apiDeploymentEntity) {
+        return DeploymentDto.builder()
+            .apiVersion(apiDeploymentEntity.getApi().getApiVersion())
+            .application(new DeploymentDto.ApplicationDto(apiDeploymentEntity.getApplication().getName()))
+            .definition(new DeploymentDto.DefinitionDto(apiDeploymentEntity.getApi()))
+            .build();
     }
 }
