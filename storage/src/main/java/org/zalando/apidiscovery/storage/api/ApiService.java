@@ -7,8 +7,8 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.zalando.apidiscovery.storage.api.DeploymentDto.DeploymentApplicationDto;
-import org.zalando.apidiscovery.storage.api.DeploymentDto.DeploymentDefinitionDto;
+import org.zalando.apidiscovery.storage.api.DeploymentDto.ApplicationDto;
+import org.zalando.apidiscovery.storage.api.DeploymentDto.DefinitionDto;
 
 import static java.text.MessageFormat.format;
 import static java.util.stream.Collectors.groupingBy;
@@ -72,7 +72,7 @@ public class ApiService {
         if (!apiEntities.isEmpty()) {
             ApiLifecycleState lifecycleState = aggregateApplicationLifecycleStateForApi(apiEntities);
             List<VersionsDto> versions = toVersionDtoList(apiEntities);
-            List<ApplicationDto> applications = applicationService.getApplicationsByApiEntities(apiEntities);
+            List<org.zalando.apidiscovery.storage.api.ApplicationDto> applications = applicationService.getApplicationsByApiEntities(apiEntities);
 
             return Optional.of(new ApiDto(apiName,
                 lifecycleState,
@@ -136,8 +136,8 @@ public class ApiService {
     private DeploymentDto apiDeploymentToDeploymentDto(ApiDeploymentEntity apiDeploymentEntity) {
         return DeploymentDto.builder()
             .apiVersion(apiDeploymentEntity.getApi().getApiVersion())
-            .application(new DeploymentApplicationDto(apiDeploymentEntity.getApplication().getName()))
-            .definition(new DeploymentDefinitionDto(apiDeploymentEntity.getApi()))
+            .application(new ApplicationDto(apiDeploymentEntity.getApplication().getName()))
+            .definition(new DefinitionDto(apiDeploymentEntity.getApi()))
             .build();
     }
 }

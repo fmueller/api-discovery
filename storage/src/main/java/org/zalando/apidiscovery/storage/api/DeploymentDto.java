@@ -19,9 +19,9 @@ public class DeploymentDto {
 
     private String apiVersion;
 
-    private DeploymentApplicationDto application;
+    private ApplicationDto application;
 
-    private DeploymentDefinitionDto definition;
+    private DefinitionDto definition;
 
 
     public void buildLinks(UriComponentsBuilder builder) {
@@ -31,11 +31,11 @@ public class DeploymentDto {
 
     @Data
     @NoArgsConstructor
-    static class DeploymentApplicationDto {
+    static class ApplicationDto {
         private String name;
         private String href;
 
-        public DeploymentApplicationDto(String name) {
+        public ApplicationDto(String name) {
             this.name = name;
         }
 
@@ -47,7 +47,7 @@ public class DeploymentDto {
 
     @Data
     @NoArgsConstructor
-    static class DeploymentDefinitionDto {
+    static class DefinitionDto {
         private String href;
 
         @JsonIgnore
@@ -59,7 +59,7 @@ public class DeploymentDto {
         @JsonIgnore
         private String apiDefinitionId;
 
-        public DeploymentDefinitionDto(ApiEntity apiEntity) {
+        public DefinitionDto(ApiEntity apiEntity) {
             apiName = apiEntity.getApiName();
             apiVersion = apiEntity.getApiVersion();
             apiDefinitionId = valueOf(apiEntity.getDefinitionId());
