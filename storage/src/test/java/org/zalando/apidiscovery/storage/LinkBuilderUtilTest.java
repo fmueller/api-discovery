@@ -14,7 +14,7 @@ import static org.springframework.web.util.UriComponentsBuilder.newInstance;
 
 public class LinkBuilderUtilTest {
 
-    UriComponentsBuilder builder;
+    private UriComponentsBuilder builder;
 
     @Before
     public void setUp() throws Exception {
