@@ -81,7 +81,7 @@ public class ApplicationResourceComponentTest {
     @Test
     public void shouldReturnAllApplications() throws Exception {
         ApplicationEntity applicationEntity1 = createApplication("application1");
-        ApiEntity apiEntity = createApiEntity("api1", "v1", "hash");
+        ApiEntity apiEntity = createApiEntity("api1", "v1", 1);
         createApiDeployment(apiEntity, applicationEntity1);
 
         mvc.perform(get("/applications"))
@@ -91,7 +91,7 @@ public class ApplicationResourceComponentTest {
             .andExpect(jsonPath("$.applications[0].app_url", equalTo("/info")))
             .andExpect(jsonPath("$.applications[0].definitions[0].api_ui", equalTo("/ui")))
             .andExpect(jsonPath("$.applications[0].definitions[0].api_url", equalTo("/url")))
-            .andExpect(jsonPath("$.applications[0].definitions[0].href", endsWith("apis/api1/versions/v1/definitions/" + apiEntity.getId())))
+            .andExpect(jsonPath("$.applications[0].definitions[0].href", endsWith("apis/api1/versions/v1/definitions/" + apiEntity.getDefinitionId())))
             .andExpect(jsonPath("$.applications[0].definitions[0].lifecycle_state", equalTo(ACTIVE)));
     }
 
@@ -105,7 +105,7 @@ public class ApplicationResourceComponentTest {
     @Test
     public void shouldReturnOneApplication() throws Exception {
         ApplicationEntity applicationEntity = createApplication("application1");
-        ApiEntity apiEntity = createApiEntity("api1", "v1", "hash");
+        ApiEntity apiEntity = createApiEntity("api1", "v1", 1);
         createApiDeployment(apiEntity, applicationEntity);
 
         mvc.perform(get("/applications/application1"))
@@ -114,7 +114,7 @@ public class ApplicationResourceComponentTest {
             .andExpect(jsonPath("$.app_url", equalTo("/info")))
             .andExpect(jsonPath("$.definitions[0].api_ui", equalTo("/ui")))
             .andExpect(jsonPath("$.definitions[0].api_url", equalTo("/url")))
-            .andExpect(jsonPath("$.definitions[0].href", endsWith("apis/api1/versions/v1/definitions/" + apiEntity.getId())))
+            .andExpect(jsonPath("$.definitions[0].href", endsWith("apis/api1/versions/v1/definitions/" + apiEntity.getDefinitionId())))
             .andExpect(jsonPath("$.definitions[0].lifecycle_state", equalTo(ACTIVE)));
     }
 
@@ -151,12 +151,13 @@ public class ApplicationResourceComponentTest {
         return apiDeploymentEntity;
     }
 
-    private ApiEntity createApiEntity(String name, String version, String definitionHash) {
+    private ApiEntity createApiEntity(String name, String version, int definitionId) {
         return ApiEntity.builder()
             .apiName(name)
             .apiVersion(version)
-            .definitionHash(definitionHash)
+            .definitionId(definitionId)
             .definitionType("swagger")
+            .definitionHash("hash")
             .created(now(UTC))
             .build();
     }

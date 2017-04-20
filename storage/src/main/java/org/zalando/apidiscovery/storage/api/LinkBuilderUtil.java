@@ -19,25 +19,6 @@ public class LinkBuilderUtil {
     }
 
     public static UriComponents buildDefinitionDeploymentLink(UriComponentsBuilder builder,
-                                                              DeploymentLinkDto.DefinitionLinkDto definitionLinkDto) {
-        return buildDefinitionDeploymentLink(
-            builder,
-            definitionLinkDto.getApiName(),
-            definitionLinkDto.getApiVersion(),
-            definitionLinkDto.getDefinitionId());
-    }
-
-    public static UriComponents buildDefinitionDeploymentLink(UriComponentsBuilder builder,
-                                                              DeploymentDto.DeploymentDefinitionDto definitionDto) {
-        return buildDefinitionDeploymentLink(
-            builder,
-            definitionDto.getApiName(),
-            definitionDto.getApiVersion(),
-            definitionDto.getApiDefinitionId());
-    }
-
-
-    public static UriComponents buildDefinitionDeploymentLink(UriComponentsBuilder builder,
                                                               String apiName,
                                                               String apiVersion,
                                                               String definitionId) {
@@ -55,11 +36,6 @@ public class LinkBuilderUtil {
             .build();
     }
 
-    public static UriComponents buildDefinitionDeploymentLink(UriComponentsBuilder builder,
-                                                              DeploymentDto.DeploymentApplicationDto deploymentApplicationDto) {
-        return buildApplicationDeploymentLink(builder, deploymentApplicationDto.getName());
-    }
-
     public static UriComponents buildLink(UriComponentsBuilder builder,
                                           DeploymentLinkDto deploymentLinkDto) {
         if (deploymentLinkDto instanceof DeploymentLinkDto.ApplicationLinkDto) {
@@ -70,9 +46,17 @@ public class LinkBuilderUtil {
             return buildDefinitionDeploymentLink(builder, (DeploymentLinkDto.DefinitionLinkDto) deploymentLinkDto);
         } else {
 
-            throw new UnsupportedOperationException(format("LinkBuilder for class [{}] not supported", deploymentLinkDto));
+            throw new UnsupportedOperationException(format("LinkBuilder for class [{0}] not supported", deploymentLinkDto));
         }
     }
 
+    public static UriComponents buildDefinitionDeploymentLink(UriComponentsBuilder builder,
+                                                              DeploymentLinkDto.DefinitionLinkDto definitionLinkDto) {
+        return buildDefinitionDeploymentLink(
+            builder,
+            definitionLinkDto.getApiName(),
+            definitionLinkDto.getApiVersion(),
+            definitionLinkDto.getDefinitionId());
+    }
 
 }

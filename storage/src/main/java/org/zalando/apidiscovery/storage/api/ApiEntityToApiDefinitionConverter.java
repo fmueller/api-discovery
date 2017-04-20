@@ -12,7 +12,7 @@ public class ApiEntityToApiDefinitionConverter {
         List<DeploymentLinkDto> deploymentLinkDtos = null;
         if (apiEntity.getApiDeploymentEntities() != null) {
             deploymentLinkDtos = apiEntity.getApiDeploymentEntities().stream()
-                .map(apiDeploymentEntity -> new DeploymentLinkDto(apiDeploymentEntity))
+                .map(apiDeploymentEntity -> new DeploymentLinkDto.ApplicationLinkDto(apiDeploymentEntity))
                     .collect(toList());
         }
 

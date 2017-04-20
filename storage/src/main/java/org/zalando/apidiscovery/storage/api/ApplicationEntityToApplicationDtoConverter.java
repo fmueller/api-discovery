@@ -10,15 +10,15 @@ public class ApplicationEntityToApplicationDtoConverter {
         List<DeploymentLinkDto> deploymentLinkDtos = null;
         if (applicationEntity.getApiDeploymentEntities() != null) {
             deploymentLinkDtos = applicationEntity.getApiDeploymentEntities().stream()
-                .map(apiDeploymentEntity -> new DeploymentLinkDto(apiDeploymentEntity))
-                    .collect(toList());
+                .map(apiDeploymentEntity -> new DeploymentLinkDto.DefinitionLinkDto(apiDeploymentEntity))
+                .collect(toList());
         }
 
         return ApplicationDto.builder()
-                .name(applicationEntity.getName())
-                .appUrl(applicationEntity.getAppUrl())
-                .definitions(deploymentLinkDtos)
-                .created(applicationEntity.getCreated())
-                .build();
+            .name(applicationEntity.getName())
+            .appUrl(applicationEntity.getAppUrl())
+            .definitions(deploymentLinkDtos)
+            .created(applicationEntity.getCreated())
+            .build();
     }
 }

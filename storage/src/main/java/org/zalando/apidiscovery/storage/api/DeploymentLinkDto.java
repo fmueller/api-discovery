@@ -4,8 +4,8 @@ import java.time.OffsetDateTime;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import static java.lang.String.valueOf;
@@ -13,8 +13,7 @@ import static java.lang.String.valueOf;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class DeploymentLinkDto {
+public abstract class DeploymentLinkDto {
 
     private String apiUrl;
     private String apiUi;
@@ -36,21 +35,23 @@ public class DeploymentLinkDto {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    class ApplicationLinkDto extends DeploymentLinkDto {
+    @EqualsAndHashCode(callSuper = false)
+    public static class ApplicationLinkDto extends DeploymentLinkDto {
 
         @JsonIgnore
         private String applicationName;
 
-        public ApplicationLinkDto(ApiDeploymentEntity apiDeploymentEntity, String applicationName) {
+        public ApplicationLinkDto(ApiDeploymentEntity apiDeploymentEntity) {
             super(apiDeploymentEntity);
-            this.applicationName = applicationName;
+            this.applicationName = apiDeploymentEntity.getApplication().getName();
         }
     }
 
 
     @Data
     @AllArgsConstructor
-    class DefinitionLinkDto extends DeploymentLinkDto {
+    @EqualsAndHashCode(callSuper = false)
+    public static class DefinitionLinkDto extends DeploymentLinkDto {
 
         @JsonIgnore
         private String apiName;
@@ -59,11 +60,12 @@ public class DeploymentLinkDto {
         @JsonIgnore
         private String definitionId;
 
-        public DefinitionLinkDto(ApiDeploymentEntity apiDeploymentEntity, ApiEntity apiEntity) {
+        public DefinitionLinkDto(ApiDeploymentEntity apiDeploymentEntity) {
             super(apiDeploymentEntity);
+            ApiEntity apiEntity = apiDeploymentEntity.getApi();
             apiName = apiEntity.getApiName();
             apiVersion = apiEntity.getApiVersion();
-            definitionId = valueOf(apiEntity.getId());
+            definitionId = valueOf(apiEntity.getDefinitionId());
         }
     }
 

@@ -103,9 +103,9 @@ public class ApiDeploymentResourceComponentTest {
             .andExpect(jsonPath("$.deployments[0].application.name", equalTo("application1")))
             .andExpect(jsonPath("$..definition.href",
                 containsInAnyOrder(
-                    endsWith(expectedDefinitionHref("v1", api1.getId())),
-                    endsWith(expectedDefinitionHref("v1", api1_1.getId())),
-                    endsWith(expectedDefinitionHref("v2", api2.getId()))
+                    endsWith(expectedDefinitionHref("v1", api1.getDefinitionId())),
+                    endsWith(expectedDefinitionHref("v1", api1_1.getDefinitionId())),
+                    endsWith(expectedDefinitionHref("v2", api2.getDefinitionId()))
                 )))
             .andExpect(jsonPath("$..application.href",
                 contains(
