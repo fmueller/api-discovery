@@ -15,8 +15,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-import org.zalando.apidiscovery.crawler.storage.ApiDiscoveryStorageGateway;
-import org.zalando.apidiscovery.crawler.storage.LegacyApiDiscoveryStorageGateway;
+import org.zalando.apidiscovery.crawler.gateway.ApiDiscoveryStorageGateway;
+import org.zalando.apidiscovery.crawler.gateway.LegacyApiDiscoveryStorageGateway;
+import org.zalando.apidiscovery.crawler.gateway.WellKnownSchemaGateway;
 import org.zalando.stups.clients.kio.ApplicationBase;
 import org.zalando.stups.clients.kio.KioOperations;
 

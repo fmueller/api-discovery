@@ -1,11 +1,11 @@
-package org.zalando.apidiscovery.crawler.storage;
+package org.zalando.apidiscovery.crawler.gateway;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.annotations.VisibleForTesting;
 import org.springframework.web.client.RestOperations;
 import org.zalando.stups.clients.kio.ApplicationBase;
 
-import static org.zalando.apidiscovery.crawler.WellKnownSchemaGateway.extractApiDefinitionUrl;
+import static org.zalando.apidiscovery.crawler.gateway.WellKnownSchemaGateway.extractApiDefinitionUrl;
 
 public class ApiDiscoveryStorageGateway {
 

@@ -3,8 +3,8 @@ package org.zalando.apidiscovery.crawler;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.core.io.Resource;
-import org.zalando.apidiscovery.crawler.storage.ApiDefinition;
-import org.zalando.apidiscovery.crawler.storage.LegacyApiDefinition;
+import org.zalando.apidiscovery.crawler.gateway.ApiDefinition;
+import org.zalando.apidiscovery.crawler.gateway.LegacyApiDefinition;
 import org.zalando.stups.clients.kio.ApplicationBase;
 
 import java.io.IOException;

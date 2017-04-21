@@ -1,4 +1,4 @@
-package org.zalando.apidiscovery.crawler.storage;
+package org.zalando.apidiscovery.crawler.gateway;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,7 +9,7 @@ import org.springframework.util.Assert;
 import org.springframework.web.client.RestOperations;
 import org.zalando.stups.clients.kio.ApplicationBase;
 
-import static org.zalando.apidiscovery.crawler.WellKnownSchemaGateway.extractApiDefinitionUrl;
+import static org.zalando.apidiscovery.crawler.gateway.WellKnownSchemaGateway.extractApiDefinitionUrl;
 
 public class LegacyApiDiscoveryStorageGateway {
 

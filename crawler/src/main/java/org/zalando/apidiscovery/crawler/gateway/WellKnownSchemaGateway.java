@@ -1,4 +1,4 @@
-package org.zalando.apidiscovery.crawler;
+package org.zalando.apidiscovery.crawler.gateway;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

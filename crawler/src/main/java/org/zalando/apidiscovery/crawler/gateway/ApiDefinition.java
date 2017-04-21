@@ -1,4 +1,4 @@
-package org.zalando.apidiscovery.crawler.storage;
+package org.zalando.apidiscovery.crawler.gateway;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,13 +9,14 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class LegacyApiDefinition {
+public class ApiDefinition {
 
-    public static LegacyApiDefinition UNSUCCESSFUL = LegacyApiDefinition.builder().status("UNSUCCESSFUL").build();
+    public static ApiDefinition UNSUCCESSFUL = ApiDefinition.builder().status("UNSUCCESSFUL").build();
 
     private String status;
     private String type;
-    private String name;
+    private String apiName;
+    private String appName;
     private String version;
     private String serviceUrl;
     private String url;

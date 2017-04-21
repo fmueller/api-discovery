@@ -1,4 +1,4 @@
-package org.zalando.apidiscovery.crawler.storage;
+package org.zalando.apidiscovery.crawler.gateway;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -7,12 +7,12 @@ import org.springframework.core.io.Resource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.zalando.apidiscovery.crawler.TestDataHelper.META_API_LEGACY_DEFINITION;
+import static org.zalando.apidiscovery.crawler.TestDataHelper.META_API_DEFINITION;
 import static org.zalando.apidiscovery.crawler.TestDataHelper.metaApiApplication;
 import static org.zalando.apidiscovery.crawler.TestDataHelper.readJson;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-public class LegacyApiDiscoveryStorageGatewayTest {
+public class ApiDiscoveryStorageGatewayTest {
 
     @Value("classpath:meta_api_schema_discovery.json")
     private Resource metaApiSchemaDiscoveryResource;
@@ -21,12 +21,12 @@ public class LegacyApiDiscoveryStorageGatewayTest {
     private Resource metaApiDefinitionResource;
 
     @Test
-    public void shouldBeAbleToMapSchemaDiscoveryAndDefinitionToLegacyApiDefinition() throws Exception {
-        LegacyApiDefinition legacyApiDefinition = LegacyApiDiscoveryStorageGateway.constructLegacyApiDefinition(
+    public void shouldBeAbleToMapSchemaDiscoveryAndDefinitionToApiDefinition() throws Exception {
+        ApiDefinition apiDefinition = ApiDiscoveryStorageGateway.constructApiDefinition(
             readJson(metaApiSchemaDiscoveryResource),
             readJson(metaApiDefinitionResource),
             metaApiApplication());
 
-        assertThat(legacyApiDefinition).isEqualTo(META_API_LEGACY_DEFINITION);
+        assertThat(apiDefinition).isEqualTo(META_API_DEFINITION);
     }
 }

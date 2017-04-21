@@ -3,8 +3,9 @@ package org.zalando.apidiscovery.crawler;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.zalando.apidiscovery.crawler.storage.ApiDiscoveryStorageGateway;
-import org.zalando.apidiscovery.crawler.storage.LegacyApiDiscoveryStorageGateway;
+import org.zalando.apidiscovery.crawler.gateway.ApiDiscoveryStorageGateway;
+import org.zalando.apidiscovery.crawler.gateway.LegacyApiDiscoveryStorageGateway;
+import org.zalando.apidiscovery.crawler.gateway.WellKnownSchemaGateway;
 import org.zalando.stups.clients.kio.ApplicationBase;
 
 import java.util.concurrent.Callable;
