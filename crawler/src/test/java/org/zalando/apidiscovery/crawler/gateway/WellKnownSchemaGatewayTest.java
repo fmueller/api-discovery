@@ -37,7 +37,7 @@ public class WellKnownSchemaGatewayTest {
     private Resource metaApiDefinitionResource;
 
     @Mock
-    RestTemplate restTemplate;
+    private RestTemplate restTemplate;
 
     private WellKnownSchemaGateway schemaGateway;
 
@@ -105,13 +105,15 @@ public class WellKnownSchemaGatewayTest {
             any(HttpEntity.class),
             eq(JsonNode.class));
 
-        doReturn(new ResponseEntity<>("some yaml", HttpStatus.OK)).when(restTemplate).exchange(
+        doReturn(new ResponseEntity<>("some: yaml", HttpStatus.OK)).when(restTemplate).exchange(
             eq("https://meta.api/swagger.json"),
             eq(HttpMethod.GET),
             anyObject(),
             eq(String.class));
 
-        schemaGateway.retrieveApiDefinition(metaApiApplication(), mockedSchemaDiscovery);
+        JsonNode apiDefinition = schemaGateway.retrieveApiDefinition(metaApiApplication(), mockedSchemaDiscovery);
+
+        assertThat(apiDefinition).isNotNull();
 
         InOrder inOrder = Mockito.inOrder(restTemplate);
         inOrder.verify(restTemplate).exchange(eq("https://meta.api/swagger.json"), eq(HttpMethod.GET), anyObject(),
