@@ -4,64 +4,70 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
+import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.zalando.apidiscovery.crawler.storage.ApiDiscoveryStorageGateway;
 import org.zalando.apidiscovery.crawler.storage.LegacyApiDiscoveryStorageGateway;
 import org.zalando.stups.clients.kio.ApplicationBase;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
-import static org.zalando.apidiscovery.crawler.TestData.metaApiApplication;
-import static org.zalando.apidiscovery.crawler.TestData.metaApiDefinition;
-import static org.zalando.apidiscovery.crawler.TestData.metaApiSchemaDiscovery;
+import static org.zalando.apidiscovery.crawler.TestDataHelper.metaApiApplication;
+import static org.zalando.apidiscovery.crawler.TestDataHelper.readJson;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(SpringJUnit4ClassRunner.class)
 public class ApiDefinitionCrawlJobTest {
 
     @Mock
-    private LegacyApiDiscoveryStorageGateway legacyStorageClient;
+    private LegacyApiDiscoveryStorageGateway legacyStorageGateway;
 
     @Mock
-    private ApiDiscoveryStorageGateway storageClient;
+    private ApiDiscoveryStorageGateway storageGateway;
 
     @Mock
-    private RestTemplate schemaClient;
+    private WellKnownSchemaGateway schemaGateway;
+
+    @Value("classpath:meta_api_schema_discovery.json")
+    private Resource metaApiSchemaDiscoveryResource;
+
+    @Value("classpath:meta_api_definition.json")
+    private Resource metaApiDefinitionResource;
 
     private ApplicationBase metaApiApplication = metaApiApplication();
 
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+    }
+
     @Test
     public void shouldBeAbleToProcessUnsuccessfulCrawling() throws Exception {
-        ApiDefinitionCrawlJob job = new ApiDefinitionCrawlJob(legacyStorageClient, storageClient, schemaClient, metaApiApplication);
+        ApiDefinitionCrawlJob job = new ApiDefinitionCrawlJob(legacyStorageGateway, storageGateway, schemaGateway, metaApiApplication);
 
         assertThat(job.call()).isNull();
 
-        verify(legacyStorageClient).createOrUpdateApiDefinition(eq(null), eq(null), eq(metaApiApplication));
-        verify(storageClient).pushApiDefinition(eq(null), eq(null), eq(metaApiApplication));
+        verify(legacyStorageGateway).createOrUpdateApiDefinition(eq(null), eq(null), eq(metaApiApplication));
+        verify(storageGateway).pushApiDefinition(eq(null), eq(null), eq(metaApiApplication));
     }
 
     @Test
     public void shouldBeAbleToProcessSuccessfulCrawling() throws Exception {
-        ResponseEntity<JsonNode> schema = new ResponseEntity<>(metaApiSchemaDiscovery(), HttpStatus.OK);
-        ResponseEntity<JsonNode> api = new ResponseEntity<>(metaApiDefinition(), HttpStatus.OK);
+        JsonNode metaApiSchemaDiscovery = readJson(metaApiSchemaDiscoveryResource);
+        JsonNode metaApiDefinition = readJson(metaApiDefinitionResource);
 
-        doReturn(schema).when(schemaClient).exchange(eq("https://meta.api/.well-known/schema-discovery"), eq(HttpMethod.GET), any(HttpEntity.class), eq(JsonNode.class));
-        doReturn(api).when(schemaClient).exchange(eq("https://meta.api/swagger.json"), eq(HttpMethod.GET), anyObject(), eq(JsonNode.class));
+        doReturn(metaApiSchemaDiscovery).when(schemaGateway).retrieveSchemaDiscovery(eq(metaApiApplication));
+        doReturn(metaApiDefinition).when(schemaGateway).retrieveApiDefinition(eq(metaApiApplication), any(JsonNode.class));
 
-        ApiDefinitionCrawlJob job = new ApiDefinitionCrawlJob(legacyStorageClient, storageClient, schemaClient, metaApiApplication);
+        ApiDefinitionCrawlJob job = new ApiDefinitionCrawlJob(legacyStorageGateway, storageGateway, schemaGateway, metaApiApplication);
 
         assertThat(job.call()).isNull();
 
-        verify(legacyStorageClient).createOrUpdateApiDefinition(eq(metaApiSchemaDiscovery()), eq(metaApiDefinition()), eq(metaApiApplication));
-        verify(storageClient).pushApiDefinition(eq(metaApiSchemaDiscovery()), eq(metaApiDefinition()), eq(metaApiApplication));
+        verify(legacyStorageGateway).createOrUpdateApiDefinition(eq(metaApiSchemaDiscovery), eq(metaApiDefinition), eq(metaApiApplication));
+        verify(storageGateway).pushApiDefinition(eq(metaApiSchemaDiscovery), eq(metaApiDefinition), eq(metaApiApplication));
     }
 
 }

@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-import org.springframework.web.client.RestTemplate;
 import org.zalando.apidiscovery.crawler.storage.ApiDiscoveryStorageGateway;
 import org.zalando.apidiscovery.crawler.storage.LegacyApiDiscoveryStorageGateway;
 import org.zalando.stups.clients.kio.ApplicationBase;
@@ -27,21 +26,21 @@ public class ApiDiscoveryCrawler {
     private static final Logger LOG = LoggerFactory.getLogger(ApiDiscoveryCrawler.class);
 
     private final KioOperations kioClient;
-    private final LegacyApiDiscoveryStorageGateway legacyStorageClient;
-    private final ApiDiscoveryStorageGateway storageClient;
-    private final RestTemplate schemaClient;
+    private final LegacyApiDiscoveryStorageGateway legacyStorageGateway;
+    private final ApiDiscoveryStorageGateway storageGateway;
+    private final WellKnownSchemaGateway schemaGateway;
     private final ExecutorService fixedPool;
 
     @Autowired
     public ApiDiscoveryCrawler(KioOperations kioClient,
-                               LegacyApiDiscoveryStorageGateway legacyStorageClient,
+                               LegacyApiDiscoveryStorageGateway legacyStorageGateway,
                                ApiDiscoveryStorageGateway storageClient,
-                               RestTemplate schemaClient,
+                               WellKnownSchemaGateway schemaGateway,
                                @Value("${crawler.jobs.pool}") int jobsPoolSize) {
         this.kioClient = kioClient;
-        this.legacyStorageClient = legacyStorageClient;
-        this.storageClient = storageClient;
-        this.schemaClient = schemaClient;
+        this.legacyStorageGateway = legacyStorageGateway;
+        this.storageGateway = storageClient;
+        this.schemaGateway = schemaGateway;
         fixedPool = Executors.newFixedThreadPool(jobsPoolSize);
     }
 
@@ -54,7 +53,7 @@ public class ApiDiscoveryCrawler {
 
         final List<Callable<Void>> crawlJobs = applications.stream()
                 .filter(app -> !StringUtils.isEmpty(app.getServiceUrl()))
-                .map(app -> new ApiDefinitionCrawlJob(legacyStorageClient, storageClient, schemaClient, app))
+                .map(app -> new ApiDefinitionCrawlJob(legacyStorageGateway, storageGateway, schemaGateway, app))
                 .collect(Collectors.toList());
         LOG.info("Crawling {} api definitions", crawlJobs.size());
 

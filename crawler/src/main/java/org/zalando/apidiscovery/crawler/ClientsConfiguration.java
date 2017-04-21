@@ -49,6 +49,11 @@ public class ClientsConfiguration {
     }
 
     @Bean
+    public WellKnownSchemaGateway wellKnownSchemaGateway() {
+        return new WellKnownSchemaGateway(oauth2Operations());
+    }
+
+    @Bean
     public RestTemplate oauth2Operations() {
         RestTemplate restTemplate = buildOAuth2RestTemplate("schema");
         restTemplate.getMessageConverters().add(0, new StringHttpMessageConverter(Charset.forName("UTF-8")));

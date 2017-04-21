@@ -1,10 +1,11 @@
 package org.zalando.apidiscovery.crawler.storage;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.google.common.annotations.VisibleForTesting;
 import org.springframework.web.client.RestOperations;
 import org.zalando.stups.clients.kio.ApplicationBase;
 
-import static org.zalando.apidiscovery.crawler.Utils.extractApiDefinitionUrl;
+import static org.zalando.apidiscovery.crawler.WellKnownSchemaGateway.extractApiDefinitionUrl;
 
 public class ApiDiscoveryStorageGateway {
 
@@ -28,6 +29,7 @@ public class ApiDiscoveryStorageGateway {
         restOperations.postForLocation(baseUrl + "/api-definitions", apiDefinition);
     }
 
+    @VisibleForTesting
     protected static ApiDefinition constructApiDefinition(JsonNode schemaDiscovery, JsonNode apiDefinition, ApplicationBase app) {
         String serviceUrl = app.getServiceUrl().endsWith("/") ? app.getServiceUrl() : app.getServiceUrl() + "/";
 

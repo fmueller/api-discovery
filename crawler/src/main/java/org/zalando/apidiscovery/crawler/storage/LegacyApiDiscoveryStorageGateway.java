@@ -4,11 +4,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.google.common.annotations.VisibleForTesting;
 import org.springframework.util.Assert;
 import org.springframework.web.client.RestOperations;
 import org.zalando.stups.clients.kio.ApplicationBase;
 
-import static org.zalando.apidiscovery.crawler.Utils.extractApiDefinitionUrl;
+import static org.zalando.apidiscovery.crawler.WellKnownSchemaGateway.extractApiDefinitionUrl;
 
 public class LegacyApiDiscoveryStorageGateway {
 
@@ -36,6 +37,7 @@ public class LegacyApiDiscoveryStorageGateway {
         restOperations.put(baseUrl + "/apps/{applicationId}", apiDefinition, uriVariables);
     }
 
+    @VisibleForTesting
     protected static LegacyApiDefinition constructLegacyApiDefinition(JsonNode schemaDiscovery, JsonNode apiDefinition, ApplicationBase app) {
         String serviceUrl = app.getServiceUrl().endsWith("/") ? app.getServiceUrl() : app.getServiceUrl() + "/";
 
