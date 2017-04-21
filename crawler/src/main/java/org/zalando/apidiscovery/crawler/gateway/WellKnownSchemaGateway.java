@@ -3,6 +3,7 @@ package org.zalando.apidiscovery.crawler.gateway;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.google.common.annotations.VisibleForTesting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
@@ -27,7 +28,7 @@ public class WellKnownSchemaGateway {
     }
 
     public JsonNode retrieveSchemaDiscovery(ApplicationBase app) {
-        final String serviceUrl = serviceUrl(app);
+        final String serviceUrl = extractServiceUrl(app);
 
         try {
             HttpHeaders headers = new HttpHeaders();
@@ -55,7 +56,7 @@ public class WellKnownSchemaGateway {
     }
 
     public JsonNode retrieveApiDefinition(ApplicationBase app, JsonNode schemaDiscovery) throws Exception {
-        final String url = serviceUrl(app) + extractApiDefinitionUrl(schemaDiscovery);
+        final String url = extractServiceUrl(app) + extractApiDefinitionUrl(schemaDiscovery);
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.set("Accept", "*/*");
@@ -72,7 +73,7 @@ public class WellKnownSchemaGateway {
         }
     }
 
-    public static String extractApiDefinitionUrl(JsonNode schemaDiscovery) {
+    protected static String extractApiDefinitionUrl(JsonNode schemaDiscovery) {
         String apiDefinitionUrl = schemaDiscovery.get("schema_url").asText();
         if (apiDefinitionUrl.startsWith("/")) {
             apiDefinitionUrl = apiDefinitionUrl.substring(1);
@@ -80,11 +81,13 @@ public class WellKnownSchemaGateway {
         return apiDefinitionUrl;
     }
 
-    private static String serviceUrl(ApplicationBase app) {
+    @VisibleForTesting
+    protected static String extractServiceUrl(ApplicationBase app) {
         return app.getServiceUrl().endsWith("/") ? app.getServiceUrl() : app.getServiceUrl() + "/";
     }
 
-    private JsonNode tryRetrieveApiDefinitionAsYaml(String url, String appId) throws IOException {
+    @VisibleForTesting
+    protected JsonNode tryRetrieveApiDefinitionAsYaml(String url, String appId) throws IOException {
         LOG.info("Try to load api definition as yaml for service {}", appId);
 
         HttpHeaders headers = new HttpHeaders();
