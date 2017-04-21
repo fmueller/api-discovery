@@ -1,6 +1,8 @@
 package org.zalando.apidiscovery.storage.api;
 
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,10 +14,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.List;
-
 import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.toList;
+import static org.zalando.apidiscovery.storage.api.LinkBuilderUtil.buildLink;
 
 @CrossOrigin
 @RestController
@@ -32,8 +33,8 @@ public class ApiResourceController {
     @GetMapping
     public ResponseEntity<ApiListDto> getApis(@RequestParam(value = "lifecycle_state", required = false) ApiLifecycleState lifecycleState) {
         List<ApiDto> apiList = loadApis(lifecycleState).stream()
-                .sorted(comparing(api -> api.getApiMetaData().getName()))
-                .collect(toList());
+            .sorted(comparing(api -> api.getApiMetaData().getName()))
+            .collect(toList());
         return ResponseEntity.ok(new ApiListDto(apiList));
     }
 
@@ -44,8 +45,8 @@ public class ApiResourceController {
     @GetMapping("/{api_id}")
     public ResponseEntity<ApiDto> getApi(@PathVariable("api_id") String apiId, UriComponentsBuilder builder) {
         return apiService.getApi(apiId)
-                .map(api -> ResponseEntity.ok(buildLinks(api, builder)))
-                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+            .map(api -> ResponseEntity.ok(buildLinks(api, builder)))
+            .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @GetMapping("/{api_id}/versions")
@@ -77,16 +78,29 @@ public class ApiResourceController {
             .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
+    @GetMapping("/{api_id}/deployments")
+    public ResponseEntity<DeploymentsDto> getApiDeployments(@PathVariable("api_id") String apiId,
+                                                            UriComponentsBuilder builder) {
+        List<DeploymentDto> deploymentsForApi = apiService.getDeploymentsForApi(apiId);
+        return ResponseEntity.ok(new DeploymentsDto(updateLinks(deploymentsForApi, builder)));
+
+    }
+
+    private List<DeploymentDto> updateLinks(List<DeploymentDto> deploymentDtoList, UriComponentsBuilder builder) {
+        deploymentDtoList.forEach(
+            deploymentDto -> deploymentDto.buildLinks(builder)
+        );
+        return deploymentDtoList;
+    }
+
     private ApiDto buildLinks(ApiDto api, UriComponentsBuilder builder) {
         updateApiDefinitionWithLinks(api.getVersions(), builder);
 
         api.getApplications()
-                .forEach(applicationDto -> applicationDto.getDefinitions()
-                        .forEach(deploymentLinkDto -> deploymentLinkDto.setHref(
-                                builder.cloneBuilder()
-                                        .path(deploymentLinkDto.getLinkBuilder().buildLink())
-                                        .toUriString()))
-                );
+            .forEach(applicationDto -> applicationDto.getDefinitions()
+                .forEach(deploymentLinkDto -> deploymentLinkDto.setHref(
+                    buildLink(builder.cloneBuilder(), deploymentLinkDto).toUriString()
+                )));
 
         return api;
     }
@@ -107,9 +121,8 @@ public class ApiResourceController {
     private ApiDefinitionDto updateApiDefinitionWithLinks(ApiDefinitionDto apiDefinitionDto, UriComponentsBuilder builder) {
         apiDefinitionDto.getApplications()
             .forEach(deploymentLinkDto -> deploymentLinkDto.setHref(
-                builder.cloneBuilder()
-                    .path(deploymentLinkDto.getLinkBuilder().buildLink())
-                    .toUriString()));
+                buildLink(builder.cloneBuilder(), deploymentLinkDto).toUriString()
+            ));
 
         return apiDefinitionDto;
     }

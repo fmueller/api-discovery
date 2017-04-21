@@ -227,10 +227,10 @@ public class ApiResourceIntegrationTest extends AbstractResourceIntegrationTest 
         assertThat(response,
             hasJsonPath("$.applications..definitions[*].href",
                 hasItems(localUriBuilder()
-                        .path("apis/testAPI/versions/1.0.0/definitions/" + valueOf(testAPi100.getId()))
+                        .path("apis/testAPI/versions/1.0.0/definitions/" + valueOf(testAPi100.getDefinitionId()))
                         .toUriString(),
                     localUriBuilder()
-                        .path("apis/testAPI/versions/2.0.0/definitions/" + valueOf(testAPi200.getId()))
+                        .path("apis/testAPI/versions/2.0.0/definitions/" + valueOf(testAPi200.getDefinitionId()))
                         .toUriString())));
 
     }

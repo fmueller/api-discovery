@@ -4,16 +4,16 @@ import java.time.OffsetDateTime;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.springframework.web.util.UriComponentsBuilder;
+
+import static java.lang.String.valueOf;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class DeploymentLinkDto {
+public abstract class DeploymentLinkDto {
 
     private String apiUrl;
     private String apiUi;
@@ -22,54 +22,51 @@ public class DeploymentLinkDto {
     private OffsetDateTime lastUpdated;
     private String href;
 
-    @JsonIgnore
-    private LinkBuilder linkBuilder;
 
-    public DeploymentLinkDto(ApiDeploymentEntity apiDeploymentEntity, LinkBuilder linkBuilder) {
+    public DeploymentLinkDto(ApiDeploymentEntity apiDeploymentEntity) {
         lifecycleState = apiDeploymentEntity.getLifecycleState();
         apiUi = apiDeploymentEntity.getApiUi();
         apiUrl = apiDeploymentEntity.getApiUrl();
         created = apiDeploymentEntity.getCreated();
         lastUpdated = apiDeploymentEntity.getLastCrawled();
-        this.linkBuilder = linkBuilder;
     }
 
 
-}
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @EqualsAndHashCode(callSuper = false)
+    public static class ApplicationLinkDto extends DeploymentLinkDto {
 
-interface LinkBuilder {
-    String buildLink();
-}
+        @JsonIgnore
+        private String applicationName;
 
-@Data
-@AllArgsConstructor
-class ApplicationDeploymentLinkBuilder implements LinkBuilder {
-
-    private String applicationName;
-
-    @Override
-    public String buildLink() {
-        return UriComponentsBuilder.newInstance()
-            .pathSegment("applications", applicationName)
-            .toUriString();
+        public ApplicationLinkDto(ApiDeploymentEntity apiDeploymentEntity) {
+            super(apiDeploymentEntity);
+            this.applicationName = apiDeploymentEntity.getApplication().getName();
+        }
     }
-}
 
-@Data
-@AllArgsConstructor
-class DefinitionDeploymentLinkBuilder implements LinkBuilder {
 
-    private String apiName;
-    private String apiVersion;
-    private String definitionId;
+    @Data
+    @AllArgsConstructor
+    @EqualsAndHashCode(callSuper = false)
+    public static class DefinitionLinkDto extends DeploymentLinkDto {
 
-    @Override
-    public String buildLink() {
-        return UriComponentsBuilder.newInstance()
-            .pathSegment("apis", apiName)
-            .pathSegment("versions", apiVersion)
-            .pathSegment("definitions", definitionId)
-            .toUriString();
+        @JsonIgnore
+        private String apiName;
+        @JsonIgnore
+        private String apiVersion;
+        @JsonIgnore
+        private String definitionId;
+
+        public DefinitionLinkDto(ApiDeploymentEntity apiDeploymentEntity) {
+            super(apiDeploymentEntity);
+            ApiEntity apiEntity = apiDeploymentEntity.getApi();
+            apiName = apiEntity.getApiName();
+            apiVersion = apiEntity.getApiVersion();
+            definitionId = valueOf(apiEntity.getDefinitionId());
+        }
     }
-}
 
+}

@@ -1,5 +1,7 @@
 package org.zalando.apidiscovery.storage.api;
 
+import java.net.URI;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -10,9 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.zalando.apidiscovery.storage.utils.SwaggerParseException;
 
-import java.net.URI;
-
-import static java.lang.String.valueOf;
+import static org.zalando.apidiscovery.storage.api.LinkBuilderUtil.buildDefinitionDeploymentLink;
 
 @CrossOrigin
 @RestController
@@ -30,11 +30,8 @@ public class ApiDefinitionResourceController {
     public ResponseEntity<Void> postDiscoveredApiDefinition(@RequestBody DiscoveredApiDefinition discoveredAPIDefinition, UriComponentsBuilder builder)
             throws SwaggerParseException {
         final ApiEntity api = apiDefinitionProcessingService.processDiscoveredApiDefinition(discoveredAPIDefinition);
-        final LinkBuilder linkBuilder = new DefinitionDeploymentLinkBuilder(
-                api.getApiName(),
-                api.getApiVersion(),
-                valueOf(api.getId()));
-        final URI location = builder.path(linkBuilder.buildLink()).build().encode().toUri();
+
+        final URI location = buildDefinitionDeploymentLink(builder, api).encode().toUri();
         return ResponseEntity.created(location).build();
     }
 

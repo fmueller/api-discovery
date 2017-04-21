@@ -2,7 +2,6 @@ package org.zalando.apidiscovery.storage.api;
 
 import java.util.List;
 
-import static java.lang.String.valueOf;
 import static java.util.stream.Collectors.toList;
 
 public class ApplicationEntityToApplicationDtoConverter {
@@ -11,23 +10,15 @@ public class ApplicationEntityToApplicationDtoConverter {
         List<DeploymentLinkDto> deploymentLinkDtos = null;
         if (applicationEntity.getApiDeploymentEntities() != null) {
             deploymentLinkDtos = applicationEntity.getApiDeploymentEntities().stream()
-                    .map(ApplicationEntityToApplicationDtoConverter::mapApiDeploymentEntityToDefinitionDeploymentLink)
-                    .collect(toList());
+                .map(apiDeploymentEntity -> new DeploymentLinkDto.DefinitionLinkDto(apiDeploymentEntity))
+                .collect(toList());
         }
 
         return ApplicationDto.builder()
-                .name(applicationEntity.getName())
-                .appUrl(applicationEntity.getAppUrl())
-                .definitions(deploymentLinkDtos)
-                .created(applicationEntity.getCreated())
-                .build();
+            .name(applicationEntity.getName())
+            .appUrl(applicationEntity.getAppUrl())
+            .definitions(deploymentLinkDtos)
+            .created(applicationEntity.getCreated())
+            .build();
     }
-
-
-    private static DeploymentLinkDto mapApiDeploymentEntityToDefinitionDeploymentLink(ApiDeploymentEntity apiDeploymentEntity) {
-        ApiEntity apiEntity = apiDeploymentEntity.getApi();
-        LinkBuilder linkBuilder = new DefinitionDeploymentLinkBuilder(apiEntity.getApiName(), apiEntity.getApiVersion(), valueOf(apiEntity.getId()));
-        return new DeploymentLinkDto(apiDeploymentEntity, linkBuilder);
-    }
-
 }
