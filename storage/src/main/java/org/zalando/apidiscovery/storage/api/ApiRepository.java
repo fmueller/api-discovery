@@ -5,12 +5,15 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ApiRepository extends JpaRepository<ApiEntity, Long> {
 
     List<ApiEntity> findByApiName(String apiName);
 
     List<ApiEntity> findByApiNameAndApiVersionAndDefinitionHash(String apiName, String apiVersion, String definitionHash);
+
+    Optional<ApiEntity> findByApiNameAndApiVersionAndDefinitionId(String apiName, String apiVersion, int definitionId);
 
     @Query("SELECT COALESCE(max(a.definitionId), 0) FROM ApiEntity a " +
             "WHERE a.apiName = :apiName AND a.apiVersion = :apiVersion")

@@ -1,11 +1,11 @@
 package org.zalando.apidiscovery.storage;
 
-import java.time.OffsetDateTime;
-
 import org.zalando.apidiscovery.storage.api.ApiDeploymentEntity;
 import org.zalando.apidiscovery.storage.api.ApiEntity;
 import org.zalando.apidiscovery.storage.api.ApiLifecycleState;
 import org.zalando.apidiscovery.storage.api.ApplicationEntity;
+
+import java.time.OffsetDateTime;
 
 import static java.time.OffsetDateTime.now;
 import static java.time.ZoneOffset.UTC;
@@ -21,10 +21,10 @@ public class DomainObjectGen {
     public final static String API_UI = "http://localhost:8080/ui";
     public final static String DEFINITION_TYPE = "swagger";
     public final static String DEFINITION = "API";
-    public final static long DEFINITION_ID = 1;
+    public final static String DEFINITION_HASH = "f1";
+    public final static int DEFINITION_ID = 1;
     public final static OffsetDateTime NOW = now(UTC);
     public final static ApiLifecycleState LIFECYCLE_STATE = ApiLifecycleState.ACTIVE;
-
 
     public static ApiDeploymentEntity givenApiDeployment(ApiEntity apiEntity, ApplicationEntity applicationEntity, ApiLifecycleState state) {
         return ApiDeploymentEntity.builder()
@@ -50,11 +50,13 @@ public class DomainObjectGen {
             .definitionType(DEFINITION_TYPE)
             .created(NOW)
             .definition(DEFINITION)
+            .definitionId(DEFINITION_ID)
+            .definitionHash(DEFINITION_HASH)
             .build();
     }
 
     public static ApiEntity givenApiEntity() {
-        return givenApiEntity(DEFINITION_ID, API_NAME, API_VERSION_1);
+        return givenApiEntity(API_NAME, API_VERSION_1, DEFINITION_ID);
     }
 
     public static ApiEntity givenApiEntity(String name, String version, int definitionId) {
@@ -62,13 +64,12 @@ public class DomainObjectGen {
             .apiName(name)
             .apiVersion(version)
             .definitionType(DEFINITION_TYPE)
-            .definitionHash("f1")
+            .definitionHash(DEFINITION_HASH)
             .definitionId(definitionId)
             .created(NOW)
             .definition(DEFINITION)
             .build();
     }
-
 
     public static ApplicationEntity givenApplication(String name) {
         return ApplicationEntity.builder()

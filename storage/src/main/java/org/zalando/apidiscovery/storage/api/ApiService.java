@@ -1,12 +1,12 @@
 package org.zalando.apidiscovery.storage.api;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import static java.text.MessageFormat.format;
 import static java.util.stream.Collectors.groupingBy;
@@ -109,10 +109,10 @@ public class ApiService {
             .findAny();
     }
 
-    public Optional<ApiDefinitionDto> getApiDefinitionDto(String definitionId) {
+    public Optional<ApiDefinitionDto> getApiDefinitionDto(String apiId, String version, String definitionId) {
         try {
-            Long id = Long.valueOf(definitionId);
-            return Optional.ofNullable(apiRepository.findOne(id))
+            return apiRepository
+                .findByApiNameAndApiVersionAndDefinitionId(apiId, version, Integer.valueOf(definitionId))
                 .map(ApiEntityToApiDefinitionConverter::toApiDefinitionDto);
         } catch (NumberFormatException nfe) {
             return Optional.empty();
