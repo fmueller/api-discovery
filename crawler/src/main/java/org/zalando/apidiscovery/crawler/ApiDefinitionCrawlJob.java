@@ -10,7 +10,7 @@ import org.zalando.stups.clients.kio.ApplicationBase;
 import java.util.concurrent.Callable;
 
 @Slf4j
-class ApiDefinitionCrawlJob implements Callable<Void> {
+class ApiDefinitionCrawlJob implements Callable<CrawlResult> {
 
     private final LegacyApiDiscoveryStorageGateway legacyStorageGateway;
     private final ApiDiscoveryStorageGateway storageGateway;
@@ -28,28 +28,31 @@ class ApiDefinitionCrawlJob implements Callable<Void> {
     }
 
     @Override
-    public Void call() throws Exception {
+    public CrawlResult call() throws Exception {
         final JsonNode schemaDiscovery = schemaGateway.retrieveSchemaDiscovery(app);
 
         if (schemaDiscovery == null) {
             log.info("Api definition unavailable for {}", app.getId());
-            pushCrawlingResultsWithoutSchemaDiscovery(app);
+            return pushUnsuccessfulCrawlingResults(app);
         } else {
             JsonNode apiDefinition = schemaGateway.retrieveApiDefinition(app, schemaDiscovery);
             log.info("Successfully crawled api definition of {}", app.getId());
-            pushCrawlingResultsWithSchemaDiscovery(schemaDiscovery, apiDefinition, app);
+            return pushCrawlingResults(schemaDiscovery, apiDefinition, app);
         }
-        return null;
     }
 
-    private void pushCrawlingResultsWithoutSchemaDiscovery(ApplicationBase app){
+    private CrawlResult pushUnsuccessfulCrawlingResults(ApplicationBase app) {
         legacyStorageGateway.createOrUpdateApiDefinition(null, null, app);
         storageGateway.pushApiDefinition(null, null, app);
+
+        return CrawlResult.builder().successful(false).build();
     }
 
-    private void pushCrawlingResultsWithSchemaDiscovery(JsonNode schemaDiscovery, JsonNode apiDefinition, ApplicationBase app) {
+    private CrawlResult pushCrawlingResults(JsonNode schemaDiscovery, JsonNode apiDefinition, ApplicationBase app) {
         legacyStorageGateway.createOrUpdateApiDefinition(schemaDiscovery, apiDefinition, app);
         storageGateway.pushApiDefinition(schemaDiscovery, apiDefinition, app);
+
+        return CrawlResult.builder().successful(true).build();
     }
 
 }

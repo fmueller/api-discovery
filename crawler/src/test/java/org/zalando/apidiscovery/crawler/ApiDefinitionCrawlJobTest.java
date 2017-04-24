@@ -49,7 +49,7 @@ public class ApiDefinitionCrawlJobTest {
     public void shouldBeAbleToProcessUnsuccessfulCrawling() throws Exception {
         ApiDefinitionCrawlJob job = new ApiDefinitionCrawlJob(legacyStorageGateway, storageGateway, schemaGateway, metaApiApplication);
 
-        assertThat(job.call()).isNull();
+        assertThat(job.call()).isEqualTo(CrawlResult.builder().successful(false).build());
 
         verify(legacyStorageGateway).createOrUpdateApiDefinition(eq(null), eq(null), eq(metaApiApplication));
         verify(storageGateway).pushApiDefinition(eq(null), eq(null), eq(metaApiApplication));
@@ -65,7 +65,7 @@ public class ApiDefinitionCrawlJobTest {
 
         ApiDefinitionCrawlJob job = new ApiDefinitionCrawlJob(legacyStorageGateway, storageGateway, schemaGateway, metaApiApplication);
 
-        assertThat(job.call()).isNull();
+        assertThat(job.call()).isEqualTo(CrawlResult.builder().successful(true).build());
 
         verify(legacyStorageGateway).createOrUpdateApiDefinition(eq(metaApiSchemaDiscovery), eq(metaApiDefinition), eq(metaApiApplication));
         verify(storageGateway).pushApiDefinition(eq(metaApiSchemaDiscovery), eq(metaApiDefinition), eq(metaApiApplication));

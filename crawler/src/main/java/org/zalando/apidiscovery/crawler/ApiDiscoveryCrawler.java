@@ -50,15 +50,15 @@ public class ApiDiscoveryCrawler {
         final List<ApplicationBase> applications = kioClient.listApplications();
         log.info("Found {} applications in kio", applications.size());
 
-        final List<Callable<Void>> crawlJobs = applications.stream()
+        final List<Callable<CrawlResult>> crawlJobs = applications.stream()
                 .filter(app -> !StringUtils.isEmpty(app.getServiceUrl()))
                 .map(app -> new ApiDefinitionCrawlJob(legacyStorageGateway, storageGateway, schemaGateway, app))
                 .collect(Collectors.toList());
         log.info("Crawling {} api definitions", crawlJobs.size());
 
         try {
-            List<Future<Void>> futures = fixedPool.invokeAll(crawlJobs);
-            for (Future<Void> future : futures) {
+            List<Future<CrawlResult>> futures = fixedPool.invokeAll(crawlJobs);
+            for (Future<CrawlResult> future : futures) {
                 future.get();
             }
         } catch (InterruptedException | ExecutionException e) {
