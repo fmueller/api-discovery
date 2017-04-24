@@ -125,7 +125,7 @@ public class ApiDefinitionResourceIntegrationTest extends AbstractResourceIntegr
 
         final ApiDeploymentEntity deployment = entityManager
             .find(ApiDeploymentEntity.class, new ApiDeploymentEntity(apis.get(0), app.get()));
-        assertThat(deployment.getLifecycleState()).isEqualTo(ApiLifecycleState.ACTIVE);
+        assertThat(deployment.getLifecycleState()).isEqualTo(ACTIVE);
     }
 
     @Test
