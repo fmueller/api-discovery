@@ -16,6 +16,8 @@ public class KioApplication {
         return app.getId();
     }
 
+
+
     @Override
     public boolean equals(Object object) {
         if (object == null || !(object instanceof KioApplication)) return false;
@@ -23,6 +25,11 @@ public class KioApplication {
         if (this.app == null ^ that.app == null) return false;
         if (this.app == null && that.app == null) return true;
         return this.app.toString().equals(that.app.toString());
+    }
+
+    @Override
+    public int hashCode() {
+        return this.app == null ? 0 : this.app.toString().hashCode();
     }
 
 }
