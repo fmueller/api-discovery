@@ -1,8 +1,7 @@
 package org.zalando.apidiscovery.crawler;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.zalando.apidiscovery.crawler.gateway.ApiDiscoveryStorageGateway;
 import org.zalando.apidiscovery.crawler.gateway.LegacyApiDiscoveryStorageGateway;
 import org.zalando.apidiscovery.crawler.gateway.WellKnownSchemaGateway;
@@ -10,9 +9,8 @@ import org.zalando.stups.clients.kio.ApplicationBase;
 
 import java.util.concurrent.Callable;
 
+@Slf4j
 class ApiDefinitionCrawlJob implements Callable<Void> {
-
-    private static final Logger LOG = LoggerFactory.getLogger(ApiDefinitionCrawlJob.class);
 
     private final LegacyApiDiscoveryStorageGateway legacyStorageGateway;
     private final ApiDiscoveryStorageGateway storageGateway;
@@ -34,17 +32,22 @@ class ApiDefinitionCrawlJob implements Callable<Void> {
         final JsonNode schemaDiscovery = schemaGateway.retrieveSchemaDiscovery(app);
 
         if (schemaDiscovery == null) {
-            LOG.info("Api definition unavailable for {}", app.getId());
-            pushApiDefinitionToLegacyAndNewEndpoint(null, null, app);
+            log.info("Api definition unavailable for {}", app.getId());
+            pushCrawlingResultsWithoutSchemaDiscovery(app);
         } else {
             JsonNode apiDefinition = schemaGateway.retrieveApiDefinition(app, schemaDiscovery);
-            LOG.info("Successfully crawled api definition of {}", app.getId());
-            pushApiDefinitionToLegacyAndNewEndpoint(schemaDiscovery, apiDefinition, app);
+            log.info("Successfully crawled api definition of {}", app.getId());
+            pushCrawlingResultsWithSchemaDiscovery(schemaDiscovery, apiDefinition, app);
         }
         return null;
     }
 
-    private void pushApiDefinitionToLegacyAndNewEndpoint(JsonNode schemaDiscovery, JsonNode apiDefinition, ApplicationBase app) {
+    private void pushCrawlingResultsWithoutSchemaDiscovery(ApplicationBase app){
+        legacyStorageGateway.createOrUpdateApiDefinition(null, null, app);
+        storageGateway.pushApiDefinition(null, null, app);
+    }
+
+    private void pushCrawlingResultsWithSchemaDiscovery(JsonNode schemaDiscovery, JsonNode apiDefinition, ApplicationBase app) {
         legacyStorageGateway.createOrUpdateApiDefinition(schemaDiscovery, apiDefinition, app);
         storageGateway.pushApiDefinition(schemaDiscovery, apiDefinition, app);
     }

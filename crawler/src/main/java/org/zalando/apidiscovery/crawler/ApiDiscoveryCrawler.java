@@ -8,8 +8,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -22,9 +21,8 @@ import org.zalando.stups.clients.kio.ApplicationBase;
 import org.zalando.stups.clients.kio.KioOperations;
 
 @Component
+@Slf4j
 public class ApiDiscoveryCrawler {
-
-    private static final Logger LOG = LoggerFactory.getLogger(ApiDiscoveryCrawler.class);
 
     private final KioOperations kioClient;
     private final LegacyApiDiscoveryStorageGateway legacyStorageGateway;
@@ -47,16 +45,16 @@ public class ApiDiscoveryCrawler {
 
     @Scheduled(fixedDelayString = "${crawler.delay}")
     public void crawlApiDefinitions() {
-        LOG.info("Start crawling api definitions");
+        log.info("Start crawling api definitions");
 
         final List<ApplicationBase> applications = kioClient.listApplications();
-        LOG.info("Found {} applications in kio", applications.size());
+        log.info("Found {} applications in kio", applications.size());
 
         final List<Callable<Void>> crawlJobs = applications.stream()
                 .filter(app -> !StringUtils.isEmpty(app.getServiceUrl()))
                 .map(app -> new ApiDefinitionCrawlJob(legacyStorageGateway, storageGateway, schemaGateway, app))
                 .collect(Collectors.toList());
-        LOG.info("Crawling {} api definitions", crawlJobs.size());
+        log.info("Crawling {} api definitions", crawlJobs.size());
 
         try {
             List<Future<Void>> futures = fixedPool.invokeAll(crawlJobs);
@@ -64,10 +62,10 @@ public class ApiDiscoveryCrawler {
                 future.get();
             }
         } catch (InterruptedException | ExecutionException e) {
-            LOG.error("Error while crawling", e);
+            log.error("Error while crawling", e);
             // swallow exception to not stop crawler
         }
 
-        LOG.info("Finished crawling api definitions");
+        log.info("Finished crawling api definitions");
     }
 }

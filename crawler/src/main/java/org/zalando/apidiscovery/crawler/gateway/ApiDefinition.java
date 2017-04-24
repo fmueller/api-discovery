@@ -11,13 +11,24 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ApiDefinition {
 
-    public static ApiDefinition UNSUCCESSFUL = ApiDefinition.builder().status("UNSUCCESSFUL").build();
+    public static final String STATUS_UNSUCCESSFUL = "UNSUCCESSFUL";
+    public static final String STATUS_SUCCESSFUL = "SUCCESSFUL";
+
+    public static final String UNDEFINED_SCHEMA_TYPE = "undefined_schema_type";
+    public static final String UNDEFINED_TITLE = "undefined_title";
+    public static final String UNDEFINED_VERSION = "undefined_version";
+
+    public static ApiDefinition UNSUCCESSFUL = ApiDefinition.builder().status(STATUS_UNSUCCESSFUL).build();
 
     private String status;
-    private String type;
-    private String apiName;
+
+    @Builder.Default
+    private String type = UNDEFINED_SCHEMA_TYPE;
+    @Builder.Default
+    private String apiName = UNDEFINED_TITLE;
     private String appName;
-    private String version;
+    @Builder.Default
+    private String version = UNDEFINED_VERSION;
     private String serviceUrl;
     private String url;
     private String ui;

@@ -42,10 +42,10 @@ public class LegacyApiDiscoveryStorageGateway {
         String serviceUrl = app.getServiceUrl().endsWith("/") ? app.getServiceUrl() : app.getServiceUrl() + "/";
 
         return LegacyApiDefinition.builder()
-                .status("SUCCESS")
-                .type(schemaDiscovery.get("schema_type").asText(""))
-                .name(apiDefinition.get("info").get("title").asText())
-                .version(apiDefinition.get("info").get("version").asText())
+                .status(LegacyApiDefinition.STATUS_SUCCESS)
+                .type(schemaDiscovery.get("schema_type").asText(ApiDefinition.UNDEFINED_SCHEMA_TYPE))
+                .name(apiDefinition.get("info").get("title").asText(ApiDefinition.UNDEFINED_TITLE))
+                .version(apiDefinition.get("info").get("version").asText(ApiDefinition.UNDEFINED_VERSION))
                 .serviceUrl(serviceUrl)
                 .url(extractApiDefinitionUrl(schemaDiscovery))
                 .ui(schemaDiscovery.has("ui_url") ? schemaDiscovery.get("ui_url").asText() : null)
