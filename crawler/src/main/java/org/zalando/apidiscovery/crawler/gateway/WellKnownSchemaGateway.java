@@ -11,7 +11,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
-import org.zalando.stups.clients.kio.ApplicationBase;
+import org.zalando.apidiscovery.crawler.KioApplication;
+import org.zalando.apidiscovery.crawler.SchemaDiscovery;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
@@ -26,8 +27,8 @@ public class WellKnownSchemaGateway {
         this.restTemplate = restTemplate;
     }
 
-    public JsonNode retrieveSchemaDiscovery(ApplicationBase app) {
-        final String serviceUrl = extractServiceUrl(app);
+    public JsonNode retrieveSchemaDiscovery(KioApplication app) {
+        final String serviceUrl = app.getServiceUrl();
 
         try {
             HttpHeaders headers = new HttpHeaders();
@@ -38,24 +39,24 @@ public class WellKnownSchemaGateway {
             if (responseEntity.getStatusCode().is2xxSuccessful()) {
                 return responseEntity.getBody();
             } else if (responseEntity.getStatusCode().value() == 404) {
-                log.info("Service {} does not implement api discovery", app.getId());
+                log.info("Service {} does not implement api discovery", app.getName());
             } else {
-                log.info("Error while loading api discovery of service {}: {}", app.getId(), responseEntity.getStatusCode());
+                log.info("Error while loading api discovery of service {}: {}", app.getName(), responseEntity.getStatusCode());
             }
         } catch (ResourceAccessException e) {
             if (e.getCause() instanceof UnknownHostException) {
-                log.info("Host for service {} is not reachable: {}", app.getId(), serviceUrl);
+                log.info("Host for service {} is not reachable: {}", app.getName(), serviceUrl);
             } else {
-                log.info("Service {} is not reachable: {}", app.getId(), e.getMessage());
+                log.info("Service {} is not reachable: {}", app.getName(), e.getMessage());
             }
         } catch (Exception e) {
-            log.info("Could not load api discovery info for service {}: {}", app.getId(), e.getMessage());
+            log.info("Could not load api discovery info for service {}: {}", app.getName(), e.getMessage());
         }
         return null;
     }
 
-    public JsonNode retrieveApiDefinition(ApplicationBase app, JsonNode schemaDiscovery) throws Exception {
-        final String url = extractServiceUrl(app) + extractApiDefinitionUrl(schemaDiscovery);
+    public JsonNode retrieveApiDefinition(KioApplication app, SchemaDiscovery schemaDiscovery) throws Exception {
+        final String url = app.getServiceUrl() + schemaDiscovery.getApiDefinitionUrl();
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.set("Accept", "*/*");
@@ -64,26 +65,12 @@ public class WellKnownSchemaGateway {
             if (responseEntity.getStatusCode().is2xxSuccessful()) {
                 return responseEntity.getBody();
             } else {
-                log.info("Try to load api definition as json for service {}", app.getId());
-                return tryRetrieveApiDefinitionAsYaml(url, app.getId());
+                log.info("Try to load api definition as json for service {}", app.getName());
+                return tryRetrieveApiDefinitionAsYaml(url, app.getName());
             }
         } catch (Exception e) {
-            return tryRetrieveApiDefinitionAsYaml(url, app.getId());
+            return tryRetrieveApiDefinitionAsYaml(url, app.getName());
         }
-    }
-
-    @VisibleForTesting
-    protected static String extractApiDefinitionUrl(JsonNode schemaDiscovery) {
-        String apiDefinitionUrl = schemaDiscovery.get("schema_url").asText();
-        if (apiDefinitionUrl.startsWith("/")) {
-            apiDefinitionUrl = apiDefinitionUrl.substring(1);
-        }
-        return apiDefinitionUrl;
-    }
-
-    @VisibleForTesting
-    protected static String extractServiceUrl(ApplicationBase app) {
-        return app.getServiceUrl().endsWith("/") ? app.getServiceUrl() : app.getServiceUrl() + "/";
     }
 
     @VisibleForTesting

@@ -45,6 +45,10 @@ public class TestDataHelper {
         return application;
     }
 
+    public static KioApplication metaApiKioApplication(){
+        return new KioApplication(metaApiApplication());
+    }
+
     public static JsonNode readJson(Resource resource) throws IOException {
         String content = Files.lines(resource.getFile().toPath()).collect(Collectors.joining());
         return objectMapper.readTree(content);

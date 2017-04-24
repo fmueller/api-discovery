@@ -15,7 +15,7 @@ class ApiDefinitionCrawlJob implements Callable<CrawlResult> {
     private final LegacyApiDiscoveryStorageGateway legacyStorageGateway;
     private final ApiDiscoveryStorageGateway storageGateway;
     private final WellKnownSchemaGateway schemaGateway;
-    private final ApplicationBase app;
+    private final KioApplication app;
 
     ApiDefinitionCrawlJob(LegacyApiDiscoveryStorageGateway legacyStorageGateway,
                           ApiDiscoveryStorageGateway storageGateway,
@@ -24,33 +24,35 @@ class ApiDefinitionCrawlJob implements Callable<CrawlResult> {
         this.legacyStorageGateway = legacyStorageGateway;
         this.storageGateway = storageGateway;
         this.schemaGateway = schemaGateway;
-        this.app = app;
+        this.app = new KioApplication(app);
     }
 
     @Override
     public CrawlResult call() throws Exception {
-        final JsonNode schemaDiscovery = schemaGateway.retrieveSchemaDiscovery(app);
+        JsonNode schemaDiscoveryJson = schemaGateway.retrieveSchemaDiscovery(app);
 
-        if (schemaDiscovery == null) {
-            log.info("Api definition unavailable for {}", app.getId());
+        if (schemaDiscoveryJson == null) {
+            log.info("Api definition unavailable for {}", app.getName());
             return pushUnsuccessfulCrawlingResults(app);
         } else {
-            JsonNode apiDefinition = schemaGateway.retrieveApiDefinition(app, schemaDiscovery);
-            log.info("Successfully crawled api definition of {}", app.getId());
+            final SchemaDiscovery schemaDiscovery = new SchemaDiscovery(schemaDiscoveryJson);
+            final CrawledApiDefinition apiDefinition = new CrawledApiDefinition(
+                schemaGateway.retrieveApiDefinition(app, schemaDiscovery));
+            log.info("Successfully crawled api definition of {}", app.getName());
             return pushCrawlingResults(schemaDiscovery, apiDefinition, app);
         }
     }
 
-    private CrawlResult pushUnsuccessfulCrawlingResults(ApplicationBase app) {
+    private CrawlResult pushUnsuccessfulCrawlingResults(KioApplication app) {
         legacyStorageGateway.createOrUpdateApiDefinition(null, null, app);
         storageGateway.pushApiDefinition(null, null, app);
 
         return CrawlResult.builder().successful(false).build();
     }
 
-    private CrawlResult pushCrawlingResults(JsonNode schemaDiscovery, JsonNode apiDefinition, ApplicationBase app) {
-        legacyStorageGateway.createOrUpdateApiDefinition(schemaDiscovery, apiDefinition, app);
-        storageGateway.pushApiDefinition(schemaDiscovery, apiDefinition, app);
+    private CrawlResult pushCrawlingResults(SchemaDiscovery schemaDiscovery, CrawledApiDefinition crawledApiDefinition, KioApplication app) {
+        legacyStorageGateway.createOrUpdateApiDefinition(schemaDiscovery, crawledApiDefinition, app);
+        storageGateway.pushApiDefinition(schemaDiscovery, crawledApiDefinition, app);
 
         return CrawlResult.builder().successful(true).build();
     }

@@ -5,6 +5,9 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.zalando.apidiscovery.crawler.CrawledApiDefinition;
+import org.zalando.apidiscovery.crawler.KioApplication;
+import org.zalando.apidiscovery.crawler.SchemaDiscovery;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.zalando.apidiscovery.crawler.TestDataHelper.META_API_DEFINITION;
@@ -23,9 +26,9 @@ public class ApiDiscoveryStorageGatewayTest {
     @Test
     public void shouldBeAbleToMapSchemaDiscoveryAndDefinitionToApiDefinition() throws Exception {
         ApiDefinition apiDefinition = ApiDiscoveryStorageGateway.constructApiDefinition(
-            readJson(metaApiSchemaDiscoveryResource),
-            readJson(metaApiDefinitionResource),
-            metaApiApplication());
+            new SchemaDiscovery(readJson(metaApiSchemaDiscoveryResource)),
+            new CrawledApiDefinition(readJson(metaApiDefinitionResource)),
+            new KioApplication(metaApiApplication()));
 
         assertThat(apiDefinition).isEqualTo(META_API_DEFINITION);
     }

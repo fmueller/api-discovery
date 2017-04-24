@@ -3,13 +3,12 @@ package org.zalando.apidiscovery.crawler.gateway;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.annotations.VisibleForTesting;
 import org.springframework.util.Assert;
 import org.springframework.web.client.RestOperations;
-import org.zalando.stups.clients.kio.ApplicationBase;
-
-import static org.zalando.apidiscovery.crawler.gateway.WellKnownSchemaGateway.extractApiDefinitionUrl;
+import org.zalando.apidiscovery.crawler.CrawledApiDefinition;
+import org.zalando.apidiscovery.crawler.KioApplication;
+import org.zalando.apidiscovery.crawler.SchemaDiscovery;
 
 public class LegacyApiDiscoveryStorageGateway {
 
@@ -21,35 +20,36 @@ public class LegacyApiDiscoveryStorageGateway {
         this.baseUrl = baseUrl;
     }
 
-    public void createOrUpdateApiDefinition(JsonNode schemaDiscoveryInformation, JsonNode apiDefinitionInformation, ApplicationBase app) {
-        Assert.hasText(app.getId(), "applicationId must not be blank");
+    public void createOrUpdateApiDefinition(SchemaDiscovery schemaDiscovery, CrawledApiDefinition crawledApiDefinition,
+                                            KioApplication app) {
+        Assert.hasText(app.getName(), "application name must not be blank");
 
         LegacyApiDefinition apiDefinition;
-        if (schemaDiscoveryInformation == null || apiDefinitionInformation == null) {
+        if (schemaDiscovery == null || crawledApiDefinition == null) {
             apiDefinition = LegacyApiDefinition.UNSUCCESSFUL;
         } else {
-            apiDefinition = constructLegacyApiDefinition(schemaDiscoveryInformation, apiDefinitionInformation, app);
+            apiDefinition = constructLegacyApiDefinition(schemaDiscovery, crawledApiDefinition, app);
         }
 
         final Map<String, String> uriVariables = new HashMap<>();
-        uriVariables.put("applicationId", app.getId());
+        uriVariables.put("applicationId", app.getName());
 
         restOperations.put(baseUrl + "/apps/{applicationId}", apiDefinition, uriVariables);
     }
 
     @VisibleForTesting
-    protected static LegacyApiDefinition constructLegacyApiDefinition(JsonNode schemaDiscovery, JsonNode apiDefinition, ApplicationBase app) {
-        String serviceUrl = app.getServiceUrl().endsWith("/") ? app.getServiceUrl() : app.getServiceUrl() + "/";
-
+    protected static LegacyApiDefinition constructLegacyApiDefinition(SchemaDiscovery schemaDiscovery,
+                                                                      CrawledApiDefinition apiDefinition,
+                                                                      KioApplication app) {
         return LegacyApiDefinition.builder()
                 .status(LegacyApiDefinition.STATUS_SUCCESS)
-                .type(schemaDiscovery.get("schema_type").asText(ApiDefinition.UNDEFINED_SCHEMA_TYPE))
-                .name(apiDefinition.get("info").get("title").asText(ApiDefinition.UNDEFINED_TITLE))
-                .version(apiDefinition.get("info").get("version").asText(ApiDefinition.UNDEFINED_VERSION))
-                .serviceUrl(serviceUrl)
-                .url(extractApiDefinitionUrl(schemaDiscovery))
-                .ui(schemaDiscovery.has("ui_url") ? schemaDiscovery.get("ui_url").asText() : null)
-                .definition(apiDefinition.toString())
+                .type(schemaDiscovery.getSchemaType())
+                .name(apiDefinition.getName())
+                .version(apiDefinition.getVersion())
+                .serviceUrl(app.getServiceUrl())
+                .url(schemaDiscovery.getApiDefinitionUrl())
+                .ui(schemaDiscovery.getUiUrl())
+                .definition(apiDefinition.getDefinition())
                 .build();
     }
 }

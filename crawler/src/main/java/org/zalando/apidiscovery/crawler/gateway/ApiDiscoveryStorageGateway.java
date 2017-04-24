@@ -1,11 +1,10 @@
 package org.zalando.apidiscovery.crawler.gateway;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.annotations.VisibleForTesting;
 import org.springframework.web.client.RestOperations;
-import org.zalando.stups.clients.kio.ApplicationBase;
-
-import static org.zalando.apidiscovery.crawler.gateway.WellKnownSchemaGateway.extractApiDefinitionUrl;
+import org.zalando.apidiscovery.crawler.CrawledApiDefinition;
+import org.zalando.apidiscovery.crawler.KioApplication;
+import org.zalando.apidiscovery.crawler.SchemaDiscovery;
 
 public class ApiDiscoveryStorageGateway {
 
@@ -17,32 +16,30 @@ public class ApiDiscoveryStorageGateway {
         this.baseUrl = baseUrl;
     }
 
-    public void pushApiDefinition(JsonNode schemaDiscoveryInformation, JsonNode apiDefinitionInformation, ApplicationBase app) {
+    public void pushApiDefinition(SchemaDiscovery schemaDiscovery, CrawledApiDefinition crawledApiDefinition, KioApplication app) {
         final ApiDefinition apiDefinition;
 
-        if (schemaDiscoveryInformation == null || apiDefinitionInformation == null) {
+        if (schemaDiscovery == null || crawledApiDefinition == null) {
             apiDefinition = ApiDefinition.UNSUCCESSFUL;
         } else {
-            apiDefinition = constructApiDefinition(schemaDiscoveryInformation, apiDefinitionInformation, app);
+            apiDefinition = constructApiDefinition(schemaDiscovery, crawledApiDefinition, app);
         }
 
         restOperations.postForLocation(baseUrl + "/api-definitions", apiDefinition);
     }
 
     @VisibleForTesting
-    protected static ApiDefinition constructApiDefinition(JsonNode schemaDiscovery, JsonNode apiDefinition, ApplicationBase app) {
-        String serviceUrl = app.getServiceUrl().endsWith("/") ? app.getServiceUrl() : app.getServiceUrl() + "/";
-
+    protected static ApiDefinition constructApiDefinition(SchemaDiscovery schemaDiscovery, CrawledApiDefinition apiDefinition, KioApplication app) {
         return ApiDefinition.builder()
             .status(ApiDefinition.STATUS_SUCCESSFUL)
-            .type(schemaDiscovery.get("schema_type").asText(ApiDefinition.UNDEFINED_SCHEMA_TYPE))
-            .apiName(apiDefinition.get("info").get("title").asText(ApiDefinition.UNDEFINED_TITLE))
-            .appName(app.getId())
-            .version(apiDefinition.get("info").get("version").asText(ApiDefinition.UNDEFINED_VERSION))
-            .serviceUrl(serviceUrl)
-            .url(extractApiDefinitionUrl(schemaDiscovery))
-            .ui(schemaDiscovery.has("ui_url") ? schemaDiscovery.get("ui_url").asText() : null)
-            .definition(apiDefinition.toString())
+            .type(schemaDiscovery.getSchemaType())
+            .apiName(apiDefinition.getName())
+            .appName(app.getName())
+            .version(apiDefinition.getVersion())
+            .serviceUrl(app.getServiceUrl())
+            .url(schemaDiscovery.getApiDefinitionUrl())
+            .ui(schemaDiscovery.getUiUrl())
+            .definition(apiDefinition.getDefinition())
             .build();
     }
 }

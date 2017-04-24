@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.zalando.apidiscovery.crawler.SchemaDiscovery;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
@@ -24,7 +25,7 @@ import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
-import static org.zalando.apidiscovery.crawler.TestDataHelper.metaApiApplication;
+import static org.zalando.apidiscovery.crawler.TestDataHelper.metaApiKioApplication;
 import static org.zalando.apidiscovery.crawler.TestDataHelper.readJson;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -57,7 +58,7 @@ public class WellKnownSchemaGatewayTest {
             any(HttpEntity.class),
             eq(JsonNode.class));
 
-        JsonNode schemaDiscovery = schemaGateway.retrieveSchemaDiscovery(metaApiApplication());
+        JsonNode schemaDiscovery = schemaGateway.retrieveSchemaDiscovery(metaApiKioApplication());
 
         assertThat(schemaDiscovery).isNotNull();
         assertThat(schemaDiscovery).isEqualTo(mockedSchemaDiscovery);
@@ -73,7 +74,7 @@ public class WellKnownSchemaGatewayTest {
             any(HttpEntity.class),
             eq(JsonNode.class));
 
-        JsonNode schemaDiscovery = schemaGateway.retrieveSchemaDiscovery(metaApiApplication());
+        JsonNode schemaDiscovery = schemaGateway.retrieveSchemaDiscovery(metaApiKioApplication());
 
         assertThat(schemaDiscovery).isNull();
     }
@@ -81,7 +82,7 @@ public class WellKnownSchemaGatewayTest {
     @Test
     public void shouldSuccessfullyRetrieveApiDefinition() throws Exception {
         JsonNode mockedApiDefinition = readJson(metaApiDefinitionResource);
-        JsonNode mockedSchemaDiscovery = readJson(metaApiSchemaDiscoveryResource);
+        SchemaDiscovery mockedSchemaDiscovery = new SchemaDiscovery(readJson(metaApiSchemaDiscoveryResource));
 
         ResponseEntity<JsonNode> definitionResponse = new ResponseEntity<>(mockedApiDefinition, HttpStatus.OK);
         doReturn(definitionResponse).when(restTemplate).exchange(
@@ -90,7 +91,7 @@ public class WellKnownSchemaGatewayTest {
             any(HttpEntity.class),
             eq(JsonNode.class));
 
-        JsonNode apiDefinition = schemaGateway.retrieveApiDefinition(metaApiApplication(), mockedSchemaDiscovery);
+        JsonNode apiDefinition = schemaGateway.retrieveApiDefinition(metaApiKioApplication(), mockedSchemaDiscovery);
 
         assertThat(apiDefinition).isNotNull();
         assertThat(apiDefinition).isEqualTo(mockedApiDefinition);
@@ -98,7 +99,7 @@ public class WellKnownSchemaGatewayTest {
 
     @Test
     public void shouldTryToRetrieveYamlApiDefinitionIfSomethingGoesWrong() throws Exception {
-        JsonNode mockedSchemaDiscovery = readJson(metaApiSchemaDiscoveryResource);
+        SchemaDiscovery mockedSchemaDiscovery = new SchemaDiscovery(readJson(metaApiSchemaDiscoveryResource));
         doThrow(new RestClientException("oh no!")).when(restTemplate).exchange(
             eq("https://meta.api/swagger.json"),
             eq(HttpMethod.GET),
@@ -111,7 +112,7 @@ public class WellKnownSchemaGatewayTest {
             anyObject(),
             eq(String.class));
 
-        JsonNode apiDefinition = schemaGateway.retrieveApiDefinition(metaApiApplication(), mockedSchemaDiscovery);
+        JsonNode apiDefinition = schemaGateway.retrieveApiDefinition(metaApiKioApplication(), mockedSchemaDiscovery);
 
         assertThat(apiDefinition).isNotNull();
 
@@ -122,17 +123,4 @@ public class WellKnownSchemaGatewayTest {
             eq(String.class));
     }
 
-    @Test
-    public void shouldExtractApiDefinitionUrl() throws Exception {
-        String url = WellKnownSchemaGateway.extractApiDefinitionUrl(readJson(metaApiSchemaDiscoveryResource));
-
-        assertThat(url).isEqualTo("swagger.json");
-    }
-
-    @Test
-    public void shouldExtractServiceUrl() throws Exception {
-        String serviceUrl = WellKnownSchemaGateway.extractServiceUrl(metaApiApplication());
-
-        assertThat(serviceUrl).isEqualTo("https://meta.api/");
-    }
 }
