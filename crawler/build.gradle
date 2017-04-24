@@ -17,7 +17,7 @@ buildscript {
 
 apply plugin: 'java'
 apply plugin: 'jacoco'
-apply plugin: 'spring-boot'
+apply plugin: 'org.springframework.boot'
 apply plugin: 'com.github.ben-manes.versions'
 
 task wrapper(type: Wrapper) {
