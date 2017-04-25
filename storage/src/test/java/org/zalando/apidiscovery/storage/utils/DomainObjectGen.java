@@ -1,4 +1,4 @@
-package org.zalando.apidiscovery.storage;
+package org.zalando.apidiscovery.storage.utils;
 
 import org.zalando.apidiscovery.storage.api.ApiDeploymentEntity;
 import org.zalando.apidiscovery.storage.api.ApiEntity;

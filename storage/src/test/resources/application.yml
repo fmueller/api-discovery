@@ -30,8 +30,3 @@ metrics-collecting.delay: 30000
 
 inactive.time: 600
 decommissioned.time: 3600
-
-logging:
-  level:
-    org.hibernate.type: 'TRACE'
-    org.hibernate.SQL: 'DEBUG'
