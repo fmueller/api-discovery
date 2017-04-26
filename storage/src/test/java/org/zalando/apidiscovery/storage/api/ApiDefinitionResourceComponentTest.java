@@ -1,32 +1,26 @@
 package org.zalando.apidiscovery.storage.api;
 
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.zalando.apidiscovery.storage.AbstractResourceIntegrationTest;
+import org.zalando.apidiscovery.storage.AbstractComponentTest;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
-import java.util.regex.Pattern;
 
-import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasNoJsonPath;
 import static java.time.OffsetDateTime.now;
 import static java.time.ZoneOffset.UTC;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.zalando.apidiscovery.storage.api.ApiLifecycleState.ACTIVE;
 import static org.zalando.apidiscovery.storage.utils.DomainObjectGen.API_NAME;
 import static org.zalando.apidiscovery.storage.utils.DomainObjectGen.API_UI;
 import static org.zalando.apidiscovery.storage.utils.DomainObjectGen.API_URL;
@@ -38,10 +32,8 @@ import static org.zalando.apidiscovery.storage.utils.DomainObjectGen.DEFINITION_
 import static org.zalando.apidiscovery.storage.utils.DomainObjectGen.givenApiDeployment;
 import static org.zalando.apidiscovery.storage.utils.DomainObjectGen.givenApiEntity;
 import static org.zalando.apidiscovery.storage.utils.DomainObjectGen.givenApplication;
-import static org.zalando.apidiscovery.storage.TestDataHelper.readResource;
-import static org.zalando.apidiscovery.storage.api.ApiLifecycleState.ACTIVE;
 
-public class ApiDefinitionResourceIntegrationTest extends AbstractResourceIntegrationTest {
+public class ApiDefinitionResourceComponentTest extends AbstractComponentTest {
 
     @Value("classpath:uber.json")
     private Resource discoveredUberApiJson;
@@ -142,23 +134,17 @@ public class ApiDefinitionResourceIntegrationTest extends AbstractResourceIntegr
 
     @Test
     public void shouldReturnBadRequestWhenProvidingNotParsableDefinition() throws Exception {
-        final ResponseEntity<Void> response = postApiDefinition(invalidCrawledApi);
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        postApiDefinition(invalidCrawledApi).andExpect(status().isBadRequest());
     }
 
     @Test
     public void shouldReturnALocationHeader() throws Exception {
-        final ResponseEntity<Void> response = postApiDefinition(minimalCrawledApi);
-        final URI location = response.getHeaders().getLocation();
-        final String uriPattern = "http://localhost(:\\d+)/apis/uber-api/versions/v1/definitions/\\d+";
-
-        assertThat(location).isNotNull();
-        assertThat(Pattern.matches(uriPattern, location.toString())).isTrue();
+        postApiDefinition(minimalCrawledApi)
+            .andExpect(header().string("Location", containsString("/apis/uber-api/versions/v1/definitions")));
     }
 
     @Test
-    public void shouldReturnOneSpecificApiDefinition() {
+    public void shouldReturnOneSpecificApiDefinition() throws Exception {
         ApplicationEntity app1 = applicationRepository.save(givenApplication(APP1_NAME));
 
         ApiEntity testAPi100 = givenApiEntity(API_NAME, API_VERSION_1, 1);
@@ -171,13 +157,10 @@ public class ApiDefinitionResourceIntegrationTest extends AbstractResourceIntegr
 
         apiRepository.save(asList(testAPi100, testAPi200));
 
-        ResponseEntity<String> responseEntity = restTemplate.getForEntity(
-            "/apis/" + API_NAME + "/versions/" + API_VERSION_1 + "/definitions/1", String.class);
-
-        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-
-        final String response = responseEntity.getBody();
-        MatcherAssert.assertThat(response, hasJsonPath("$.definition", equalTo("definition_version_1")));
+        mvc.perform(get("/apis/" + API_NAME + "/versions/" + API_VERSION_1 + "/definitions/1"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.applications", hasSize(1)))
+            .andExpect(jsonPath("$.definition", equalTo("definition_version_1")));
     }
 
     @Test
@@ -192,35 +175,22 @@ public class ApiDefinitionResourceIntegrationTest extends AbstractResourceIntegr
 
         apiRepository.save(asList(testAPi100));
 
-        ResponseEntity<String> responseEntity = restTemplate.getForEntity(
-            "/apis/" + API_NAME + "/versions/" + API_VERSION_1 + "/definitions/" + testAPi100.getDefinitionId(), String.class);
-
-        final String response = responseEntity.getBody();
-        MatcherAssert.assertThat(response, hasNoJsonPath("$.id"));
-        MatcherAssert.assertThat(response, hasJsonPath("$.type", Matchers.equalTo(DEFINITION_TYPE)));
-        MatcherAssert.assertThat(response, hasJsonPath("$.definition", Matchers.equalTo(DEFINITION)));
-        MatcherAssert.assertThat(response, hasJsonPath("$.applications[0].lifecycle_state", Matchers.equalTo(ACTIVE.name())));
-        MatcherAssert.assertThat(response, hasJsonPath("$.applications[0].api_ui", Matchers.equalTo(API_UI)));
-        MatcherAssert.assertThat(response, hasJsonPath("$.applications[0].api_url", Matchers.equalTo(API_URL)));
         final String expectedUrl = localUriBuilder().path("/applications/" + APP1_NAME).toUriString();
-        MatcherAssert.assertThat(response, hasJsonPath("$.applications[0].href", Matchers.equalTo(expectedUrl)));
+
+        mvc.perform(get("/apis/" + API_NAME + "/versions/" + API_VERSION_1 + "/definitions/" + testAPi100.getDefinitionId()))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$", hasNoJsonPath("$.id")))
+            .andExpect(jsonPath("$.type", equalTo(DEFINITION_TYPE)))
+            .andExpect(jsonPath("$.definition", equalTo(DEFINITION)))
+            .andExpect(jsonPath("$.applications[0].lifecycle_state", equalTo(ACTIVE.name())))
+            .andExpect(jsonPath("$.applications[0].api_ui", equalTo(API_UI)))
+            .andExpect(jsonPath("$.applications[0].api_url", equalTo(API_URL)))
+            .andExpect(jsonPath("$.applications[0].href", equalTo(expectedUrl)));
     }
 
     @Test
     public void shouldReturn404IfNoDefinitionFound() throws Exception {
-        ResponseEntity<String> responseEntity = restTemplate.getForEntity(
-            "/apis/" + API_NAME + "/versions/" + API_VERSION_1 + "/definitions/XYZ", String.class);
-
-        MatcherAssert.assertThat(responseEntity.getStatusCode(), Matchers.equalTo(HttpStatus.NOT_FOUND));
-    }
-
-    private ResponseEntity<Void> postApiDefinition(Resource apiDefinition) throws IOException, URISyntaxException {
-        return restTemplate.exchange("/api-definitions", HttpMethod.POST, httpEntity(readResource(apiDefinition)), Void.class);
-    }
-
-    private HttpEntity<String> httpEntity(final String content) throws IOException, URISyntaxException {
-        final HttpHeaders headers = new HttpHeaders();
-        headers.set("Content-Type", APPLICATION_JSON_UTF8_VALUE);
-        return new HttpEntity<>(content, headers);
+        mvc.perform(get("/apis/" + API_NAME + "/versions/" + API_VERSION_1 + "/definitions/XYZ"))
+            .andExpect(status().isNotFound());
     }
 }
