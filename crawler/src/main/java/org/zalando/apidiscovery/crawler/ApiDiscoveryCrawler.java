@@ -8,62 +8,64 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-import org.springframework.web.client.RestTemplate;
-import org.zalando.apidiscovery.crawler.storage.ApiDiscoveryStorageClient;
+import org.zalando.apidiscovery.crawler.gateway.ApiDiscoveryStorageGateway;
+import org.zalando.apidiscovery.crawler.gateway.LegacyApiDiscoveryStorageGateway;
+import org.zalando.apidiscovery.crawler.gateway.WellKnownSchemaGateway;
 import org.zalando.stups.clients.kio.ApplicationBase;
 import org.zalando.stups.clients.kio.KioOperations;
 
 @Component
+@Slf4j
 public class ApiDiscoveryCrawler {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ApiDiscoveryCrawler.class);
-
     private final KioOperations kioClient;
-    private final ApiDiscoveryStorageClient storageClient;
-    private final RestTemplate schemaClient;
+    private final LegacyApiDiscoveryStorageGateway legacyStorageGateway;
+    private final ApiDiscoveryStorageGateway storageGateway;
+    private final WellKnownSchemaGateway schemaGateway;
     private final ExecutorService fixedPool;
 
     @Autowired
     public ApiDiscoveryCrawler(KioOperations kioClient,
-                               ApiDiscoveryStorageClient storageClient,
-                               RestTemplate schemaClient,
+                               LegacyApiDiscoveryStorageGateway legacyStorageGateway,
+                               ApiDiscoveryStorageGateway storageClient,
+                               WellKnownSchemaGateway schemaGateway,
                                @Value("${crawler.jobs.pool}") int jobsPoolSize) {
         this.kioClient = kioClient;
-        this.storageClient = storageClient;
-        this.schemaClient = schemaClient;
+        this.legacyStorageGateway = legacyStorageGateway;
+        this.storageGateway = storageClient;
+        this.schemaGateway = schemaGateway;
         fixedPool = Executors.newFixedThreadPool(jobsPoolSize);
     }
 
     @Scheduled(fixedDelayString = "${crawler.delay}")
     public void crawlApiDefinitions() {
-        LOG.info("Start crawling api definitions");
+        log.info("Start crawling api definitions");
 
         final List<ApplicationBase> applications = kioClient.listApplications();
-        LOG.info("Found {} applications in kio", applications.size());
+        log.info("Found {} applications in kio", applications.size());
 
-        final List<Callable<Void>> crawlJobs = applications.stream()
+        final List<Callable<CrawlResult>> crawlJobs = applications.stream()
                 .filter(app -> !StringUtils.isEmpty(app.getServiceUrl()))
-                .map(app -> new ApiDefinitionCrawlJob(storageClient, schemaClient, app))
+                .map(app -> new ApiDefinitionCrawlJob(legacyStorageGateway, storageGateway, schemaGateway, app))
                 .collect(Collectors.toList());
-        LOG.info("Crawling {} api definitions", crawlJobs.size());
+        log.info("Crawling {} api definitions", crawlJobs.size());
 
         try {
-            List<Future<Void>> futures = fixedPool.invokeAll(crawlJobs);
-            for (Future<Void> future : futures) {
+            List<Future<CrawlResult>> futures = fixedPool.invokeAll(crawlJobs);
+            for (Future<CrawlResult> future : futures) {
                 future.get();
             }
         } catch (InterruptedException | ExecutionException e) {
-            LOG.error("Error while crawling", e);
+            log.error("Error while crawling", e);
             // swallow exception to not stop crawler
         }
 
-        LOG.info("Finished crawling api definitions");
+        log.info("Finished crawling api definitions");
     }
 }
