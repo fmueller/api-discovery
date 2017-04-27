@@ -62,11 +62,11 @@ public class WellKnownSchemaGateway {
         ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(headers),
             String.class);
 
-        if (responseEntity.getStatusCode().is2xxSuccessful()) {
-            return objectMapper.readValue(responseEntity.getBody(), JsonNode.class);
-        } else {
+        if (!responseEntity.getStatusCode().is2xxSuccessful()) {
             log.info("Could not receive api definition: {}", responseEntity);
             return null;
+        } else {
+            return objectMapper.readValue(responseEntity.getBody(), JsonNode.class);
         }
     }
 }
