@@ -8,19 +8,19 @@ import org.springframework.core.io.Resource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.zalando.apidiscovery.crawler.TestDataHelper.readJson;
+import static org.zalando.apidiscovery.crawler.TestDataHelper.parseResource;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 public class CrawledApiDefinitionTest {
 
     @Value("classpath:meta_api_definition.json")
-    private Resource metaApiDefinitionResource;
+    private Resource metaApiDefinitionJson;
 
     private CrawledApiDefinition crawledApiDefinition;
 
     @Before
     public void setUp() throws Exception {
-        crawledApiDefinition = new CrawledApiDefinition(readJson(metaApiDefinitionResource));
+        crawledApiDefinition = new CrawledApiDefinition(parseResource(metaApiDefinitionJson));
     }
 
     @Test

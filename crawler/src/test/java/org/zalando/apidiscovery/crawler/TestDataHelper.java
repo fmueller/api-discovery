@@ -2,6 +2,7 @@ package org.zalando.apidiscovery.crawler;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import org.springframework.core.io.Resource;
 import org.zalando.apidiscovery.crawler.gateway.ApiDefinition;
 import org.zalando.apidiscovery.crawler.gateway.LegacyApiDefinition;
@@ -13,7 +14,7 @@ import java.util.stream.Collectors;
 
 public class TestDataHelper {
 
-    private static ObjectMapper objectMapper = new ObjectMapper();
+    private static ObjectMapper objectMapper = new ObjectMapper(new YAMLFactory());
 
     public static LegacyApiDefinition META_API_LEGACY_DEFINITION = LegacyApiDefinition.builder()
         .name("meta-api")
@@ -49,8 +50,8 @@ public class TestDataHelper {
         return new KioApplication(metaApiApplication());
     }
 
-    public static JsonNode readJson(Resource resource) throws IOException {
-        String content = Files.lines(resource.getFile().toPath()).collect(Collectors.joining());
-        return objectMapper.readTree(content);
+    public static JsonNode parseResource(Resource resource) throws IOException {
+        String content = Files.lines(resource.getFile().toPath()).collect(Collectors.joining("\n"));
+        return objectMapper.readValue(content, JsonNode.class);
     }
 }

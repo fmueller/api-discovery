@@ -3,7 +3,6 @@ package org.zalando.apidiscovery.crawler.gateway;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.google.common.annotations.VisibleForTesting;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -55,36 +54,23 @@ public class WellKnownSchemaGateway {
         return null;
     }
 
-    public JsonNode retrieveApiDefinition(KioApplication app, SchemaDiscovery schemaDiscovery) throws Exception {
+    public JsonNode retrieveApiDefinition(KioApplication app, SchemaDiscovery schemaDiscovery) throws IOException {
         final String url = app.getServiceUrl() + schemaDiscovery.getApiDefinitionUrl();
-        try {
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("Accept", "*/*");
-            ResponseEntity<JsonNode> responseEntity = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(headers), JsonNode.class);
 
-            if (responseEntity.getStatusCode().is2xxSuccessful()) {
-                return responseEntity.getBody();
-            } else {
-                log.info("Try to load api definition as json for service {}", app.getName());
-                return tryRetrieveApiDefinitionAsYaml(url, app.getName());
-            }
-        } catch (Exception e) {
-            return tryRetrieveApiDefinitionAsYaml(url, app.getName());
+        ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.GET,
+            new HttpEntity<>(acceptAllHeader()), String.class);
+
+        if (!responseEntity.getStatusCode().is2xxSuccessful()) {
+            log.info("Could not receive api definition: {}", responseEntity);
+            return null;
+        } else {
+            return objectMapper.readValue(responseEntity.getBody(), JsonNode.class);
         }
     }
 
-    @VisibleForTesting
-    protected JsonNode tryRetrieveApiDefinitionAsYaml(String url, String appId) throws IOException {
-        log.info("Try to load api definition as yaml for service {}", appId);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Accept", "*/*");
-        ResponseEntity<String> yamlApiDefinition = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity(headers), String.class);
-
-        if (!yamlApiDefinition.getStatusCode().is2xxSuccessful()) {
-            log.info("Could not load yaml api definition");
-            return null;
-        }
-        return objectMapper.readValue(yamlApiDefinition.getBody(), JsonNode.class);
+    private HttpHeaders acceptAllHeader() {
+        final HttpHeaders headers = new HttpHeaders();
+        headers.set("Accept", "*/*");
+        return headers;
     }
 }
