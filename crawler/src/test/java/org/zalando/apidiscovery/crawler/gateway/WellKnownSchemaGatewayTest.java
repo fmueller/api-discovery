@@ -27,8 +27,11 @@ import static org.zalando.apidiscovery.crawler.TestDataHelper.parseResource;
 @RunWith(SpringJUnit4ClassRunner.class)
 public class WellKnownSchemaGatewayTest {
 
-    @Value("classpath:meta_api_schema_discovery.json")
+    @Value("classpath:meta_api_schema_discovery_json_schema_url.json")
     private Resource metaApiSchemaDiscoveryJson;
+
+    @Value("classpath:meta_api_schema_discovery_yaml_schema_url.json")
+    private Resource metaApiSchemaDiscoveryJsonWithYamlLink;
 
     @Value("classpath:meta_api_definition.json")
     private Resource metaApiDefinitionJson;
@@ -99,10 +102,10 @@ public class WellKnownSchemaGatewayTest {
     @Test
     public void shouldRetrieveYamlApiDefinition() throws Exception {
         JsonNode expectedApiDefinition = parseResource(metaApiDefinitionJson);
-        SchemaDiscovery schemaDiscovery = new SchemaDiscovery(parseResource(metaApiSchemaDiscoveryJson));
+        SchemaDiscovery schemaDiscovery = new SchemaDiscovery(parseResource(metaApiSchemaDiscoveryJsonWithYamlLink));
         String minimalValidSwaggerYaml = parseResource(metaApiDefinitionYaml).toString();
         doReturn(new ResponseEntity<>(minimalValidSwaggerYaml, HttpStatus.OK)).when(restTemplate).exchange(
-            eq("https://meta.api/swagger.json"),
+            eq("https://meta.api/swagger.yaml"),
             eq(HttpMethod.GET),
             anyObject(),
             eq(String.class));

@@ -34,7 +34,7 @@ public class ApiDefinitionCrawlJobTest {
     @Mock
     private WellKnownSchemaGateway schemaGateway;
 
-    @Value("classpath:meta_api_schema_discovery.json")
+    @Value("classpath:meta_api_schema_discovery_json_schema_url.json")
     private Resource metaApiSchemaDiscoveryJson;
 
     @Value("classpath:meta_api_definition.json")
