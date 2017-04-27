@@ -345,9 +345,6 @@ definitions:
   Definition:
     type: object
     properties:
-      id:
-        type: string
-        description: opaque identifier
       type:
         type: string
         description: Type of API definition

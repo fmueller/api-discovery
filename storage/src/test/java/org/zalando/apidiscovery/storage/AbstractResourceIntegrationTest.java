@@ -15,7 +15,6 @@ import javax.persistence.EntityManager;
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
-
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:cleanDatabase.sql")

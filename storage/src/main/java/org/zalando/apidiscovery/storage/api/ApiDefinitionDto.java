@@ -13,7 +13,6 @@ import java.util.List;
 @Builder
 public class ApiDefinitionDto {
 
-    private String id;
     private String type;
     private String definition;
     private List<DeploymentLinkDto> applications;

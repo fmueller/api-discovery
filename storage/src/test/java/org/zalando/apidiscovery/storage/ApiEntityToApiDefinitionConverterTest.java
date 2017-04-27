@@ -6,18 +6,17 @@ import org.zalando.apidiscovery.storage.api.ApiDeploymentEntity;
 import org.zalando.apidiscovery.storage.api.ApiEntity;
 import org.zalando.apidiscovery.storage.api.ApplicationEntity;
 import org.zalando.apidiscovery.storage.api.DeploymentLinkDto;
+import org.zalando.apidiscovery.storage.utils.DomainObjectGen;
 
-import static java.lang.String.valueOf;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.zalando.apidiscovery.storage.DomainObjectGen.API_UI;
-import static org.zalando.apidiscovery.storage.DomainObjectGen.API_URL;
-import static org.zalando.apidiscovery.storage.DomainObjectGen.DEFINITION_ID;
-import static org.zalando.apidiscovery.storage.DomainObjectGen.LIFECYCLE_STATE;
-import static org.zalando.apidiscovery.storage.DomainObjectGen.NOW;
-import static org.zalando.apidiscovery.storage.DomainObjectGen.givenApiDeployment;
-import static org.zalando.apidiscovery.storage.DomainObjectGen.givenApiEntity;
-import static org.zalando.apidiscovery.storage.DomainObjectGen.givenApplication;
+import static org.zalando.apidiscovery.storage.utils.DomainObjectGen.API_UI;
+import static org.zalando.apidiscovery.storage.utils.DomainObjectGen.API_URL;
+import static org.zalando.apidiscovery.storage.utils.DomainObjectGen.LIFECYCLE_STATE;
+import static org.zalando.apidiscovery.storage.utils.DomainObjectGen.NOW;
+import static org.zalando.apidiscovery.storage.utils.DomainObjectGen.givenApiDeployment;
+import static org.zalando.apidiscovery.storage.utils.DomainObjectGen.givenApiEntity;
+import static org.zalando.apidiscovery.storage.utils.DomainObjectGen.givenApplication;
 import static org.zalando.apidiscovery.storage.api.ApiEntityToApiDefinitionConverter.toApiDefinitionDto;
 
 public class ApiEntityToApiDefinitionConverterTest {
@@ -28,12 +27,10 @@ public class ApiEntityToApiDefinitionConverterTest {
 
         ApiDefinitionDto dto = toApiDefinitionDto(apiEntity);
 
-        assertThat(dto.getId()).isEqualTo(valueOf(DEFINITION_ID));
         assertThat(dto.getDefinition()).isEqualTo(DomainObjectGen.DEFINITION);
         assertThat(dto.getType()).isEqualTo(DomainObjectGen.DEFINITION_TYPE);
 
     }
-
 
     @Test
     public void shouldConvertDefinitionWithApplicationsCorrectly() throws Exception {
@@ -65,6 +62,5 @@ public class ApiEntityToApiDefinitionConverterTest {
         ApiDefinitionDto dto = toApiDefinitionDto(apiEntity);
 
         assertThat(dto.getApplications()).hasSize(2);
-
     }
 }

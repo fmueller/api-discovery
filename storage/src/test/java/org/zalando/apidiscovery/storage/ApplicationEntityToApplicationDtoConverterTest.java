@@ -8,12 +8,12 @@ import org.zalando.apidiscovery.storage.api.ApplicationEntity;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.zalando.apidiscovery.storage.DomainObjectGen.APP1_NAME;
-import static org.zalando.apidiscovery.storage.DomainObjectGen.APP_URL;
-import static org.zalando.apidiscovery.storage.DomainObjectGen.NOW;
-import static org.zalando.apidiscovery.storage.DomainObjectGen.givenApiDeployment;
-import static org.zalando.apidiscovery.storage.DomainObjectGen.givenApiEntity;
-import static org.zalando.apidiscovery.storage.DomainObjectGen.givenApplication;
+import static org.zalando.apidiscovery.storage.utils.DomainObjectGen.APP1_NAME;
+import static org.zalando.apidiscovery.storage.utils.DomainObjectGen.APP_URL;
+import static org.zalando.apidiscovery.storage.utils.DomainObjectGen.NOW;
+import static org.zalando.apidiscovery.storage.utils.DomainObjectGen.givenApiDeployment;
+import static org.zalando.apidiscovery.storage.utils.DomainObjectGen.givenApiEntity;
+import static org.zalando.apidiscovery.storage.utils.DomainObjectGen.givenApplication;
 import static org.zalando.apidiscovery.storage.api.ApplicationEntityToApplicationDtoConverter.toApplicationDto;
 
 public class ApplicationEntityToApplicationDtoConverterTest {

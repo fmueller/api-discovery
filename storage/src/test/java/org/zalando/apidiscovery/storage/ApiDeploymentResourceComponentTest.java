@@ -1,28 +1,12 @@
 package org.zalando.apidiscovery.storage;
 
-import java.util.ArrayList;
-
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.ConfigFileApplicationContextInitializer;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
 import org.zalando.apidiscovery.storage.api.ApiDeploymentEntity;
 import org.zalando.apidiscovery.storage.api.ApiEntity;
 import org.zalando.apidiscovery.storage.api.ApiLifecycleState;
-import org.zalando.apidiscovery.storage.api.ApiRepository;
-import org.zalando.apidiscovery.storage.api.ApiResourceController;
-import org.zalando.apidiscovery.storage.api.ApiService;
 import org.zalando.apidiscovery.storage.api.ApplicationEntity;
-import org.zalando.apidiscovery.storage.api.ApplicationRepository;
-import org.zalando.apidiscovery.storage.api.ApplicationService;
+
+import java.util.ArrayList;
 
 import static java.time.OffsetDateTime.now;
 import static java.time.ZoneOffset.UTC;
@@ -36,36 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.web.util.UriComponentsBuilder.newInstance;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(initializers = ConfigFileApplicationContextInitializer.class)
-@WebAppConfiguration
-@Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:cleanDatabase.sql")
-public class ApiDeploymentResourceComponentTest {
-
-    @Autowired
-    protected ApplicationRepository applicationRepository;
-
-    @Autowired
-    protected ApiRepository apiRepository;
-
-    @Autowired
-    private MockMvc mvc;
-
-    @TestConfiguration
-    @Import(value = {ComponentTestConfig.class, ApiResourceController.class})
-    static class TestConfig {
-
-        @Bean
-        public ApplicationService applicationService(ApplicationRepository applicationRepository) {
-            return new ApplicationService((applicationRepository));
-        }
-
-        @Bean
-        public ApiService apiService(ApiRepository apiRepository, ApplicationService applicationService) {
-            return new ApiService(apiRepository, applicationService);
-        }
-
-    }
+public class ApiDeploymentResourceComponentTest extends AbstractComponentTest {
 
     @Test
     public void shouldReturnAllDeployments() throws Exception {

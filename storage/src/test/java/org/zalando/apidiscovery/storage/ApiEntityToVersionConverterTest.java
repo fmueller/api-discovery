@@ -1,15 +1,15 @@
 package org.zalando.apidiscovery.storage;
 
-import java.util.List;
-
 import org.junit.Test;
 import org.zalando.apidiscovery.storage.api.ApiEntity;
 import org.zalando.apidiscovery.storage.api.VersionsDto;
 
+import java.util.List;
+
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.zalando.apidiscovery.storage.DomainObjectGen.givenApiEntity;
 import static org.zalando.apidiscovery.storage.api.ApiEntityToVersionConverter.toVersionDtoList;
+import static org.zalando.apidiscovery.storage.utils.DomainObjectGen.givenApiEntity;
 
 public class ApiEntityToVersionConverterTest {
 
