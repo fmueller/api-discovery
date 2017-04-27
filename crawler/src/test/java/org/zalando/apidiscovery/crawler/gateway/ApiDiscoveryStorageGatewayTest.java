@@ -12,22 +12,22 @@ import org.zalando.apidiscovery.crawler.SchemaDiscovery;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.zalando.apidiscovery.crawler.TestDataHelper.META_API_DEFINITION;
 import static org.zalando.apidiscovery.crawler.TestDataHelper.metaApiApplication;
-import static org.zalando.apidiscovery.crawler.TestDataHelper.readJson;
+import static org.zalando.apidiscovery.crawler.TestDataHelper.parseResource;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 public class ApiDiscoveryStorageGatewayTest {
 
     @Value("classpath:meta_api_schema_discovery.json")
-    private Resource metaApiSchemaDiscoveryResource;
+    private Resource metaApiSchemaDiscoveryJson;
 
     @Value("classpath:meta_api_definition.json")
-    private Resource metaApiDefinitionResource;
+    private Resource metaApiDefinitionJson;
 
     @Test
     public void shouldBeAbleToMapSchemaDiscoveryAndDefinitionToApiDefinition() throws Exception {
         ApiDefinition apiDefinition = ApiDiscoveryStorageGateway.constructApiDefinition(
-            new SchemaDiscovery(readJson(metaApiSchemaDiscoveryResource)),
-            new CrawledApiDefinition(readJson(metaApiDefinitionResource)),
+            new SchemaDiscovery(parseResource(metaApiSchemaDiscoveryJson)),
+            new CrawledApiDefinition(parseResource(metaApiDefinitionJson)),
             new KioApplication(metaApiApplication()));
 
         assertThat(apiDefinition).isEqualTo(META_API_DEFINITION);

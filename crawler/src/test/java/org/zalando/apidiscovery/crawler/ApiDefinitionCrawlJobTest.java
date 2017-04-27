@@ -20,7 +20,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.zalando.apidiscovery.crawler.TestDataHelper.metaApiKioApplication;
 import static org.zalando.apidiscovery.crawler.TestDataHelper.metaApiApplication;
-import static org.zalando.apidiscovery.crawler.TestDataHelper.readJson;
+import static org.zalando.apidiscovery.crawler.TestDataHelper.parseResource;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 public class ApiDefinitionCrawlJobTest {
@@ -35,10 +35,10 @@ public class ApiDefinitionCrawlJobTest {
     private WellKnownSchemaGateway schemaGateway;
 
     @Value("classpath:meta_api_schema_discovery.json")
-    private Resource metaApiSchemaDiscoveryResource;
+    private Resource metaApiSchemaDiscoveryJson;
 
     @Value("classpath:meta_api_definition.json")
-    private Resource metaApiDefinitionResource;
+    private Resource metaApiDefinitionJson;
 
     private ApplicationBase metaApiApplication = metaApiApplication();
     private KioApplication metaApiKioApplication = metaApiKioApplication();
@@ -59,8 +59,8 @@ public class ApiDefinitionCrawlJobTest {
 
     @Test
     public void shouldBeAbleToProcessSuccessfulCrawling() throws Exception {
-        JsonNode metaApiSchemaDiscoveryJson = readJson(metaApiSchemaDiscoveryResource);
-        JsonNode metaApiDefinitionJson = readJson(metaApiDefinitionResource);
+        JsonNode metaApiSchemaDiscoveryJson = parseResource(this.metaApiSchemaDiscoveryJson);
+        JsonNode metaApiDefinitionJson = parseResource(this.metaApiDefinitionJson);
         SchemaDiscovery schemaDiscovery = new SchemaDiscovery(metaApiSchemaDiscoveryJson);
         CrawledApiDefinition apiDefinition = new CrawledApiDefinition(metaApiDefinitionJson);
 

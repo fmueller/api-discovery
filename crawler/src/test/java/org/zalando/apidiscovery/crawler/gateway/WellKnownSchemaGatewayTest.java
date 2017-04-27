@@ -22,16 +22,19 @@ import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.zalando.apidiscovery.crawler.TestDataHelper.metaApiKioApplication;
-import static org.zalando.apidiscovery.crawler.TestDataHelper.readJson;
+import static org.zalando.apidiscovery.crawler.TestDataHelper.parseResource;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 public class WellKnownSchemaGatewayTest {
 
     @Value("classpath:meta_api_schema_discovery.json")
-    private Resource metaApiSchemaDiscoveryResource;
+    private Resource metaApiSchemaDiscoveryJson;
 
     @Value("classpath:meta_api_definition.json")
-    private Resource metaApiDefinitionResource;
+    private Resource metaApiDefinitionJson;
+
+    @Value("classpath:meta_api_definition.yaml")
+    private Resource metaApiDefinitionYaml;
 
     @Mock
     private RestTemplate restTemplate;
@@ -46,7 +49,7 @@ public class WellKnownSchemaGatewayTest {
 
     @Test
     public void shouldSuccessfullyRetrieveSchemaDiscovery() throws Exception {
-        JsonNode mockedSchemaDiscovery = readJson(metaApiSchemaDiscoveryResource);
+        JsonNode mockedSchemaDiscovery = parseResource(metaApiSchemaDiscoveryJson);
         ResponseEntity<JsonNode> schemaResponse = new ResponseEntity<>(mockedSchemaDiscovery, HttpStatus.OK);
         doReturn(schemaResponse).when(restTemplate).exchange(
             eq("https://meta.api/.well-known/schema-discovery"),
@@ -62,7 +65,7 @@ public class WellKnownSchemaGatewayTest {
 
     @Test
     public void shouldReturnNullIfNot2xxResponse() throws Exception {
-        String mockedSchemaDiscovery = readJson(metaApiSchemaDiscoveryResource).toString();
+        String mockedSchemaDiscovery = parseResource(metaApiSchemaDiscoveryJson).toString();
         ResponseEntity<String> schemaResponse = new ResponseEntity<>(mockedSchemaDiscovery, HttpStatus.NOT_FOUND);
         doReturn(schemaResponse).when(restTemplate).exchange(
             eq("https://meta.api/.well-known/schema-discovery"),
@@ -77,8 +80,8 @@ public class WellKnownSchemaGatewayTest {
 
     @Test
     public void shouldRetrieveJsonApiDefinition() throws Exception {
-        JsonNode mockedApiDefinition = readJson(metaApiDefinitionResource);
-        SchemaDiscovery mockedSchemaDiscovery = new SchemaDiscovery(readJson(metaApiSchemaDiscoveryResource));
+        JsonNode mockedApiDefinition = parseResource(metaApiDefinitionJson);
+        SchemaDiscovery mockedSchemaDiscovery = new SchemaDiscovery(parseResource(metaApiSchemaDiscoveryJson));
 
         ResponseEntity<String> definitionResponse = new ResponseEntity<>(mockedApiDefinition.toString(), HttpStatus.OK);
         doReturn(definitionResponse).when(restTemplate).exchange(
@@ -95,11 +98,9 @@ public class WellKnownSchemaGatewayTest {
 
     @Test
     public void shouldRetrieveYamlApiDefinition() throws Exception {
-        JsonNode expectedApiDefinition = readJson(metaApiDefinitionResource);
-        SchemaDiscovery schemaDiscovery = new SchemaDiscovery(readJson(metaApiSchemaDiscoveryResource));
-        String minimalValidSwaggerYaml = "info:\n" +
-            "  version: \"1.0\"\n" +
-            "  title: \"meta-api\"";
+        JsonNode expectedApiDefinition = parseResource(metaApiDefinitionJson);
+        SchemaDiscovery schemaDiscovery = new SchemaDiscovery(parseResource(metaApiSchemaDiscoveryJson));
+        String minimalValidSwaggerYaml = parseResource(metaApiDefinitionYaml).toString();
         doReturn(new ResponseEntity<>(minimalValidSwaggerYaml, HttpStatus.OK)).when(restTemplate).exchange(
             eq("https://meta.api/swagger.json"),
             eq(HttpMethod.GET),

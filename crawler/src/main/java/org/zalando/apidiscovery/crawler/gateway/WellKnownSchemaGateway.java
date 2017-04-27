@@ -57,10 +57,8 @@ public class WellKnownSchemaGateway {
     public JsonNode retrieveApiDefinition(KioApplication app, SchemaDiscovery schemaDiscovery) throws IOException {
         final String url = app.getServiceUrl() + schemaDiscovery.getApiDefinitionUrl();
 
-        final HttpHeaders headers = new HttpHeaders();
-        headers.set("Accept", "*/*");
-        ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(headers),
-            String.class);
+        ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.GET,
+            new HttpEntity<>(acceptAllHeader()), String.class);
 
         if (!responseEntity.getStatusCode().is2xxSuccessful()) {
             log.info("Could not receive api definition: {}", responseEntity);
@@ -68,5 +66,11 @@ public class WellKnownSchemaGateway {
         } else {
             return objectMapper.readValue(responseEntity.getBody(), JsonNode.class);
         }
+    }
+
+    private HttpHeaders acceptAllHeader() {
+        final HttpHeaders headers = new HttpHeaders();
+        headers.set("Accept", "*/*");
+        return headers;
     }
 }
