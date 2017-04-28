@@ -1,0 +1,14 @@
+/**
+ * Fix swagger-ui styles.
+ */
+.swagger-ui .wrapper {
+  padding: 0px !important;
+}
+
+#swagger-ui .container {
+  padding: 0 20px !important;
+}
+
+.swagger-ui .scheme-container {
+  padding: 20px 10px 10px 10px !important;
+}
