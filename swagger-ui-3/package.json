@@ -10,8 +10,8 @@
     "build-server": "babel -d dist/server server",
     "build": " npm run build-server && npm run build-client",
     "dist": "npm run clean && NODE_ENV=production npm run build -- -p",
-    "start-server": "API_DISCOVERY_BASE_DIR=./dist/server babel-node server/index.js",
-    "start": "webpack-dev-server --inline --content-base dist/client"
+    "start-dist": "npm run dist && NODE_ENV=production API_DISCOVERY_BASE_DIR=./dist/server babel-node server/index.js",
+    "start": "nodemon server/index.js"
   },
   "devDependencies": {
     "babel-cli": "6.24.1",
@@ -25,6 +25,8 @@
     "extract-text-webpack-plugin": "2.1.0",
     "file-loader": "0.11.1",
     "html-webpack-plugin": "2.28.0",
+    "koa-connect": "2.0.0",
+    "nodemon": "1.11.0",
     "react": "15.5.4",
     "react-dom": "15.5.4",
     "rimraf": "2.6.1",
@@ -32,7 +34,7 @@
     "swagger-ui": "3.0.7",
     "swagger-ui-dist": "3.0.7",
     "webpack": "2.4.1",
-    "webpack-dev-server": "2.4.5",
+    "webpack-koa2-middleware": "1.0.1",
     "yaml-js": "0.1.5"
   },
   "dependencies": {
