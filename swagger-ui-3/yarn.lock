@@ -4496,10 +4496,6 @@ swagger-client@^3.0.7:
     qs "^6.3.0"
     url "^0.11.0"
 
-swagger-ui-dist@3.0.7:
-  version "3.0.7"
-  resolved "https://registry.yarnpkg.com/swagger-ui-dist/-/swagger-ui-dist-3.0.7.tgz#a7f201f4083d9e0ce5f7c65785af9ce570026dcb"
-
 swagger-ui@3.0.7:
   version "3.0.7"
   resolved "https://registry.yarnpkg.com/swagger-ui/-/swagger-ui-3.0.7.tgz#72fd3dd902c5f55fee44e8e494e97e33a1776a3c"

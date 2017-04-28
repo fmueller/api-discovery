@@ -3,7 +3,6 @@
      "js": "babel-node"
   },
   "watch": [
-    "client/",
     "server/"
   ]
 }

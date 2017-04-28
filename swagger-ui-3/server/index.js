@@ -10,7 +10,7 @@ if (conf.isProduction()) {
   console.log('Serving static files from', conf.staticDir());
 } else {
   console.log('Using webpack-dev-middleware');
-  app.use(require('./webpack-dev')({ publicPath: '/', index: '/index.html', lazy: true }));
+  app.use(require('./webpack-dev')({ publicPath: '/', index: '/index.html' }));
 }
 
 app.listen(conf.port());
