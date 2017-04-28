@@ -11,7 +11,8 @@
     "build": " npm run build-server && npm run build-client",
     "dist": "npm run clean && NODE_ENV=production npm run build -- -p",
     "start-dist": "npm run dist && NODE_ENV=production API_DISCOVERY_BASE_DIR=./dist/server babel-node server/index.js",
-    "start": "nodemon server/index.js"
+    "start": "nodemon server/index.js",
+    "prettier": "prettier --print-width=100 --single-quote --write \"{client,server}/**/*.js\""
   },
   "devDependencies": {
     "babel-cli": "6.24.1",
@@ -28,6 +29,7 @@
     "isomorphic-fetch": "2.2.1",
     "koa-connect": "2.0.0",
     "nodemon": "1.11.0",
+    "prettier": "1.2.2",
     "prop-types": "15.5.8",
     "react": "15.5.4",
     "react-dom": "15.5.4",
