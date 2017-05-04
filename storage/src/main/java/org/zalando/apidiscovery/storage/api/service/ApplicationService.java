@@ -6,7 +6,7 @@ import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.zalando.apidiscovery.storage.api.resource.dto.ApplicationDto;
+import org.zalando.apidiscovery.storage.api.service.dto.ApplicationDto;
 import org.zalando.apidiscovery.storage.api.domain.util.ApplicationEntityToApplicationDtoConverter;
 import org.zalando.apidiscovery.storage.api.repository.ApiEntity;
 import org.zalando.apidiscovery.storage.api.repository.ApplicationEntity;

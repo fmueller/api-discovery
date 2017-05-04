@@ -3,7 +3,7 @@ package org.zalando.apidiscovery.storage.api.domain.util;
 import org.junit.Test;
 import org.zalando.apidiscovery.storage.api.repository.ApiDeploymentEntity;
 import org.zalando.apidiscovery.storage.api.repository.ApiEntity;
-import org.zalando.apidiscovery.storage.api.resource.dto.ApplicationDto;
+import org.zalando.apidiscovery.storage.api.service.dto.ApplicationDto;
 import org.zalando.apidiscovery.storage.api.repository.ApplicationEntity;
 
 import static java.util.Arrays.asList;

@@ -1,6 +1,6 @@
 package org.zalando.apidiscovery.storage.api.domain.util;
 
-import org.zalando.apidiscovery.storage.api.resource.dto.VersionsDto;
+import org.zalando.apidiscovery.storage.api.service.dto.VersionsDto;
 import org.zalando.apidiscovery.storage.api.repository.ApiEntity;
 
 import java.util.List;

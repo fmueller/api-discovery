@@ -2,7 +2,7 @@ package org.zalando.apidiscovery.storage.api.resource;
 
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
-import org.zalando.apidiscovery.storage.api.resource.dto.DeploymentLinkDto;
+import org.zalando.apidiscovery.storage.api.service.dto.DeploymentLinkDto;
 import org.zalando.apidiscovery.storage.api.repository.ApiEntity;
 
 import static java.lang.String.valueOf;

@@ -1,4 +1,4 @@
-package org.zalando.apidiscovery.storage.api.resource.dto;
+package org.zalando.apidiscovery.storage.api.service.dto;
 
 import java.util.List;
 
