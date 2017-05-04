@@ -10,7 +10,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.zalando.apidiscovery.storage.api.domain.ApiLifecycleState;
-import org.zalando.apidiscovery.storage.api.domain.DiscoveredApiDefinition;
+import org.zalando.apidiscovery.storage.api.service.dto.DiscoveredApiDefinitionDto;
 import org.zalando.apidiscovery.storage.api.repository.ApiDeploymentEntity;
 import org.zalando.apidiscovery.storage.api.repository.ApiEntity;
 import org.zalando.apidiscovery.storage.api.repository.ApiRepository;
@@ -59,26 +59,26 @@ public class ApiDefinitionProcessingService {
     }
 
     @Transactional
-    public ApiEntity processDiscoveredApiDefinition(final DiscoveredApiDefinition discoveredApiDefinition) throws SwaggerParseException {
-        setApiNameAndVersion(discoveredApiDefinition);
+    public ApiEntity processDiscoveredApiDefinition(final DiscoveredApiDefinitionDto discoveredApiDefinitionDto) throws SwaggerParseException {
+        setApiNameAndVersion(discoveredApiDefinitionDto);
         final OffsetDateTime now = now(UTC);
-        final String definitionHash = sha256(discoveredApiDefinition.getDefinition());
+        final String definitionHash = sha256(discoveredApiDefinitionDto.getDefinition());
 
         // needed in order to implement the retry logic
         // default FlushModeType.AUTO tries to flush before the transaction ends
         final Session session = entityManager.unwrap(Session.class);
         session.setFlushMode(FlushModeType.COMMIT);
 
-        final ApplicationEntity application = findOrCreateApplication(discoveredApiDefinition, now);
+        final ApplicationEntity application = findOrCreateApplication(discoveredApiDefinitionDto, now);
         applicationRepository.save(application);
 
-        Optional<ApiEntity> apiVersionOption = findApiDefinition(discoveredApiDefinition.getApiName(),
-                discoveredApiDefinition.getVersion(), definitionHash);
+        Optional<ApiEntity> apiVersionOption = findApiDefinition(discoveredApiDefinitionDto.getApiName(),
+                discoveredApiDefinitionDto.getVersion(), definitionHash);
 
         for (int counter = 0; counter < maxNumberOfRetries; counter++) {
             try {
                 ApiEntity apiVersion = apiVersionOption.orElse(
-                        newApiVersion(discoveredApiDefinition, now, definitionHash, nextDefinitionId(discoveredApiDefinition)));
+                        newApiVersion(discoveredApiDefinitionDto, now, definitionHash, nextDefinitionId(discoveredApiDefinitionDto)));
                 final ApiDeploymentEntity apiDeployment = findOrCreateApiDeployment(apiVersion, application, now);
 
                 apiVersion = apiRepository.save(apiVersion);
@@ -95,7 +95,7 @@ public class ApiDefinitionProcessingService {
                 }
             }
         }
-        LOG.warn("could not persist discovered api definition: {}", discoveredApiDefinition);
+        LOG.warn("could not persist discovered api definition: {}", discoveredApiDefinitionDto);
         throw new ApiStoragePersistenceException("could not persist discovered api definition");
     }
 
@@ -116,11 +116,11 @@ public class ApiDefinitionProcessingService {
         return apiDeployment;
     }
 
-    private ApplicationEntity findOrCreateApplication(DiscoveredApiDefinition discoveredApiDefinition, OffsetDateTime now) {
+    private ApplicationEntity findOrCreateApplication(DiscoveredApiDefinitionDto discoveredApiDefinitionDto, OffsetDateTime now) {
         final Optional<ApplicationEntity> existingApplication =
-                applicationRepository.findOneByName(discoveredApiDefinition.getApplicationName());
+                applicationRepository.findOneByName(discoveredApiDefinitionDto.getApplicationName());
 
-        return existingApplication.orElse(newApplication(discoveredApiDefinition, now));
+        return existingApplication.orElse(newApplication(discoveredApiDefinitionDto, now));
     }
 
     private Optional<ApiEntity> findApiDefinition(String apiName, String apiVersion, String definitionHash) {
@@ -130,8 +130,8 @@ public class ApiDefinitionProcessingService {
         return existingApis.isEmpty() ? Optional.empty() : Optional.of(existingApis.get(0));
     }
 
-    protected int nextDefinitionId(DiscoveredApiDefinition discoveredApiDefinition) {
-        return apiRepository.getLastApiDefinitionId(discoveredApiDefinition.getApiName(), discoveredApiDefinition.getVersion())
+    protected int nextDefinitionId(DiscoveredApiDefinitionDto discoveredApiDefinitionDto) {
+        return apiRepository.getLastApiDefinitionId(discoveredApiDefinitionDto.getApiName(), discoveredApiDefinitionDto.getVersion())
                 + 1;
     }
 
@@ -141,10 +141,10 @@ public class ApiDefinitionProcessingService {
         return String.format("%064x", new BigInteger(1, messageDigest.digest()));
     }
 
-    protected void setApiNameAndVersion(final DiscoveredApiDefinition discoveredApiDefinition) throws SwaggerParseException {
-        final SwaggerDefinitionHelper swagger = new SwaggerDefinitionHelper(discoveredApiDefinition.getDefinition());
-        discoveredApiDefinition.setApiName(swagger.getName());
-        discoveredApiDefinition.setVersion(swagger.getVersion());
+    protected void setApiNameAndVersion(final DiscoveredApiDefinitionDto discoveredApiDefinitionDto) throws SwaggerParseException {
+        final SwaggerDefinitionHelper swagger = new SwaggerDefinitionHelper(discoveredApiDefinitionDto.getDefinition());
+        discoveredApiDefinitionDto.setApiName(swagger.getName());
+        discoveredApiDefinitionDto.setVersion(swagger.getVersion());
     }
 
     private ApiDeploymentEntity newApiDeployment(OffsetDateTime now) {
@@ -153,22 +153,22 @@ public class ApiDefinitionProcessingService {
                 .build();
     }
 
-    private ApplicationEntity newApplication(DiscoveredApiDefinition discoveredAPIDefinition, OffsetDateTime now) {
+    private ApplicationEntity newApplication(DiscoveredApiDefinitionDto discoveredAPIDefinitionDto, OffsetDateTime now) {
         return ApplicationEntity.builder()
-                .appUrl(discoveredAPIDefinition.getServiceUrl())
-                .name(discoveredAPIDefinition.getApplicationName())
+                .appUrl(discoveredAPIDefinitionDto.getServiceUrl())
+                .name(discoveredAPIDefinitionDto.getApplicationName())
                 .apiDeploymentEntities(new ArrayList<>())
                 .created(now)
                 .build();
     }
 
-    private ApiEntity newApiVersion(DiscoveredApiDefinition discoveredAPIDefinition, OffsetDateTime now,
+    private ApiEntity newApiVersion(DiscoveredApiDefinitionDto discoveredAPIDefinitionDto, OffsetDateTime now,
                                     String definitionHash, int nextDefinitionId) {
         return ApiEntity.builder()
-                .apiName(discoveredAPIDefinition.getApiName())
-                .definitionType(discoveredAPIDefinition.getType())
-                .apiVersion(discoveredAPIDefinition.getVersion())
-                .definition(discoveredAPIDefinition.getDefinition())
+                .apiName(discoveredAPIDefinitionDto.getApiName())
+                .definitionType(discoveredAPIDefinitionDto.getType())
+                .apiVersion(discoveredAPIDefinitionDto.getVersion())
+                .definition(discoveredAPIDefinitionDto.getDefinition())
                 .definitionHash(definitionHash)
                 .definitionId(nextDefinitionId)
                 .created(now)

@@ -1,4 +1,4 @@
-package org.zalando.apidiscovery.storage.api.domain;
+package org.zalando.apidiscovery.storage.api.service.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class DiscoveredApiDefinition {
+public class DiscoveredApiDefinitionDto {
 
     private String status;
     private String type;

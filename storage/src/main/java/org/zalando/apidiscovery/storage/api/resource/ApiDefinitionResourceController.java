@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
-import org.zalando.apidiscovery.storage.api.domain.DiscoveredApiDefinition;
+import org.zalando.apidiscovery.storage.api.service.dto.DiscoveredApiDefinitionDto;
 import org.zalando.apidiscovery.storage.api.repository.ApiEntity;
 import org.zalando.apidiscovery.storage.api.service.ApiDefinitionProcessingService;
 import org.zalando.apidiscovery.storage.api.domain.SwaggerParseException;
@@ -30,9 +30,9 @@ public class ApiDefinitionResourceController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> postDiscoveredApiDefinition(@RequestBody DiscoveredApiDefinition discoveredAPIDefinition, UriComponentsBuilder builder)
+    public ResponseEntity<Void> postDiscoveredApiDefinition(@RequestBody DiscoveredApiDefinitionDto discoveredAPIDefinitionDto, UriComponentsBuilder builder)
             throws SwaggerParseException {
-        final ApiEntity api = apiDefinitionProcessingService.processDiscoveredApiDefinition(discoveredAPIDefinition);
+        final ApiEntity api = apiDefinitionProcessingService.processDiscoveredApiDefinition(discoveredAPIDefinitionDto);
 
         final URI location = buildDefinitionDeploymentLink(builder, api).encode().toUri();
         return ResponseEntity.created(location).build();

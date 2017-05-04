@@ -3,9 +3,8 @@ package org.zalando.apidiscovery.storage.api.service;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.zalando.apidiscovery.storage.api.AbstractResourceIntegrationTest;
-import org.zalando.apidiscovery.storage.api.domain.DiscoveredApiDefinition;
+import org.zalando.apidiscovery.storage.api.service.dto.DiscoveredApiDefinitionDto;
 import org.zalando.apidiscovery.storage.api.repository.ApiEntity;
-import org.zalando.apidiscovery.storage.api.service.ApiDefinitionProcessingService;
 
 import javax.transaction.Transactional;
 import java.util.List;
@@ -22,7 +21,7 @@ public class ApiDefinitionProcessingServiceIntegrationTest extends AbstractResou
     public void shouldBeAbleToAddFirstDefinition() throws Exception {
         assertThat(apiRepository.findByApiName("meta-api").size()).isEqualTo(0);
 
-        final DiscoveredApiDefinition apiDef = discoveredMetaApi("1.0", "a");
+        final DiscoveredApiDefinitionDto apiDef = discoveredMetaApi("1.0", "a");
         apiService.processDiscoveredApiDefinition(apiDef);
 
         List<ApiEntity> apis = apiRepository.findByApiName("meta-api");
@@ -41,8 +40,8 @@ public class ApiDefinitionProcessingServiceIntegrationTest extends AbstractResou
     public void definitionIdShouldGrow() throws Exception {
         assertThat(apiRepository.findByApiName("meta-api").size()).isEqualTo(0);
 
-        final DiscoveredApiDefinition apiDef = discoveredMetaApi("1.0", "diff-a");
-        final DiscoveredApiDefinition slightlyDifferentApiDef = discoveredMetaApi("1.0", "diff-b");
+        final DiscoveredApiDefinitionDto apiDef = discoveredMetaApi("1.0", "diff-a");
+        final DiscoveredApiDefinitionDto slightlyDifferentApiDef = discoveredMetaApi("1.0", "diff-b");
         apiService.processDiscoveredApiDefinition(apiDef);
         apiService.processDiscoveredApiDefinition(slightlyDifferentApiDef);
 
@@ -61,7 +60,7 @@ public class ApiDefinitionProcessingServiceIntegrationTest extends AbstractResou
             private int counter = 0;
 
             @Override
-            protected int nextDefinitionId(DiscoveredApiDefinition discoveredApiDefinition) {
+            protected int nextDefinitionId(DiscoveredApiDefinitionDto discoveredApiDefinition) {
                 return counter++ < 2 ? 1 : 2;
             }
         };
