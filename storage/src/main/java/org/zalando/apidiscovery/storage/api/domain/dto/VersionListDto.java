@@ -1,4 +1,4 @@
-package org.zalando.apidiscovery.storage.api.service.dto;
+package org.zalando.apidiscovery.storage.api.domain.dto;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +10,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class DeploymentsDto {
+public class VersionListDto {
 
-    private List<DeploymentDto> deployments = new ArrayList<>();
+    private List<VersionsDto> versions = new ArrayList<>();
+
 }

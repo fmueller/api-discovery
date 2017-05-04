@@ -1,7 +1,7 @@
 package org.zalando.apidiscovery.storage.api.service;
 
 import org.junit.Test;
-import org.zalando.apidiscovery.storage.api.service.dto.DiscoveredApiDefinitionDto;
+import org.zalando.apidiscovery.storage.api.domain.dto.DiscoveredApiDefinitionDto;
 import org.zalando.apidiscovery.storage.api.domain.SwaggerParseException;
 
 import static org.assertj.core.api.Assertions.assertThat;

@@ -3,7 +3,7 @@ package org.zalando.apidiscovery.storage.api.service;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.zalando.apidiscovery.storage.api.AbstractResourceIntegrationTest;
-import org.zalando.apidiscovery.storage.api.service.dto.DiscoveredApiDefinitionDto;
+import org.zalando.apidiscovery.storage.api.domain.dto.DiscoveredApiDefinitionDto;
 import org.zalando.apidiscovery.storage.api.repository.ApiEntity;
 
 import javax.transaction.Transactional;

@@ -1,4 +1,4 @@
-package org.zalando.apidiscovery.storage.api.service.dto;
+package org.zalando.apidiscovery.storage.api.domain.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

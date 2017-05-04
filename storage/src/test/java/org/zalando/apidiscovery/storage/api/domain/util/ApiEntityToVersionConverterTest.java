@@ -2,7 +2,7 @@ package org.zalando.apidiscovery.storage.api.domain.util;
 
 import org.junit.Test;
 import org.zalando.apidiscovery.storage.api.repository.ApiEntity;
-import org.zalando.apidiscovery.storage.api.service.dto.VersionsDto;
+import org.zalando.apidiscovery.storage.api.domain.dto.VersionsDto;
 
 import java.util.List;
 

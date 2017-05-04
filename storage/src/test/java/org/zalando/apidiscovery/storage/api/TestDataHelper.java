@@ -1,7 +1,7 @@
 package org.zalando.apidiscovery.storage.api;
 
 import org.springframework.core.io.Resource;
-import org.zalando.apidiscovery.storage.api.service.dto.DiscoveredApiDefinitionDto;
+import org.zalando.apidiscovery.storage.api.domain.dto.DiscoveredApiDefinitionDto;
 
 import java.io.IOException;
 import java.nio.file.Files;

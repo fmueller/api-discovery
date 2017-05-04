@@ -3,7 +3,7 @@ package org.zalando.apidiscovery.storage.api.resource;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.web.util.UriComponentsBuilder;
-import org.zalando.apidiscovery.storage.api.service.dto.DeploymentLinkDto;
+import org.zalando.apidiscovery.storage.api.domain.dto.DeploymentLinkDto;
 import org.zalando.apidiscovery.storage.api.repository.ApiDeploymentEntity;
 import org.zalando.apidiscovery.storage.api.repository.ApiEntity;
 import org.zalando.apidiscovery.storage.api.repository.ApplicationEntity;
