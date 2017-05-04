@@ -42,6 +42,7 @@ public class ApiEntity implements Serializable {
     private String definition;
     private String definitionType;
 
+    @Builder.Default
     @OneToMany(mappedBy = "api", cascade = ALL)
     private List<ApiDeploymentEntity> apiDeploymentEntities = new ArrayList<>();
 
