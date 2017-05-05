@@ -1,7 +1,7 @@
 package org.zalando.apidiscovery.storage.api;
 
 import org.springframework.core.io.Resource;
-import org.zalando.apidiscovery.storage.api.domain.model.DiscoveredApiDefinitionDto;
+import org.zalando.apidiscovery.storage.api.domain.model.DiscoveredApiDefinition;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -12,8 +12,8 @@ public class TestDataHelper {
     private TestDataHelper() {
     }
 
-    public static DiscoveredApiDefinitionDto discoveredMetaApi(String version, String definitionDiff) {
-        return DiscoveredApiDefinitionDto.builder()
+    public static DiscoveredApiDefinition discoveredMetaApi(String version, String definitionDiff) {
+        return DiscoveredApiDefinition.builder()
             .applicationName("Meta Application")
             .apiName("meta-api")
             .type("swagger")

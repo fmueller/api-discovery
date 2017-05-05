@@ -10,15 +10,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
-import org.zalando.apidiscovery.storage.api.domain.model.ApiDefinitionDto;
-import org.zalando.apidiscovery.storage.api.domain.model.ApiDto;
+import org.zalando.apidiscovery.storage.api.domain.model.ApiDefinition;
+import org.zalando.apidiscovery.storage.api.domain.model.Api;
 import org.zalando.apidiscovery.storage.api.domain.model.ApiLifecycleState;
-import org.zalando.apidiscovery.storage.api.domain.model.ApiListDto;
-import org.zalando.apidiscovery.storage.api.domain.model.DeploymentDto;
-import org.zalando.apidiscovery.storage.api.domain.model.DeploymentsDto;
-import org.zalando.apidiscovery.storage.api.domain.model.VersionListDto;
-import org.zalando.apidiscovery.storage.api.domain.model.VersionsDto;
-import org.zalando.apidiscovery.storage.api.domain.service.ApiService;
+import org.zalando.apidiscovery.storage.api.domain.model.ApiList;
+import org.zalando.apidiscovery.storage.api.domain.model.Deployment;
+import org.zalando.apidiscovery.storage.api.domain.model.Deployments;
+import org.zalando.apidiscovery.storage.api.domain.model.VersionList;
+import org.zalando.apidiscovery.storage.api.domain.model.Versions;
+import org.zalando.apidiscovery.storage.api.domain.logic.ApiService;
 
 import java.util.List;
 
@@ -39,71 +39,71 @@ public class ApiResourceController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiListDto> getApis(@RequestParam(value = "lifecycle_state", required = false) ApiLifecycleState lifecycleState) {
-        List<ApiDto> apiList = loadApis(lifecycleState).stream()
+    public ResponseEntity<ApiList> getApis(@RequestParam(value = "lifecycle_state", required = false) ApiLifecycleState lifecycleState) {
+        List<Api> apiList = loadApis(lifecycleState).stream()
             .sorted(comparing(api -> api.getApiMetaData().getName()))
             .collect(toList());
-        return ResponseEntity.ok(new ApiListDto(apiList));
+        return ResponseEntity.ok(new ApiList(apiList));
     }
 
-    private List<ApiDto> loadApis(ApiLifecycleState lifecycleState) {
+    private List<Api> loadApis(ApiLifecycleState lifecycleState) {
         return lifecycleState == null ? apiService.getAllApis() : apiService.getAllApis(lifecycleState);
     }
 
     @GetMapping("/{api_id}")
-    public ResponseEntity<ApiDto> getApi(@PathVariable("api_id") String apiId, UriComponentsBuilder builder) {
+    public ResponseEntity<Api> getApi(@PathVariable("api_id") String apiId, UriComponentsBuilder builder) {
         return apiService.getApi(apiId)
             .map(api -> ResponseEntity.ok(buildLinks(api, builder)))
             .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @GetMapping("/{api_id}/versions")
-    public ResponseEntity<VersionListDto> getApiVersions(@PathVariable("api_id") String apiId,
-                                                         @RequestParam(value = "lifecycle_state", required = false) ApiLifecycleState lifecycleState,
-                                                         UriComponentsBuilder builder) {
-        List<VersionsDto> versions = loadVersions(apiId, lifecycleState);
-        return ResponseEntity.ok(new VersionListDto(updateApiDefinitionWithLinks(versions, builder)));
+    public ResponseEntity<VersionList> getApiVersions(@PathVariable("api_id") String apiId,
+                                                      @RequestParam(value = "lifecycle_state", required = false) ApiLifecycleState lifecycleState,
+                                                      UriComponentsBuilder builder) {
+        List<Versions> versions = loadVersions(apiId, lifecycleState);
+        return ResponseEntity.ok(new VersionList(updateApiDefinitionWithLinks(versions, builder)));
     }
 
-    private List<VersionsDto> loadVersions(String apiId, ApiLifecycleState lifecycleState) {
+    private List<Versions> loadVersions(String apiId, ApiLifecycleState lifecycleState) {
         return lifecycleState == null ? apiService.getVersionsForApi(apiId) : apiService.getVersionsForApi(apiId, lifecycleState);
     }
 
     @GetMapping("/{api_id}/versions/{version_id}")
-    public ResponseEntity<VersionsDto> getApiVersion(@PathVariable("api_id") String apiId,
-                                                     @PathVariable("version_id") String versionId,
-                                                     UriComponentsBuilder builder) {
+    public ResponseEntity<Versions> getApiVersion(@PathVariable("api_id") String apiId,
+                                                  @PathVariable("version_id") String versionId,
+                                                  UriComponentsBuilder builder) {
         return apiService.getVersion(apiId, versionId)
             .map(versionsDto -> ResponseEntity.ok(updateApiDefinitionWithLinks(versionsDto, builder)))
             .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @GetMapping("/{api_id}/versions/{version_id}/definitions/{definition_id}")
-    public ResponseEntity<ApiDefinitionDto> getApiDefinition(@PathVariable("api_id") String apiId,
-                                                             @PathVariable("version_id") String versionId,
-                                                             @PathVariable("definition_id") String definitionId,
-                                                             UriComponentsBuilder builder) {
+    public ResponseEntity<ApiDefinition> getApiDefinition(@PathVariable("api_id") String apiId,
+                                                          @PathVariable("version_id") String versionId,
+                                                          @PathVariable("definition_id") String definitionId,
+                                                          UriComponentsBuilder builder) {
         return apiService.getApiDefinitionDto(apiId, versionId, definitionId)
             .map(definitionDto -> ResponseEntity.ok(updateApiDefinitionWithLinks(definitionDto, builder)))
             .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @GetMapping("/{api_id}/deployments")
-    public ResponseEntity<DeploymentsDto> getApiDeployments(@PathVariable("api_id") String apiId,
-                                                            UriComponentsBuilder builder) {
-        List<DeploymentDto> deploymentsForApi = apiService.getDeploymentsForApi(apiId);
-        return ResponseEntity.ok(new DeploymentsDto(updateLinks(deploymentsForApi, builder)));
+    public ResponseEntity<Deployments> getApiDeployments(@PathVariable("api_id") String apiId,
+                                                         UriComponentsBuilder builder) {
+        List<Deployment> deploymentsForApi = apiService.getDeploymentsForApi(apiId);
+        return ResponseEntity.ok(new Deployments(updateLinks(deploymentsForApi, builder)));
 
     }
 
-    private List<DeploymentDto> updateLinks(List<DeploymentDto> deploymentDtoList, UriComponentsBuilder builder) {
-        deploymentDtoList.forEach(
-            deploymentDto -> deploymentDto.buildLinks(builder)
+    private List<Deployment> updateLinks(List<Deployment> deploymentList, UriComponentsBuilder builder) {
+        deploymentList.forEach(
+            deployment -> deployment.buildLinks(builder)
         );
-        return deploymentDtoList;
+        return deploymentList;
     }
 
-    private ApiDto buildLinks(ApiDto api, UriComponentsBuilder builder) {
+    private Api buildLinks(Api api, UriComponentsBuilder builder) {
         updateApiDefinitionWithLinks(api.getVersions(), builder);
 
         api.getApplications()
@@ -115,26 +115,26 @@ public class ApiResourceController {
         return api;
     }
 
-    private List<VersionsDto> updateApiDefinitionWithLinks(List<VersionsDto> versions, UriComponentsBuilder builder) {
+    private List<Versions> updateApiDefinitionWithLinks(List<Versions> versions, UriComponentsBuilder builder) {
         versions.forEach(versionsDto -> updateApiDefinitionWithLinks(versionsDto, builder));
 
         return versions;
     }
 
-    private VersionsDto updateApiDefinitionWithLinks(VersionsDto version, UriComponentsBuilder builder) {
+    private Versions updateApiDefinitionWithLinks(Versions version, UriComponentsBuilder builder) {
         version.getDefinitions()
             .forEach(apiDefinitionDto -> updateApiDefinitionWithLinks(apiDefinitionDto, builder));
 
         return version;
     }
 
-    private ApiDefinitionDto updateApiDefinitionWithLinks(ApiDefinitionDto apiDefinitionDto, UriComponentsBuilder builder) {
-        apiDefinitionDto.getApplications()
+    private ApiDefinition updateApiDefinitionWithLinks(ApiDefinition apiDefinition, UriComponentsBuilder builder) {
+        apiDefinition.getApplications()
             .forEach(deploymentLinkDto -> deploymentLinkDto.setHref(
                 buildLink(builder.cloneBuilder(), deploymentLinkDto).toUriString()
             ));
 
-        return apiDefinitionDto;
+        return apiDefinition;
     }
 
 }

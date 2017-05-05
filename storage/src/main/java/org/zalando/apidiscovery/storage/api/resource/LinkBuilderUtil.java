@@ -2,7 +2,7 @@ package org.zalando.apidiscovery.storage.api.resource;
 
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
-import org.zalando.apidiscovery.storage.api.domain.model.DeploymentLinkDto;
+import org.zalando.apidiscovery.storage.api.domain.model.DeploymentLink;
 import org.zalando.apidiscovery.storage.api.repository.ApiEntity;
 
 import static java.lang.String.valueOf;
@@ -39,21 +39,21 @@ public class LinkBuilderUtil {
     }
 
     public static UriComponents buildLink(UriComponentsBuilder builder,
-                                          DeploymentLinkDto deploymentLinkDto) {
-        if (deploymentLinkDto instanceof DeploymentLinkDto.ApplicationLinkDto) {
+                                          DeploymentLink deploymentLink) {
+        if (deploymentLink instanceof DeploymentLink.ApplicationLink) {
 
-            return buildApplicationDeploymentLink(builder, ((DeploymentLinkDto.ApplicationLinkDto) deploymentLinkDto).getApplicationName());
-        } else if (deploymentLinkDto instanceof DeploymentLinkDto.DefinitionLinkDto) {
+            return buildApplicationDeploymentLink(builder, ((DeploymentLink.ApplicationLink) deploymentLink).getApplicationName());
+        } else if (deploymentLink instanceof DeploymentLink.DefinitionLink) {
 
-            return buildDefinitionDeploymentLink(builder, (DeploymentLinkDto.DefinitionLinkDto) deploymentLinkDto);
+            return buildDefinitionDeploymentLink(builder, (DeploymentLink.DefinitionLink) deploymentLink);
         } else {
 
-            throw new UnsupportedOperationException(format("LinkBuilder for class [{0}] not supported", deploymentLinkDto));
+            throw new UnsupportedOperationException(format("LinkBuilder for class [{0}] not supported", deploymentLink));
         }
     }
 
     public static UriComponents buildDefinitionDeploymentLink(UriComponentsBuilder builder,
-                                                              DeploymentLinkDto.DefinitionLinkDto definitionLinkDto) {
+                                                              DeploymentLink.DefinitionLink definitionLinkDto) {
         return buildDefinitionDeploymentLink(
             builder,
             definitionLinkDto.getApiName(),

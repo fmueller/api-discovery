@@ -3,7 +3,7 @@ package org.zalando.apidiscovery.storage.api.resource;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.web.util.UriComponentsBuilder;
-import org.zalando.apidiscovery.storage.api.domain.model.DeploymentLinkDto;
+import org.zalando.apidiscovery.storage.api.domain.model.DeploymentLink;
 import org.zalando.apidiscovery.storage.api.repository.ApiDeploymentEntity;
 import org.zalando.apidiscovery.storage.api.repository.ApiEntity;
 import org.zalando.apidiscovery.storage.api.repository.ApplicationEntity;
@@ -51,7 +51,7 @@ public class LinkBuilderUtilTest {
             .application(applicationEntity)
             .build();
 
-        DeploymentLinkDto.ApplicationLinkDto applicationLinkDto = new DeploymentLinkDto.ApplicationLinkDto(deploymentEntity);
+        DeploymentLink.ApplicationLink applicationLinkDto = new DeploymentLink.ApplicationLink(deploymentEntity);
 
         assertThat(LinkBuilderUtil.buildLink(builder, applicationLinkDto).toString())
             .isEqualTo("http://localhost:8080/applications/order-management-application");
@@ -69,7 +69,7 @@ public class LinkBuilderUtilTest {
             .api(apiEntity)
             .build();
 
-        DeploymentLinkDto.DefinitionLinkDto definitionLinkDto = new DeploymentLinkDto.DefinitionLinkDto(deploymentEntity);
+        DeploymentLink.DefinitionLink definitionLinkDto = new DeploymentLink.DefinitionLink(deploymentEntity);
 
         assertThat(LinkBuilderUtil.buildLink(builder, definitionLinkDto).toString())
             .isEqualTo("http://localhost:8080/apis/order-management-api/versions/1.0.0/definitions/1");
