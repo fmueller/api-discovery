@@ -1,13 +1,13 @@
-package org.zalando.apidiscovery.storage.api.service;
+package org.zalando.apidiscovery.storage.api.domain.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.zalando.apidiscovery.storage.api.domain.ApiLifecycleState;
-import org.zalando.apidiscovery.storage.api.domain.dto.ApiDefinitionDto;
-import org.zalando.apidiscovery.storage.api.domain.dto.ApiDto;
-import org.zalando.apidiscovery.storage.api.domain.dto.ApplicationDto;
-import org.zalando.apidiscovery.storage.api.domain.dto.DeploymentDto;
-import org.zalando.apidiscovery.storage.api.domain.dto.VersionsDto;
+import org.zalando.apidiscovery.storage.api.domain.model.ApiLifecycleState;
+import org.zalando.apidiscovery.storage.api.domain.model.ApiDefinitionDto;
+import org.zalando.apidiscovery.storage.api.domain.model.ApiDto;
+import org.zalando.apidiscovery.storage.api.domain.model.ApplicationDto;
+import org.zalando.apidiscovery.storage.api.domain.model.DeploymentDto;
+import org.zalando.apidiscovery.storage.api.domain.model.VersionsDto;
 import org.zalando.apidiscovery.storage.api.domain.util.ApiEntityToApiDefinitionConverter;
 import org.zalando.apidiscovery.storage.api.repository.ApiDeploymentEntity;
 import org.zalando.apidiscovery.storage.api.repository.ApiEntity;
@@ -22,9 +22,9 @@ import static java.text.MessageFormat.format;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static org.zalando.apidiscovery.storage.api.domain.util.ApiEntityToVersionConverter.toVersionDtoList;
-import static org.zalando.apidiscovery.storage.api.domain.ApiLifecycleState.ACTIVE;
-import static org.zalando.apidiscovery.storage.api.domain.ApiLifecycleState.DECOMMISSIONED;
-import static org.zalando.apidiscovery.storage.api.domain.ApiLifecycleState.INACTIVE;
+import static org.zalando.apidiscovery.storage.api.domain.model.ApiLifecycleState.ACTIVE;
+import static org.zalando.apidiscovery.storage.api.domain.model.ApiLifecycleState.DECOMMISSIONED;
+import static org.zalando.apidiscovery.storage.api.domain.model.ApiLifecycleState.INACTIVE;
 
 @Service
 public class ApiService {

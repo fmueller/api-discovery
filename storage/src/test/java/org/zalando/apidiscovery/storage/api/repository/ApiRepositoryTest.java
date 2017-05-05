@@ -8,12 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.zalando.apidiscovery.storage.api.repository.ApiDeploymentEntity;
-import org.zalando.apidiscovery.storage.api.repository.ApiEntity;
-import org.zalando.apidiscovery.storage.api.domain.ApiLifecycleState;
-import org.zalando.apidiscovery.storage.api.repository.ApiRepository;
-import org.zalando.apidiscovery.storage.api.repository.ApplicationEntity;
-import org.zalando.apidiscovery.storage.api.repository.ApplicationRepository;
+import org.zalando.apidiscovery.storage.api.domain.model.ApiLifecycleState;
 
 import static java.time.OffsetDateTime.now;
 import static java.time.ZoneOffset.UTC;

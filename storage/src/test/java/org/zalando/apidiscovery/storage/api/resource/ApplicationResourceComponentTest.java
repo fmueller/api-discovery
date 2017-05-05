@@ -4,7 +4,7 @@ import org.junit.Test;
 import org.zalando.apidiscovery.storage.api.AbstractComponentTest;
 import org.zalando.apidiscovery.storage.api.repository.ApiDeploymentEntity;
 import org.zalando.apidiscovery.storage.api.repository.ApiEntity;
-import org.zalando.apidiscovery.storage.api.domain.ApiLifecycleState;
+import org.zalando.apidiscovery.storage.api.domain.model.ApiLifecycleState;
 import org.zalando.apidiscovery.storage.api.repository.ApplicationEntity;
 
 import static java.time.OffsetDateTime.now;

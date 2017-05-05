@@ -1,12 +1,12 @@
 package org.zalando.apidiscovery.storage.api.domain.util;
 
 import org.junit.Test;
-import org.zalando.apidiscovery.storage.api.domain.dto.ApiDefinitionDto;
+import org.zalando.apidiscovery.storage.api.domain.model.ApiDefinitionDto;
 import org.zalando.apidiscovery.storage.api.DomainObjectGen;
 import org.zalando.apidiscovery.storage.api.repository.ApiDeploymentEntity;
 import org.zalando.apidiscovery.storage.api.repository.ApiEntity;
 import org.zalando.apidiscovery.storage.api.repository.ApplicationEntity;
-import org.zalando.apidiscovery.storage.api.domain.dto.DeploymentLinkDto;
+import org.zalando.apidiscovery.storage.api.domain.model.DeploymentLinkDto;
 
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;

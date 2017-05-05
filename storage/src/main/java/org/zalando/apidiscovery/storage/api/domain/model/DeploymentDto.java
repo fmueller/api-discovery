@@ -1,4 +1,4 @@
-package org.zalando.apidiscovery.storage.api.domain.dto;
+package org.zalando.apidiscovery.storage.api.domain.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;

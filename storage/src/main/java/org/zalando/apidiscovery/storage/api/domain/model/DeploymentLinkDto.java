@@ -1,4 +1,4 @@
-package org.zalando.apidiscovery.storage.api.domain.dto;
+package org.zalando.apidiscovery.storage.api.domain.model;
 
 import java.time.OffsetDateTime;
 
@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.zalando.apidiscovery.storage.api.domain.ApiLifecycleState;
 import org.zalando.apidiscovery.storage.api.repository.ApiDeploymentEntity;
 import org.zalando.apidiscovery.storage.api.repository.ApiEntity;
 

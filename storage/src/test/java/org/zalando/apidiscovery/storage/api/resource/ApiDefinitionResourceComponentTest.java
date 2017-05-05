@@ -23,7 +23,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.zalando.apidiscovery.storage.api.domain.ApiLifecycleState.ACTIVE;
+import static org.zalando.apidiscovery.storage.api.domain.model.ApiLifecycleState.ACTIVE;
 import static org.zalando.apidiscovery.storage.api.DomainObjectGen.API_NAME;
 import static org.zalando.apidiscovery.storage.api.DomainObjectGen.API_UI;
 import static org.zalando.apidiscovery.storage.api.DomainObjectGen.API_URL;

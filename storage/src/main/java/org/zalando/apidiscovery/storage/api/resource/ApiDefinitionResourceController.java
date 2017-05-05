@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
-import org.zalando.apidiscovery.storage.api.domain.dto.DiscoveredApiDefinitionDto;
+import org.zalando.apidiscovery.storage.api.domain.model.DiscoveredApiDefinitionDto;
 import org.zalando.apidiscovery.storage.api.repository.ApiEntity;
-import org.zalando.apidiscovery.storage.api.service.ApiDefinitionProcessingService;
+import org.zalando.apidiscovery.storage.api.domain.service.ApiDefinitionProcessingService;
 import org.zalando.apidiscovery.storage.api.domain.SwaggerParseException;
 
 import static org.zalando.apidiscovery.storage.api.resource.LinkBuilderUtil.buildDefinitionDeploymentLink;

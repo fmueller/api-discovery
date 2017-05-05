@@ -1,13 +1,13 @@
 package org.zalando.apidiscovery.storage.api.domain.util;
 
-import org.zalando.apidiscovery.storage.api.domain.dto.VersionsDto;
+import org.zalando.apidiscovery.storage.api.domain.model.VersionsDto;
 import org.zalando.apidiscovery.storage.api.repository.ApiEntity;
 
 import java.util.List;
 
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
-import static org.zalando.apidiscovery.storage.api.service.ApiService.aggregateApplicationLifecycleStateForApi;
+import static org.zalando.apidiscovery.storage.api.domain.service.ApiService.aggregateApplicationLifecycleStateForApi;
 
 public class ApiEntityToVersionConverter {
 

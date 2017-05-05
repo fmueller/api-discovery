@@ -1,4 +1,4 @@
-package org.zalando.apidiscovery.storage.api.service;
+package org.zalando.apidiscovery.storage.api.domain.service;
 
 import org.hibernate.Session;
 import org.hsqldb.HsqlException;
@@ -9,8 +9,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.zalando.apidiscovery.storage.api.domain.ApiLifecycleState;
-import org.zalando.apidiscovery.storage.api.domain.dto.DiscoveredApiDefinitionDto;
+import org.zalando.apidiscovery.storage.api.domain.model.ApiLifecycleState;
+import org.zalando.apidiscovery.storage.api.domain.model.DiscoveredApiDefinitionDto;
 import org.zalando.apidiscovery.storage.api.repository.ApiDeploymentEntity;
 import org.zalando.apidiscovery.storage.api.repository.ApiEntity;
 import org.zalando.apidiscovery.storage.api.repository.ApiRepository;

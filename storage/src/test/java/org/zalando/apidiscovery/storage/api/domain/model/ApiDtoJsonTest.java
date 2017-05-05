@@ -1,4 +1,4 @@
-package org.zalando.apidiscovery.storage.api.domain.dto;
+package org.zalando.apidiscovery.storage.api.domain.model;
 
 
 import org.junit.Test;
@@ -9,7 +9,7 @@ import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.zalando.apidiscovery.storage.api.domain.ApiLifecycleState.ACTIVE;
+import static org.zalando.apidiscovery.storage.api.domain.model.ApiLifecycleState.ACTIVE;
 
 @RunWith(SpringRunner.class)
 @JsonTest

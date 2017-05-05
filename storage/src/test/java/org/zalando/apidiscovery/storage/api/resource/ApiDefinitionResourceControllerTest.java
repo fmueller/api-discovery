@@ -8,9 +8,9 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.util.UriComponentsBuilder;
-import org.zalando.apidiscovery.storage.api.domain.dto.DiscoveredApiDefinitionDto;
+import org.zalando.apidiscovery.storage.api.domain.model.DiscoveredApiDefinitionDto;
 import org.zalando.apidiscovery.storage.api.repository.ApiEntity;
-import org.zalando.apidiscovery.storage.api.service.ApiDefinitionProcessingService;
+import org.zalando.apidiscovery.storage.api.domain.service.ApiDefinitionProcessingService;
 
 import java.net.URI;
 import java.util.regex.Pattern;

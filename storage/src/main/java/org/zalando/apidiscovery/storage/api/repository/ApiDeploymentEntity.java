@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Type;
-import org.zalando.apidiscovery.storage.api.domain.ApiLifecycleState;
+import org.zalando.apidiscovery.storage.api.domain.model.ApiLifecycleState;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;

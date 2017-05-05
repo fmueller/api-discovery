@@ -1,7 +1,7 @@
 package org.zalando.apidiscovery.storage.api.domain.util;
 
-import org.zalando.apidiscovery.storage.api.domain.dto.ApplicationDto;
-import org.zalando.apidiscovery.storage.api.domain.dto.DeploymentLinkDto;
+import org.zalando.apidiscovery.storage.api.domain.model.ApplicationDto;
+import org.zalando.apidiscovery.storage.api.domain.model.DeploymentLinkDto;
 import org.zalando.apidiscovery.storage.api.repository.ApplicationEntity;
 
 import java.util.List;

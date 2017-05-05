@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
-import org.zalando.apidiscovery.storage.api.domain.dto.ApplicationDto;
-import org.zalando.apidiscovery.storage.api.domain.dto.ApplicationsDto;
-import org.zalando.apidiscovery.storage.api.service.ApplicationService;
+import org.zalando.apidiscovery.storage.api.domain.model.ApplicationDto;
+import org.zalando.apidiscovery.storage.api.domain.model.ApplicationsDto;
+import org.zalando.apidiscovery.storage.api.domain.service.ApplicationService;
 
 import java.util.List;
 

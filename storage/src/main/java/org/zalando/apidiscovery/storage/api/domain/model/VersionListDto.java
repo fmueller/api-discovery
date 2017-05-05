@@ -1,4 +1,4 @@
-package org.zalando.apidiscovery.storage.api.domain.dto;
+package org.zalando.apidiscovery.storage.api.domain.model;
 
 import java.util.ArrayList;
 import java.util.List;

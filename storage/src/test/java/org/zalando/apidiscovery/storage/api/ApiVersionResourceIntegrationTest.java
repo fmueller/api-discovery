@@ -25,9 +25,9 @@ import static org.zalando.apidiscovery.storage.api.DomainObjectGen.DEFINITION_TY
 import static org.zalando.apidiscovery.storage.api.DomainObjectGen.givenApiDeployment;
 import static org.zalando.apidiscovery.storage.api.DomainObjectGen.givenApiEntity;
 import static org.zalando.apidiscovery.storage.api.DomainObjectGen.givenApplication;
-import static org.zalando.apidiscovery.storage.api.domain.ApiLifecycleState.ACTIVE;
-import static org.zalando.apidiscovery.storage.api.domain.ApiLifecycleState.DECOMMISSIONED;
-import static org.zalando.apidiscovery.storage.api.domain.ApiLifecycleState.INACTIVE;
+import static org.zalando.apidiscovery.storage.api.domain.model.ApiLifecycleState.ACTIVE;
+import static org.zalando.apidiscovery.storage.api.domain.model.ApiLifecycleState.DECOMMISSIONED;
+import static org.zalando.apidiscovery.storage.api.domain.model.ApiLifecycleState.INACTIVE;
 
 public class ApiVersionResourceIntegrationTest extends AbstractResourceIntegrationTest {
 

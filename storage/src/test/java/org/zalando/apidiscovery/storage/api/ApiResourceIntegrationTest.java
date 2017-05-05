@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.zalando.apidiscovery.storage.api.repository.ApiDeploymentEntity;
 import org.zalando.apidiscovery.storage.api.repository.ApiEntity;
-import org.zalando.apidiscovery.storage.api.domain.ApiLifecycleState;
+import org.zalando.apidiscovery.storage.api.domain.model.ApiLifecycleState;
 import org.zalando.apidiscovery.storage.api.repository.ApplicationEntity;
 
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;

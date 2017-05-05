@@ -10,15 +10,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
-import org.zalando.apidiscovery.storage.api.domain.dto.ApiDefinitionDto;
-import org.zalando.apidiscovery.storage.api.domain.dto.ApiDto;
-import org.zalando.apidiscovery.storage.api.domain.ApiLifecycleState;
-import org.zalando.apidiscovery.storage.api.domain.dto.ApiListDto;
-import org.zalando.apidiscovery.storage.api.domain.dto.DeploymentDto;
-import org.zalando.apidiscovery.storage.api.domain.dto.DeploymentsDto;
-import org.zalando.apidiscovery.storage.api.domain.dto.VersionListDto;
-import org.zalando.apidiscovery.storage.api.domain.dto.VersionsDto;
-import org.zalando.apidiscovery.storage.api.service.ApiService;
+import org.zalando.apidiscovery.storage.api.domain.model.ApiDefinitionDto;
+import org.zalando.apidiscovery.storage.api.domain.model.ApiDto;
+import org.zalando.apidiscovery.storage.api.domain.model.ApiLifecycleState;
+import org.zalando.apidiscovery.storage.api.domain.model.ApiListDto;
+import org.zalando.apidiscovery.storage.api.domain.model.DeploymentDto;
+import org.zalando.apidiscovery.storage.api.domain.model.DeploymentsDto;
+import org.zalando.apidiscovery.storage.api.domain.model.VersionListDto;
+import org.zalando.apidiscovery.storage.api.domain.model.VersionsDto;
+import org.zalando.apidiscovery.storage.api.domain.service.ApiService;
 
 import java.util.List;
 
