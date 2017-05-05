@@ -15,7 +15,7 @@ import org.zalando.apidiscovery.storage.api.domain.logic.ApplicationService;
 
 import java.util.List;
 
-import static org.zalando.apidiscovery.storage.api.resource.LinkBuilderUtil.buildLink;
+import static org.zalando.apidiscovery.storage.api.domain.logic.LinkBuilderUtil.buildLink;
 
 @CrossOrigin
 @RestController

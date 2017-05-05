@@ -15,7 +15,7 @@ import org.zalando.apidiscovery.storage.api.repository.ApiEntity;
 import org.zalando.apidiscovery.storage.api.domain.logic.ApiDefinitionProcessingService;
 import org.zalando.apidiscovery.storage.api.domain.logic.SwaggerParseException;
 
-import static org.zalando.apidiscovery.storage.api.resource.LinkBuilderUtil.buildDefinitionDeploymentLink;
+import static org.zalando.apidiscovery.storage.api.domain.logic.LinkBuilderUtil.buildDefinitionDeploymentLink;
 
 @CrossOrigin
 @RestController

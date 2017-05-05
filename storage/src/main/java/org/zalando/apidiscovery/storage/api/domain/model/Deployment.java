@@ -9,8 +9,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 import org.zalando.apidiscovery.storage.api.repository.ApiEntity;
 
 import static java.lang.String.valueOf;
-import static org.zalando.apidiscovery.storage.api.resource.LinkBuilderUtil.buildApplicationDeploymentLink;
-import static org.zalando.apidiscovery.storage.api.resource.LinkBuilderUtil.buildDefinitionDeploymentLink;
+import static org.zalando.apidiscovery.storage.api.domain.logic.LinkBuilderUtil.buildApplicationDeploymentLink;
+import static org.zalando.apidiscovery.storage.api.domain.logic.LinkBuilderUtil.buildDefinitionDeploymentLink;
 
 @Data
 @AllArgsConstructor

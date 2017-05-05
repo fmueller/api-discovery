@@ -24,7 +24,7 @@ import java.util.List;
 
 import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.toList;
-import static org.zalando.apidiscovery.storage.api.resource.LinkBuilderUtil.buildLink;
+import static org.zalando.apidiscovery.storage.api.domain.logic.LinkBuilderUtil.buildLink;
 
 @CrossOrigin
 @RestController

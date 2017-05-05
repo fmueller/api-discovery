@@ -1,8 +1,9 @@
-package org.zalando.apidiscovery.storage.api.resource;
+package org.zalando.apidiscovery.storage.api.domain.logic;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.web.util.UriComponentsBuilder;
+import org.zalando.apidiscovery.storage.api.domain.logic.LinkBuilderUtil;
 import org.zalando.apidiscovery.storage.api.domain.model.DeploymentLink;
 import org.zalando.apidiscovery.storage.api.repository.ApiDeploymentEntity;
 import org.zalando.apidiscovery.storage.api.repository.ApiEntity;

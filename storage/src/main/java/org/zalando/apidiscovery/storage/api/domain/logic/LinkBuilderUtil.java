@@ -1,4 +1,4 @@
-package org.zalando.apidiscovery.storage.api.resource;
+package org.zalando.apidiscovery.storage.api.domain.logic;
 
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
