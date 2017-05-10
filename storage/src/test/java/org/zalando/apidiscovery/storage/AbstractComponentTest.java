@@ -17,14 +17,13 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.util.UriComponentsBuilder;
-import org.zalando.apidiscovery.storage.api.ApiRepository;
-import org.zalando.apidiscovery.storage.api.ApplicationRepository;
+import org.zalando.apidiscovery.storage.repository.ApiRepository;
+import org.zalando.apidiscovery.storage.repository.ApplicationRepository;
 
 import javax.persistence.EntityManager;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.zalando.apidiscovery.storage.TestDataHelper.readResource;
 
 @RunWith(SpringRunner.class)
 @WebAppConfiguration
@@ -60,7 +59,7 @@ public abstract class AbstractComponentTest {
     protected ResultActions postApiDefinition(Resource apiDefinition) throws Exception {
         return mvc.perform(post("/api-definitions")
             .contentType(APPLICATION_JSON_UTF8_VALUE)
-            .content(readResource(apiDefinition)));
+            .content(TestDataHelper.readResource(apiDefinition)));
     }
 
     protected UriComponentsBuilder localUriBuilder() {

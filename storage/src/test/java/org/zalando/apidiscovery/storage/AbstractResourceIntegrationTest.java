@@ -8,8 +8,8 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.util.UriComponentsBuilder;
-import org.zalando.apidiscovery.storage.api.ApiRepository;
-import org.zalando.apidiscovery.storage.api.ApplicationRepository;
+import org.zalando.apidiscovery.storage.repository.ApiRepository;
+import org.zalando.apidiscovery.storage.repository.ApplicationRepository;
 
 import javax.persistence.EntityManager;
 
