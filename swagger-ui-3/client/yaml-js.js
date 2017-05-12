@@ -7,7 +7,6 @@
  */
 
 import loader from 'yaml-js/lib/loader';
-import compose from 'yaml-js/lib/composer';
 
 const YAML = {
   compose: function(stream, Loader = loader.Loader) {

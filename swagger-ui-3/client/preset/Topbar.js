@@ -29,7 +29,8 @@ class Topbar extends Component {
   static propTypes = {
     specSelectors: PropTypes.object.isRequired,
     specActions: PropTypes.object.isRequired,
-    getComponent: PropTypes.func.isRequired
+    getComponent: PropTypes.func.isRequired,
+    apiDiscoveryActions: PropTypes.object.isRequired
   };
 
   constructor(props, context) {

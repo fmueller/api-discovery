@@ -32,9 +32,6 @@ export default class ApiDiscovery extends Component {
     const { getComponent, specSelectors } = this.props;
 
     const Container = getComponent('Container');
-    const Row = getComponent('Row');
-    const Col = getComponent('Col');
-
     const Topbar = getComponent('Topbar', true);
     const BaseLayout = getComponent('BaseLayout', true);
 
