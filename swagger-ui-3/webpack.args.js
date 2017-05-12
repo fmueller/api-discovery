@@ -33,3 +33,20 @@ exports.scripts = () => {
       return [];
   }
 };
+
+exports.definitions = () => {
+  switch (process.env.NODE_ENV) {
+    case 'production':
+      return {
+        'process.env': {
+          NODE_ENV: '"production"'
+        }
+      };
+    default:
+      return {
+        'process.env': {
+          NODE_ENV: '"development"'
+        }
+      };
+  }
+};

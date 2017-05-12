@@ -1,9 +1,11 @@
 import fetch from 'isomorphic-fetch';
+import log from '../debug';
 
 export const FETCH_API = 'API_DISCOVERY_FETCH_API';
 
 const fetchApi = url => async system => {
   system.specActions.updateLoadingStatus('loading');
+  log('Fetch API %s', url);
 
   const token = localStorage.getItem('API_DISCOVERY_TOKEN');
   let response;
@@ -17,10 +19,12 @@ const fetchApi = url => async system => {
       mode: 'cors'
     });
   } catch (e) {
+    log('Error fetching API', e);
     return system.specActions.updateLoadingStatus('failed');
   }
 
   if (!response.ok) {
+    log('Error fetching API: %s %s', response.status, response.statusText);
     return system.specActions.updateLoadingStatus('failed');
   }
 

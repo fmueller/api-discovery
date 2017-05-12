@@ -11,7 +11,7 @@ module.exports = {
     vendor: ['swagger-ui']
   },
   output: {
-    filename: '[name].js',
+    filename: '[name].[chunkHash].js',
     path: path.join(__dirname, 'dist', 'client'),
     libraryTarget: 'umd2'
   },
@@ -46,7 +46,8 @@ module.exports = {
     }
   },
   plugins: [
-    new ExtractTextPlugin('index.css'),
+    new webpack.DefinePlugin(args.definitions()),
+    new ExtractTextPlugin('[name].[chunkHash].css'),
     new webpack.optimize.CommonsChunkPlugin({
       name: 'vendor'
     }),

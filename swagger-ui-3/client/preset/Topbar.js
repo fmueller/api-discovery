@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Logo from '../img/swagger.png';
+import log from '../debug';
 
 /**
  * Based on the TopBar plugin.
@@ -50,7 +51,7 @@ class Topbar extends Component {
   };
 
   componentDidMount() {
-    console.log('Topbar props', this.props);
+    log('Topbar did mount.', this.props);
   }
 
   render() {
