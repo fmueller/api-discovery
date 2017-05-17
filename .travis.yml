@@ -7,7 +7,7 @@ node_js:
 
 before_install:
   # Codacy coverage
-  - curl -sL http://repo1.maven.org/maven2/com/codacy/codacy-coverage-reporter/1.0.13/codacy-coverage-reporter-1.0.13-assembly.jar > ~/codacy-coverage-reporter.jar
+  - curl -sL http://repo1.maven.org/maven2/com/codacy/codacy-coverage-reporter/2.0.0/codacy-coverage-reporter-2.0.0-assembly.jar > ~/codacy-coverage-reporter.jar
   # / Codacy coverage
 
 addons:
@@ -28,5 +28,5 @@ script:
   - cd ../
 
 after_success:
-  - java -cp ~/codacy-coverage-reporter.jar com.codacy.CodacyCoverageReporter --language Java --coverageReport cli/build/reports/jacoco/test/jacocoTestReport.xml -t $CODACY_PROJECT_TOKEN
-  - java -cp ~/codacy-coverage-reporter.jar com.codacy.CodacyCoverageReporter --language Java --coverageReport server/build/reports/jacoco/test/jacocoTestReport.xml -t $CODACY_PROJECT_TOKEN
+  - java -cp ~/codacy-coverage-reporter.jar com.codacy.CodacyCoverageReporter --language Java --coverageReport crawler/build/reports/jacoco/test/jacocoTestReport.xml -t $CODACY_PROJECT_TOKEN
+  - java -cp ~/codacy-coverage-reporter.jar com.codacy.CodacyCoverageReporter --language Java --coverageReport storage/build/reports/jacoco/test/jacocoTestReport.xml -t $CODACY_PROJECT_TOKEN
