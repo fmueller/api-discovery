@@ -10,7 +10,7 @@
     "build-server": "tsc -p .",
     "build": "npm run build-server && npm run build-client",
     "dist": "npm run clean && npm run build-server && NODE_ENV=production npm run build-client -- -p",
-    "start-dist": "npm run dist && NODE_ENV=production API_DISCOVERY_BASE_DIR=./dist/server node dist/server/index.js",
+    "start-dist": "npm run dist && NODE_ENV=production node dist/server/index.js",
     "start": "API_DISCOVERY_ENABLE_WEBPACK_DEV=true nodemon server/index.ts",
     "lint": "eslint client && tslint --type-check --project tsconfig.json",
     "test": "npm run lint && jest --coverage",
