@@ -6,6 +6,9 @@ import org.zalando.apidiscovery.crawler.CrawledApiDefinition;
 import org.zalando.apidiscovery.crawler.KioApplication;
 import org.zalando.apidiscovery.crawler.SchemaDiscovery;
 
+import static org.zalando.apidiscovery.crawler.gateway.ApiDefinition.STATUS_SUCCESSFUL;
+import static org.zalando.apidiscovery.crawler.gateway.ApiDefinition.STATUS_UNSUCCESSFUL;
+
 public class ApiDiscoveryStorageGateway {
 
     private final RestOperations restOperations;
@@ -17,21 +20,22 @@ public class ApiDiscoveryStorageGateway {
     }
 
     public void pushApiDefinition(SchemaDiscovery schemaDiscovery, CrawledApiDefinition crawledApiDefinition, KioApplication app) {
-        final ApiDefinition apiDefinition;
-
-        if (schemaDiscovery == null || crawledApiDefinition == null) {
-            apiDefinition = ApiDefinition.UNSUCCESSFUL;
-        } else {
-            apiDefinition = constructApiDefinition(schemaDiscovery, crawledApiDefinition, app);
-        }
+        final ApiDefinition apiDefinition = constructApiDefinition(schemaDiscovery, crawledApiDefinition, app);
 
         restOperations.postForLocation(baseUrl + "/api-definitions", apiDefinition);
     }
 
     @VisibleForTesting
     protected static ApiDefinition constructApiDefinition(SchemaDiscovery schemaDiscovery, CrawledApiDefinition apiDefinition, KioApplication app) {
+        if (schemaDiscovery == null || apiDefinition == null) {
+            return ApiDefinition.builder()
+                .status(STATUS_UNSUCCESSFUL)
+                .appName(app.getName())
+                .build();
+        }
+
         return ApiDefinition.builder()
-            .status(ApiDefinition.STATUS_SUCCESSFUL)
+            .status(STATUS_SUCCESSFUL)
             .type(schemaDiscovery.getSchemaType())
             .apiName(apiDefinition.getName())
             .appName(app.getName())

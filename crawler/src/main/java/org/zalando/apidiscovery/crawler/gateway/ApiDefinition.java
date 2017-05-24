@@ -18,8 +18,6 @@ public class ApiDefinition {
     public static final String UNDEFINED_TITLE = "undefined_title";
     public static final String UNDEFINED_VERSION = "undefined_version";
 
-    public static ApiDefinition UNSUCCESSFUL = ApiDefinition.builder().status(STATUS_UNSUCCESSFUL).build();
-
     private String status;
 
     @Builder.Default
