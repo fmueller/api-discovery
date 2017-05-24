@@ -32,4 +32,17 @@ public class ApiDiscoveryStorageGatewayTest {
 
         assertThat(apiDefinition).isEqualTo(META_API_DEFINITION);
     }
+
+
+    @Test
+    public void shouldPushUnsuccessfulApiDefinitionWithApplicationName() throws Exception {
+        ApiDefinition apiDefinition = ApiDiscoveryStorageGateway.constructApiDefinition(
+            null,
+            new CrawledApiDefinition(parseResource(metaApiDefinitionJson)),
+            new KioApplication(metaApiApplication()));
+
+        assertThat(apiDefinition).isNotNull();
+        assertThat(apiDefinition.getAppName()).isNotBlank();
+        assertThat(apiDefinition.getStatus()).isEqualTo(ApiDefinition.STATUS_UNSUCCESSFUL);
+    }
 }
