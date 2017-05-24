@@ -1,7 +1,5 @@
 package org.zalando.apidiscovery.storage.resource;
 
-import java.net.URI;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -11,9 +9,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.zalando.apidiscovery.storage.domain.model.DiscoveredApiDefinition;
-import org.zalando.apidiscovery.storage.repository.ApiEntity;
 import org.zalando.apidiscovery.storage.domain.service.ApiDefinitionProcessingService;
 import org.zalando.apidiscovery.storage.domain.service.SwaggerParseException;
+import org.zalando.apidiscovery.storage.repository.ApiEntity;
+
+import javax.validation.Valid;
+import java.net.URI;
 
 import static org.zalando.apidiscovery.storage.domain.service.LinkBuilderUtil.buildDefinitionDeploymentLink;
 
@@ -30,8 +31,8 @@ public class ApiDefinitionResourceController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> postDiscoveredApiDefinition(@RequestBody DiscoveredApiDefinition discoveredAPIDefinition, UriComponentsBuilder builder)
-            throws SwaggerParseException {
+    public ResponseEntity<Void> postDiscoveredApiDefinition(@Valid @RequestBody DiscoveredApiDefinition discoveredAPIDefinition, UriComponentsBuilder builder)
+        throws SwaggerParseException {
         final ApiEntity api = apiDefinitionProcessingService.processDiscoveredApiDefinition(discoveredAPIDefinition);
 
         final URI location = buildDefinitionDeploymentLink(builder, api).encode().toUri();
