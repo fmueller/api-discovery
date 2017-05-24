@@ -4,6 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.NotBlank;
+
+import javax.validation.constraints.NotNull;
 
 @Data
 @NoArgsConstructor
@@ -11,10 +14,12 @@ import lombok.NoArgsConstructor;
 @Builder
 public class DiscoveredApiDefinition {
 
-    private String status;
+    @NotNull
+    private DiscoveredApiDefinitionState status;
     private String type;
     private String apiName;
     private String version;
+    @NotBlank
     private String applicationName;
     private String serviceUrl;
     private String url;
