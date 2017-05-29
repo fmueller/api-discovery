@@ -115,7 +115,7 @@ public class ApiDefinitionProcessingService {
 
     private ApplicationEntity findOrCreateApplication(DiscoveredApiDefinition discoveredApiDefinition, OffsetDateTime now) {
         final Optional<ApplicationEntity> existingApplication =
-                applicationRepository.findOneByName(discoveredApiDefinition.getApplicationName());
+            applicationRepository.findOneByName(discoveredApiDefinition.getAppName());
 
         return existingApplication.orElse(newApplication(discoveredApiDefinition, now));
     }
@@ -153,7 +153,7 @@ public class ApiDefinitionProcessingService {
     private ApplicationEntity newApplication(DiscoveredApiDefinition discoveredAPIDefinition, OffsetDateTime now) {
         return ApplicationEntity.builder()
                 .appUrl(discoveredAPIDefinition.getServiceUrl())
-                .name(discoveredAPIDefinition.getApplicationName())
+            .name(discoveredAPIDefinition.getAppName())
                 .apiDeploymentEntities(new ArrayList<>())
                 .created(now)
                 .build();
