@@ -1,10 +1,12 @@
 package org.zalando.apidiscovery.crawler;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.StringHttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 import org.zalando.apidiscovery.crawler.gateway.ApiDiscoveryStorageGateway;
 import org.zalando.apidiscovery.crawler.gateway.LegacyApiDiscoveryStorageGateway;
@@ -24,6 +26,9 @@ public class ClientsConfiguration {
 
     @Autowired
     private AccessTokens accessTokens;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Value("${crawler.timeout.read}")
     private int readTimeout = 5000;
@@ -62,11 +67,14 @@ public class ClientsConfiguration {
     }
 
     private RestTemplate buildOAuth2RestTemplate(final String tokenName) {
-        return new StupsOAuth2RestTemplate(new StupsTokensAccessTokenProvider(tokenName, accessTokens),
+        RestTemplate rt = new StupsOAuth2RestTemplate(new StupsTokensAccessTokenProvider(tokenName, accessTokens),
                 ClientHttpRequestFactorySelector.getRequestFactory(new TimeoutConfig.Builder()
                         .withReadTimeout(readTimeout)
                         .withConnectTimeout(connectTimeout)
                         .withConnectionRequestTimeout(connectionRequestTimeout)
                         .build()));
+        rt.getMessageConverters().add(0, new MappingJackson2HttpMessageConverter(objectMapper));
+        return rt;
     }
+
 }
