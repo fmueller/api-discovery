@@ -20,7 +20,7 @@ public class DiscoveredApiDefinition {
     private String apiName;
     private String version;
     @NotBlank
-    private String applicationName;
+    private String appName;
     private String serviceUrl;
     private String url;
     private String ui;

@@ -81,7 +81,7 @@ public class ApiDefinitionResourceControllerTest {
     private DiscoveredApiDefinition createDiscoveredApiDefinition(String applicationName, DiscoveredApiDefinitionState status) {
         return DiscoveredApiDefinition.builder()
             .apiName("meta-api")
-            .applicationName(applicationName)
+            .appName(applicationName)
             .definition("{\\\"info\\\":{\\\"title\\\":\\\"Meta API\\\",\\\"version\\\":\\\"v1\\\"}}")
             .serviceUrl("http:localhost:8080/")
             .type("swagger")
