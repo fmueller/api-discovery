@@ -27,7 +27,7 @@ function generateEnv() {
         var clientId = String(fs.readFileSync(path.join(process.env.CREDENTIALS_DIR, 'app-client-id')));
         env += 'SUIENV_OAUTH_CLIENT_ID="' + clientId + '";\n';
     } else {
-        console.log('CREDENTIALS_DIR not provided!');
+        winston.info("CREDENTIALS_DIR not provided!");
     }
     return env;
 }
