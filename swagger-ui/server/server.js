@@ -25,7 +25,6 @@ function generateEnv() {
     // read client configuration from mint
     if (process.env.CREDENTIALS_DIR) {
         var clientConfig = JSON.parse(fs.readFileSync(path.join(process.env.CREDENTIALS_DIR, 'api-portal-credentials')));
-        console.log(clientConfig)
         env += 'SUIENV_OAUTH_CLIENT_ID="' + clientConfig["app-client-id"] + '";\n';
     }
     return env;
