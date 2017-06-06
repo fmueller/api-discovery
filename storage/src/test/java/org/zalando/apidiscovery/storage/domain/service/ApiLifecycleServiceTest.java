@@ -24,7 +24,7 @@ public class ApiLifecycleServiceTest extends AbstractComponentTest {
     private ApiLifecycleService lifecycleService;
 
     @Before
-    public void setup() {
+    public void setUp() {
         lifecycleService = new ApiLifecycleService(apiRepository, 1, 1);
     }
 
