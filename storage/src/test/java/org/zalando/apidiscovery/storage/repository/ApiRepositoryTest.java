@@ -1,30 +1,17 @@
 package org.zalando.apidiscovery.storage.repository;
 
-import java.util.List;
-
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.zalando.apidiscovery.storage.AbstractComponentTest;
 import org.zalando.apidiscovery.storage.domain.model.ApiLifecycleState;
+
+import java.util.List;
 
 import static java.time.OffsetDateTime.now;
 import static java.time.ZoneOffset.UTC;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
-@Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:cleanDatabase.sql")
-public class ApiRepositoryTest {
-
-    @Autowired
-    private ApiRepository apiRepository;
-
-    @Autowired
-    private ApplicationRepository applicationRepository;
+public class ApiRepositoryTest extends AbstractComponentTest {
 
     @Test
     public void shouldReturnAllApis() throws Exception {
