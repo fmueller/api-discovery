@@ -41,6 +41,7 @@ class OAuthConfiguration extends ResourceServerConfigurerAdapter {
             .antMatchers("/metrics").access("#oauth2.hasScope('uid')")
             .antMatchers(HttpMethod.OPTIONS, "/apps/**").permitAll()
             .antMatchers(HttpMethod.PUT, "/apps/**").access("#oauth2.hasScope('application.write_all')")
+            .antMatchers(HttpMethod.POST, "/api-definitions").access("#oauth2.hasScope('application.write_all')")
             .antMatchers("/**").access("#oauth2.hasScope('uid')");
     }
 
