@@ -49,12 +49,12 @@ class ApiLifecycleService {
 
     @Transactional
     void inactivateApis(OffsetDateTime now) {
-        final OffsetDateTime toOldApis = now.minusSeconds(markAsInactiveTime);
+        final OffsetDateTime tooOldApis = now.minusSeconds(markAsInactiveTime);
 
-        List<ApiEntity> inactivatedApis = apiRepository.findNotUpdatedSinceAndActive(toOldApis);
+        List<ApiEntity> inactivatedApis = apiRepository.findNotUpdatedSinceAndActive(tooOldApis);
         inactivatedApis.forEach(a -> a.getApiDeploymentEntities().stream()
             .filter(d -> d.getLifecycleState() == ApiLifecycleState.ACTIVE
-                && (d.getLastCrawled() == null || d.getLastCrawled().isBefore(toOldApis)))
+                && (d.getLastCrawled() == null || d.getLastCrawled().isBefore(tooOldApis)))
             .forEach(d -> d.setLifecycleState(ApiLifecycleState.INACTIVE)));
 
         log.info("Marked {} api deployments as inactive", inactivatedApis.size());
@@ -63,12 +63,12 @@ class ApiLifecycleService {
 
     @Transactional
     void decommissionApis(OffsetDateTime now) {
-        final OffsetDateTime toOldApis = now.minusSeconds(markAsDecommissionedTime);
+        final OffsetDateTime tooOldApis = now.minusSeconds(markAsDecommissionedTime);
 
-        List<ApiEntity> decommissionedApis = apiRepository.findNotUpdatedSinceAndInactive(toOldApis);
+        List<ApiEntity> decommissionedApis = apiRepository.findNotUpdatedSinceAndInactive(tooOldApis);
         decommissionedApis.forEach(a -> a.getApiDeploymentEntities().stream()
             .filter(d -> d.getLifecycleState() == ApiLifecycleState.INACTIVE
-                && (d.getLastCrawled() == null || d.getLastCrawled().isBefore(toOldApis)))
+                && (d.getLastCrawled() == null || d.getLastCrawled().isBefore(tooOldApis)))
             .forEach(d -> d.setLifecycleState(ApiLifecycleState.DECOMMISSIONED)));
 
         log.info("Marked {} api deployments as decommissioned", decommissionedApis.size());
