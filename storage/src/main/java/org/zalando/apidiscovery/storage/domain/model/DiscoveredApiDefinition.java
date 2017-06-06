@@ -16,11 +16,15 @@ public class DiscoveredApiDefinition {
 
     @NotNull
     private DiscoveredApiDefinitionState status;
-    private String type;
+
+    @NotBlank
     private String apiName;
-    private String version;
+
     @NotBlank
     private String appName;
+
+    private String version;
+    private String type;
     private String serviceUrl;
     private String url;
     private String ui;

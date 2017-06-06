@@ -1,6 +1,7 @@
 {
   "service_url": "uber.swagger.io",
   "url": "api/swagger.json",
+  "api_name": "uber.api",
   "app_name": "uber.api",
   "name": "Uber",
   "lifecycle_state": "ACTIVE",

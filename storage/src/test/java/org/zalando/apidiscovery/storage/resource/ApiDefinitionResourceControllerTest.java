@@ -26,6 +26,8 @@ import static org.zalando.apidiscovery.storage.domain.model.DiscoveredApiDefinit
 @WebMvcTest(ApiDefinitionResourceController.class)
 public class ApiDefinitionResourceControllerTest {
 
+    private final String applicationName = "api-service";
+
     @Autowired
     private MockMvc mvc;
 
@@ -43,7 +45,7 @@ public class ApiDefinitionResourceControllerTest {
         given(apiDefinitionService.processDiscoveredApiDefinition(any(DiscoveredApiDefinition.class)))
             .willReturn(api);
 
-        DiscoveredApiDefinition apiDefinition = createDiscoveredApiDefinition("api-service", SUCCESSFUL);
+        DiscoveredApiDefinition apiDefinition = createDiscoveredApiDefinition(applicationName, SUCCESSFUL);
 
         mvc.perform(
             post("/api-definitions")
@@ -65,7 +67,29 @@ public class ApiDefinitionResourceControllerTest {
 
     @Test
     public void shouldReturnBadRequestForInvalidStatus() throws Exception {
-        DiscoveredApiDefinition apiDefinition = createDiscoveredApiDefinition("api-service", null);
+        DiscoveredApiDefinition apiDefinition = createDiscoveredApiDefinition(applicationName, null);
+        mvc.perform(
+            post("/api-definitions")
+                .contentType(APPLICATION_JSON)
+                .content(toJson(apiDefinition)))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void shouldReturnBadRequestForMissingApiName() throws Exception {
+        DiscoveredApiDefinition apiDefinition = createDiscoveredApiDefinition(applicationName, SUCCESSFUL);
+        apiDefinition.setApiName(null);
+        mvc.perform(
+            post("/api-definitions")
+                .contentType(APPLICATION_JSON)
+                .content(toJson(apiDefinition)))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void shouldReturnBadRequestForBlankApiName() throws Exception {
+        DiscoveredApiDefinition apiDefinition = createDiscoveredApiDefinition(applicationName, SUCCESSFUL);
+        apiDefinition.setApiName("  ");
         mvc.perform(
             post("/api-definitions")
                 .contentType(APPLICATION_JSON)
