@@ -4,3 +4,5 @@ crawler.jobs.pool: 10
 crawler.timeout.read: 5000
 crawler.timeout.connect: 2000
 crawler.timeout.connection-request: 1000
+
+management.port: 7979
