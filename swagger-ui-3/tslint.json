@@ -1,101 +1,43 @@
 {
-  "jsRules":{
-    "class-name":true,
-    "comment-format":[
-      true,
-      "check-space"
+  "defaultSeverity": "error",
+  "extends": [
+    "tslint:recommended"
+  ],
+  "jsRules": {},
+  "rules": {
+    "trailing-comma": [
+      false
     ],
-    "indent":[
-      true,
-      "spaces"
-    ],
-    "no-duplicate-variable":true,
-    "no-eval":true,
-    "no-trailing-whitespace":true,
-    "no-unsafe-finally":true,
-    "one-line":[
-      true,
-      "check-open-brace",
-      "check-whitespace"
-    ],
-    "quotemark":[
+    "quotemark": [
       true,
       "single"
     ],
-    "semicolon":[
-      false,
-      "always"
+    "no-console": [
+      false
     ],
-    "triple-equals":[
+    "no-string-literal": false,
+    "no-reference": false,
+    "no-var-requires": false,
+    "object-literal-sort-keys": false,
+    "interface-over-type-literal": false,
+    "interface-name": [
       true,
-      "allow-null-check"
+      "never-prefix"
     ],
-    "variable-name":[
+    "arrow-parens": [
       true,
-      "ban-keywords"
+      "ban-single-arg-parens"
     ],
-    "whitespace":[
+    "curly": [
       true,
-      "check-branch",
-      "check-decl",
-      "check-operator",
-      "check-separator",
-      "check-type"
+      "ignore-same-line"
+    ],
+    "member-ordering": [
+      "true",
+      {
+        "order": "fields-first"
+      }
     ]
   },
-  "rules":{
-    "class-name":true,
-    "comment-format":[
-      true,
-      "check-space"
-    ],
-    "indent":[
-      true,
-      "spaces"
-    ],
-    "no-eval":true,
-    "no-internal-module":true,
-    "no-trailing-whitespace":true,
-    "no-unsafe-finally":true,
-    "no-var-keyword":true,
-    "one-line":[
-      true,
-      "check-open-brace",
-      "check-whitespace"
-    ],
-    "quotemark":[
-      true,
-      "single"
-    ],
-    "semicolon":[
-      false,
-      "always"
-    ],
-    "triple-equals":[
-      true,
-      "allow-null-check"
-    ],
-    "typedef-whitespace":[
-      true,
-      {
-        "call-signature":"nospace",
-        "index-signature":"nospace",
-        "parameter":"nospace",
-        "property-declaration":"nospace",
-        "variable-declaration":"nospace"
-      }
-    ],
-    "variable-name":[
-      true,
-      "ban-keywords"
-    ],
-    "whitespace":[
-      true,
-      "check-branch",
-      "check-decl",
-      "check-operator",
-      "check-separator",
-      "check-type"
-    ]
-  }
+  "rulesDirectory": []
 }

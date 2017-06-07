@@ -1,19 +1,16 @@
 {
   "compilerOptions": {
-    "outDir": "dist",
+    "outDir": "dist/server",
     "module": "commonjs",
     "target": "es2017",
     "moduleResolution": "Node",
     "newLine": "LF",
-    "noImplicitAny": true,
-    "noImplicitThis": true,
+    "strict": true,
     "noUnusedLocals": true,
-    "strictNullChecks": true,
     "noUnusedParameters": true,
     "sourceMap": true,
     "pretty": true,
     "removeComments": true,
-    "allowJs": true,
     "lib": [
       "dom",
       "es2017"

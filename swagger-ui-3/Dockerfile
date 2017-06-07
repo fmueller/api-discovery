@@ -1,4 +1,4 @@
-FROM registry.opensource.zalan.do/stups/node:7.10-cd50
+FROM registry.opensource.zalan.do/stups/node:7.10-cd52
 
 RUN apt-get update && apt-get install -y apt-transport-https \
     && curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \

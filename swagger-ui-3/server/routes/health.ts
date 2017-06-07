@@ -1,5 +1,6 @@
-import Router = require('koa-router')
+import Router = require('koa-router');
 
-export default (router: Router) => router.get('/health', ctx => {
-  ctx.body = 'OK'
-});
+export default (router: Router) =>
+  router.get('/health', ctx => {
+    ctx.body = 'OK';
+  });
