@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import org.zalando.apidiscovery.storage.domain.model.ApiLifecycleState;
 import org.zalando.apidiscovery.storage.repository.ApiEntity;
 import org.zalando.apidiscovery.storage.repository.ApiRepository;
@@ -47,8 +46,10 @@ class ApiLifecycleService {
         decommissionApis(now);
     }
 
-    @Transactional
-    void inactivateApis(OffsetDateTime now) {
+    /**
+     * protected for testing purpose
+     */
+    protected void inactivateApis(OffsetDateTime now) {
         final OffsetDateTime tooOldApis = now.minusSeconds(markAsInactiveTime);
 
         List<ApiEntity> inactivatedApis = apiRepository.findNotUpdatedSinceAndActive(tooOldApis);
@@ -61,8 +62,10 @@ class ApiLifecycleService {
         apiRepository.save(inactivatedApis);
     }
 
-    @Transactional
-    void decommissionApis(OffsetDateTime now) {
+    /**
+     * protected for testing purpose
+     */
+    protected void decommissionApis(OffsetDateTime now) {
         final OffsetDateTime tooOldApis = now.minusSeconds(markAsDecommissionedTime);
 
         List<ApiEntity> decommissionedApis = apiRepository.findNotUpdatedSinceAndInactive(tooOldApis);
