@@ -13,7 +13,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import org.zalando.apidiscovery.storage.domain.model.ApiDefinition;
 import org.zalando.apidiscovery.storage.domain.model.Api;
 import org.zalando.apidiscovery.storage.domain.model.ApiLifecycleState;
-import org.zalando.apidiscovery.storage.domain.model.ApiList;
+import org.zalando.apidiscovery.storage.domain.model.Apis;
 import org.zalando.apidiscovery.storage.domain.model.Deployment;
 import org.zalando.apidiscovery.storage.domain.model.Deployments;
 import org.zalando.apidiscovery.storage.domain.model.VersionList;
@@ -39,12 +39,12 @@ public class ApiResourceController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiList> getApis(@RequestParam(value = "lifecycle_state", required = false) ApiLifecycleState lifecycleState) {
+    public ResponseEntity<Apis> getApis(@RequestParam(value = "lifecycle_state", required = false) ApiLifecycleState lifecycleState) {
         List<Api.ApiMetaData> apiList = loadApis(lifecycleState).stream()
             .map(Api::getApiMetaData)
             .sorted(comparing(Api.ApiMetaData::getId))
             .collect(toList());
-        return ResponseEntity.ok(new ApiList(apiList));
+        return ResponseEntity.ok(new Apis(apiList));
     }
 
     private List<Api> loadApis(ApiLifecycleState lifecycleState) {
