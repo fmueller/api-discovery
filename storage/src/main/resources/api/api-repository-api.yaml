@@ -382,10 +382,6 @@ definitions:
         type: string
         description: ID of the API, extracted from API Name field
         example: kio-api
-      name:
-        type: string
-        description: Human readable name of the API, extracted from API definition
-        example: Kio API
       lifecycle_state:
         $ref: '#/definitions/LifecycleState'
 

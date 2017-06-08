@@ -25,7 +25,7 @@ public class ApiJsonTest {
         assertThat(this.json.write(api))
             .doesNotHaveJsonPathValue("$.versions")
             .doesNotHaveJsonPathValue("$.applications")
-            .doesNotHaveEmptyJsonPathValue("$.apiMetaData.name")
+            .doesNotHaveEmptyJsonPathValue("$.apiMetaData.id")
             .doesNotHaveEmptyJsonPathValue("$.apiMetaData.lifecycleState");
     }
 }

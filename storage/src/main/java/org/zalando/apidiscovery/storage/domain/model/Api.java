@@ -29,7 +29,7 @@ public class Api {
     @AllArgsConstructor
     @NoArgsConstructor
     public class ApiMetaData {
-        private String name;
+        private String id;
         private ApiLifecycleState lifecycleState;
     }
 }
