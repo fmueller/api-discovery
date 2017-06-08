@@ -13,6 +13,6 @@ import java.util.List;
 @Builder
 public class ApiList {
 
-    private List<Api> apis;
+    private List<Api.ApiMetaData> apis;
 
 }

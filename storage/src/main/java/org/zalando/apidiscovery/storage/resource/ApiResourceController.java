@@ -40,8 +40,9 @@ public class ApiResourceController {
 
     @GetMapping
     public ResponseEntity<ApiList> getApis(@RequestParam(value = "lifecycle_state", required = false) ApiLifecycleState lifecycleState) {
-        List<Api> apiList = loadApis(lifecycleState).stream()
-            .sorted(comparing(api -> api.getApiMetaData().getName()))
+        List<Api.ApiMetaData> apiList = loadApis(lifecycleState).stream()
+            .map(Api::getApiMetaData)
+            .sorted(comparing(Api.ApiMetaData::getId))
             .collect(toList());
         return ResponseEntity.ok(new ApiList(apiList));
     }
