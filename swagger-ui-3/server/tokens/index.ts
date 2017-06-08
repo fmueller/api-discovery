@@ -1,5 +1,5 @@
-import conf from '../conf';
-import { log } from '../logger';
+import conf from '../framework/conf';
+import { log } from '../framework/logger';
 import LocalProvider from './LocalProvider';
 import NullProvider from './NullProvider';
 import PasswordCredentialsFlowProvider, { TokenScopes } from './PasswordCredentialsFlowProvider';

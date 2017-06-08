@@ -15,8 +15,8 @@ const log = new Logger({
 });
 
 const defaultConf = {
-  staticDir: path.resolve(__dirname, '../client'),
-  isProduction: process.env.NODE_ENV === 'production'
+  staticDir: path.resolve(__dirname, '../../client'),
+  serveStatic: process.env['NODE_ENV'] !== 'development'
 };
 
 const configFile = process.env['API_DISCOVERY_CONF'];
