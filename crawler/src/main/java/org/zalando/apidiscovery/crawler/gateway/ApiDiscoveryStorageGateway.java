@@ -1,13 +1,13 @@
 package org.zalando.apidiscovery.crawler.gateway;
 
 import com.google.common.annotations.VisibleForTesting;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.client.RestOperations;
 import org.zalando.apidiscovery.crawler.CrawledApiDefinition;
 import org.zalando.apidiscovery.crawler.KioApplication;
 import org.zalando.apidiscovery.crawler.SchemaDiscovery;
 
 import static org.zalando.apidiscovery.crawler.gateway.ApiDefinition.STATUS_SUCCESSFUL;
-import static org.zalando.apidiscovery.crawler.gateway.ApiDefinition.STATUS_UNSUCCESSFUL;
 
 public class ApiDiscoveryStorageGateway {
 
@@ -19,21 +19,21 @@ public class ApiDiscoveryStorageGateway {
         this.baseUrl = baseUrl;
     }
 
-    public void pushApiDefinition(SchemaDiscovery schemaDiscovery, CrawledApiDefinition crawledApiDefinition, KioApplication app) {
-        final ApiDefinition apiDefinition = constructApiDefinition(schemaDiscovery, crawledApiDefinition, app);
+    public void pushApiDefinition(SchemaDiscovery schemaDiscovery,
+                                  CrawledApiDefinition crawledApiDefinition,
+                                  KioApplication app) {
 
-        restOperations.postForLocation(baseUrl + "/api-definitions", apiDefinition);
+        if (!StringUtils.isBlank(crawledApiDefinition.getName()) && !StringUtils.isBlank(app.getName())) {
+            final ApiDefinition apiDefinition = constructApiDefinition(schemaDiscovery, crawledApiDefinition, app);
+
+            restOperations.postForLocation(baseUrl + "/api-definitions", apiDefinition);
+        }
     }
 
     @VisibleForTesting
-    protected static ApiDefinition constructApiDefinition(SchemaDiscovery schemaDiscovery, CrawledApiDefinition apiDefinition, KioApplication app) {
-        if (schemaDiscovery == null || apiDefinition == null) {
-            return ApiDefinition.builder()
-                .status(STATUS_UNSUCCESSFUL)
-                .appName(app.getName())
-                .build();
-        }
-
+    protected static ApiDefinition constructApiDefinition(SchemaDiscovery schemaDiscovery,
+                                                          CrawledApiDefinition apiDefinition,
+                                                          KioApplication app) {
         return ApiDefinition.builder()
             .status(STATUS_SUCCESSFUL)
             .type(schemaDiscovery.getSchemaType())
