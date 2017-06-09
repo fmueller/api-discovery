@@ -1,5 +1,6 @@
 package org.zalando.apidiscovery.crawler;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,6 +27,11 @@ public class CrawledApiDefinitionTest {
     @Test
     public void shouldExtractName() throws Exception {
         assertThat(crawledApiDefinition.getName()).isEqualTo("meta-api");
+    }
+
+    @Test
+    public void shouldExtractEmptyNameForNonExistingField() throws Exception {
+        assertThat(new CrawledApiDefinition(new ObjectMapper().createObjectNode()).getName()).isEmpty();
     }
 
     @Test
