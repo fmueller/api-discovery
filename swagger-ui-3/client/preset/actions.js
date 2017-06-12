@@ -3,15 +3,15 @@ import log from '../debug';
 
 export const FETCH_API = 'API_DISCOVERY_FETCH_API';
 
-const fetchApi = url => async system => {
+const fetchApi = id => async system => {
   system.specActions.updateLoadingStatus('loading');
-  log('Fetch API %s', url);
+  log('Fetch API %s', id);
 
   const token = localStorage.getItem('API_DISCOVERY_TOKEN');
   let response;
 
   try {
-    response = await fetch(url, {
+    response = await fetch(`/apis/${id}/definition`, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${token}`
@@ -32,7 +32,7 @@ const fetchApi = url => async system => {
 
   system.specActions.updateLoadingStatus('success');
   system.specActions.updateSpec(json.definition);
-  system.specActions.updateUrl(url);
+  system.specActions.updateUrl(id);
 };
 
 export default { fetchApi };

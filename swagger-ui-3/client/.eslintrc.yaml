@@ -15,6 +15,7 @@ settings:
     onlyFilesWithFlowAnnotation: false
 
 parserOptions:
+  sourceType: module
   ecmaFeatures:
     modules: true
 

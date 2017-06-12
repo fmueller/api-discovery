@@ -15,11 +15,17 @@
     "no-console": [
       false
     ],
+    "no-namespace": [
+      false
+    ],
     "no-string-literal": false,
     "no-reference": false,
     "no-var-requires": false,
     "object-literal-sort-keys": false,
     "interface-over-type-literal": false,
+    "max-classes-per-file": [
+      false
+    ],
     "interface-name": [
       true,
       "never-prefix"

@@ -4,6 +4,7 @@ import Koa = require('koa');
 import koaStatic = require('koa-static');
 import { Server } from 'http';
 import conf from './framework/conf';
+import createErrorHandler from './framework/ErrorHandler';
 import { log, logger } from './framework/logger';
 import createRouter from './resource';
 
@@ -23,6 +24,7 @@ export function init(): Koa {
   }
 
   const router = createRouter();
+  app.use(createErrorHandler());
   app.use(router.routes());
   app.use(router.allowedMethods());
   return app;

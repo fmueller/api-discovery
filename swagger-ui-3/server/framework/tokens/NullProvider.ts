@@ -1,4 +1,4 @@
-import TokenProvider, { TokenSupplier } from './TokenProvider';
+import TokenProvider from './TokenProvider';
 
 /**
  * Empty token provider which returns nothing.
@@ -12,7 +12,7 @@ export default class NullProvider implements TokenProvider {
     return Promise.resolve('');
   }
 
-  public getTokenSupplier(): TokenSupplier {
+  public getTokenSupplier(): TokenProvider.TokenSupplier {
     return () => this.getToken();
   }
 }

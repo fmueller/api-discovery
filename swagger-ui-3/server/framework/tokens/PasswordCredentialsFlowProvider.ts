@@ -1,10 +1,18 @@
 import path = require('path');
 import fs = require('mz/fs');
 import request = require('request-promise-native');
-import TokenProvider, { TokenSupplier } from './TokenProvider';
+import TokenProvider from './TokenProvider';
 
-export type TokenScopes = { [name: string]: string[] };
-export type TokenSet = { [name: string]: string };
+export type UserCredentials = {
+  username: string;
+  password: string;
+};
+
+export type ClientCredentials = {
+  id: string;
+  secret: string;
+};
+
 export type UserCredentialsProvider = () => UserCredentials | Promise<UserCredentials>;
 export type ClientCredentialsProvider = () => ClientCredentials | Promise<ClientCredentials>;
 
@@ -17,16 +25,7 @@ export type Options = {
   clientCredentialsProvider?: ClientCredentialsProvider;
   debounceMilliseconds?: number;
   tokenResponseParser?: (response: any) => string;
-};
-
-export type UserCredentials = {
-  username: string;
-  password: string;
-};
-
-export type ClientCredentials = {
-  id: string;
-  secret: string;
+  defaultToken?: string;
 };
 
 async function loadCredentials(filePath: string): Promise<{ [name: string]: string }> {
@@ -61,6 +60,10 @@ function defaultTokenResponseParser(response: any): string {
   return '';
 }
 
+const defaultRealm = '/services';
+const defaultDebounceMilliseconds = 10000;
+const defaultToken = 'default';
+
 /**
  * Retrieves OAuth2 tokens from a backend using the resource owner password credentials flow.
  */
@@ -69,9 +72,10 @@ export default class PasswordCredentialsFlowProvider implements TokenProvider {
   private readonly userCredentialsProvider: UserCredentialsProvider;
   private readonly clientCredentialsProvider: ClientCredentialsProvider;
   private readonly debounceMilliseconds: number;
-  private readonly tokenScopes: TokenScopes;
-  private readonly oauth2AccessTokens: TokenSet;
+  private readonly tokenScopes: TokenProvider.TokenScopes;
+  private readonly oauth2AccessTokens: TokenProvider.TokenSet;
   private readonly realm: string;
+  private readonly defaultToken: string;
   private readonly tokenResponseParser: (response: any) => string;
   private lastRefresh: number;
 
@@ -92,12 +96,13 @@ export default class PasswordCredentialsFlowProvider implements TokenProvider {
         secret: 'client_secret'
       });
 
-    this.realm = options.realm || '/services';
+    this.realm = options.realm || defaultRealm;
     this.accessTokenUri = options.accessTokenUri;
     this.oauth2AccessTokens = {};
-    this.debounceMilliseconds = options.debounceMilliseconds || 10000;
+    this.debounceMilliseconds = options.debounceMilliseconds || defaultDebounceMilliseconds;
     this.tokenResponseParser = options.tokenResponseParser || defaultTokenResponseParser;
     this.tokenScopes = {};
+    this.defaultToken = options.defaultToken || defaultToken;
     this.lastRefresh = 0;
   }
 
@@ -155,8 +160,15 @@ export default class PasswordCredentialsFlowProvider implements TokenProvider {
    * @param scopes Requested scopes of the token.
    * @return This TokenProvider instance.
    */
-  public addToken(name: string, scopes: string[]): PasswordCredentialsFlowProvider {
-    this.tokenScopes[name] = scopes;
+  public addToken(scopes: string[]): PasswordCredentialsFlowProvider;
+  public addToken(name: string, scopes: string[]): PasswordCredentialsFlowProvider;
+  public addToken(arg0: string | string[], arg1?: string[]): PasswordCredentialsFlowProvider {
+    if (typeof arg0 === 'string' && Array.isArray(arg1)) {
+      this.tokenScopes[arg0] = arg1;
+    }
+    if (Array.isArray(arg0)) {
+      this.tokenScopes[this.defaultToken] = arg0;
+    }
     return this;
   }
 
@@ -165,22 +177,34 @@ export default class PasswordCredentialsFlowProvider implements TokenProvider {
    * @param tokens Lists of requested scopes by token name.
    * @return This TokenProvider instance.
    */
-  public addTokens(tokens: TokenScopes): PasswordCredentialsFlowProvider {
+  public addTokens(tokens: TokenProvider.TokenScopes): PasswordCredentialsFlowProvider {
     Object.assign(this.tokenScopes, tokens);
     return this;
   }
 
-  public async getTokens(): Promise<TokenSet> {
+  public async getTokens(): Promise<TokenProvider.TokenSet> {
     await this.refreshTokensIfNecessary();
     return Object.assign({}, this.oauth2AccessTokens);
   }
 
-  public async getToken(key: string): Promise<string> {
+  public async getToken(name: string): Promise<string> {
     await this.refreshTokensIfNecessary();
-    return this.oauth2AccessTokens[key] || '';
+    return this.oauth2AccessTokens[name] || '';
   }
 
-  public getTokenSupplier(name: string): TokenSupplier {
-    return () => this.getToken(name);
+  public getTokenSupplier(name?: string): TokenProvider.TokenSupplier {
+    return () => this.getToken(name || defaultToken);
+  }
+
+  public toJSON(): object {
+    return {
+      accessTokenUri: this.accessTokenUri,
+      tokenScopes: Object.assign({}, this.tokenScopes),
+      realm: this.realm
+    };
+  }
+
+  public toString(): string {
+    return JSON.stringify(this.toJSON());
   }
 }
