@@ -10,7 +10,8 @@
     ],
     "quotemark": [
       true,
-      "single"
+      "single",
+      "jsx-double"
     ],
     "no-console": [
       false

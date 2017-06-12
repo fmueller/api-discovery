@@ -1,7 +1,14 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import Logo from '../img/swagger.png';
+import React = require('react');
+import PropTypes = require('prop-types');
 import log from '../debug';
+import Logo from '../img/swagger.png';
+
+type TopbarProps = {
+  specSelectors: any;
+  specActions: any;
+  getComponent: (name: string, container?: boolean | 'root') => React.ComponentClass<any>;
+  apiDiscoveryActions: any;
+};
 
 /**
  * Based on the TopBar plugin.
@@ -18,44 +25,44 @@ import log from '../debug';
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 export default () => ({
   components: {
     Topbar
   }
 });
 
-class Topbar extends Component {
-  static propTypes = {
+class Topbar extends React.Component<TopbarProps, any> {
+  public static readonly propTypes = {
     specSelectors: PropTypes.object.isRequired,
     specActions: PropTypes.object.isRequired,
     getComponent: PropTypes.func.isRequired,
     apiDiscoveryActions: PropTypes.object.isRequired
   };
 
-  constructor(props, context) {
+  constructor(props: TopbarProps, context: any) {
     super(props, context);
     this.state = { url: props.specSelectors.url() };
   }
 
-  componentWillReceiveProps(nextProps) {
+  public componentWillReceiveProps(nextProps: TopbarProps) {
     this.setState({ url: nextProps.specSelectors.url() });
   }
 
-  onUrlChange = e => {
-    const { target: { value } } = e;
+  private onUrlChange(e: React.FormEvent<HTMLInputElement>) {
+    const { currentTarget: { value } } = e;
     this.setState({ url: value });
-  };
+  }
 
-  downloadUrl = () => {
+  private downloadUrl() {
     this.props.apiDiscoveryActions.fetchApi(this.state.url);
-  };
+  }
 
-  componentDidMount() {
+  public componentDidMount() {
     log('Topbar did mount.', this.props);
   }
 
-  render() {
+  public render() {
     const { getComponent, specSelectors } = this.props;
     const Button = getComponent('Button');
     const Link = getComponent('Link');
@@ -63,7 +70,7 @@ class Topbar extends Component {
     const isLoading = specSelectors.loadingStatus() === 'loading';
     const isFailed = specSelectors.loadingStatus() === 'failed';
 
-    const inputStyle = {};
+    const inputStyle: { color?: string } = {};
     if (isFailed) inputStyle.color = 'red';
     if (isLoading) inputStyle.color = '#aaa';
     return (
@@ -78,12 +85,14 @@ class Topbar extends Component {
               <input
                 className="download-url-input"
                 type="text"
-                onChange={this.onUrlChange}
+                onChange={this.onUrlChange.bind(this)}
                 value={this.state.url}
                 disabled={isLoading}
                 style={inputStyle}
               />
-              <Button className="download-url-button" onClick={this.downloadUrl}>Discover</Button>
+              <Button className="download-url-button" onClick={this.downloadUrl.bind(this)}>
+                Discover
+              </Button>
             </div>
           </div>
         </div>

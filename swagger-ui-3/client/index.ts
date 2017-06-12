@@ -1,5 +1,8 @@
-import swaggerUI from 'swagger-ui';
+/// <reference path="./typings/index.d.ts" />
+
+import swaggerUI = require('swagger-ui');
 import ApiDiscoveryPreset from './preset';
+
 import 'swagger-ui/dist/swagger-ui.css';
 import './index.css';
 

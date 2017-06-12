@@ -1,9 +1,8 @@
 {
   "compilerOptions": {
-    "outDir": "dist/server",
+    "outDir": "../dist/client",
     "module": "commonjs",
-    "target": "es2017",
-    "moduleResolution": "Node",
+    "target": "es5",
     "newLine": "LF",
     "strict": true,
     "noUnusedLocals": true,
@@ -11,15 +10,21 @@
     "sourceMap": true,
     "pretty": true,
     "removeComments": true,
+    "allowJs": true,
+    "checkJs": true,
+    "jsx": "react",
     "lib": [
       "dom",
-      "es2017"
+      "es2015"
     ]
   },
   "include": [
-    "server/**/*"
-   ],
-   "formatCodeOptions": {
+    "**/*"
+  ],
+  "exclude": [
+    "**/yaml-js.js"
+  ],
+  "formatCodeOptions": {
     "indentSize": 2,
     "tabSize": 2,
     "newLineCharacter": "\n"

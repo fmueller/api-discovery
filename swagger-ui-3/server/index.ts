@@ -4,7 +4,7 @@ import Koa = require('koa');
 import koaStatic = require('koa-static');
 import { Server } from 'http';
 import conf from './framework/conf';
-import createErrorHandler from './framework/ErrorHandler';
+import createErrorHandler from './framework/error-handler';
 import { log, logger } from './framework/logger';
 import createRouter from './resource';
 

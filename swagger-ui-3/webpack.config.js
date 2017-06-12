@@ -7,7 +7,7 @@ const args = require('./webpack.args');
 module.exports = {
   target: 'web',
   entry: {
-    index: './client/index.js',
+    index: './client/index.ts',
     vendor: ['swagger-ui']
   },
   output: {
@@ -27,6 +27,13 @@ module.exports = {
         }
       },
       {
+        test: /\.tsx?$/,
+        loader: 'awesome-typescript-loader',
+        options: {
+          configFileName: path.resolve(__dirname, './client/tsconfig.json')
+        }
+      },
+      {
         test: /\.css$/,
         use: ExtractTextPlugin.extract({
           fallback: 'style-loader',
@@ -41,6 +48,7 @@ module.exports = {
   },
   externals: args.externals(),
   resolve: {
+    extensions: ['.ts', '.tsx', '.js', '.json', '.png', '.jpg', '.css'],
     alias: {
       'yaml-js$': path.resolve(__dirname, './client/yaml-js.js')
     }

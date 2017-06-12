@@ -1,7 +1,7 @@
-import ApiDiscovery from './ApiDiscovery';
-import Topbar from './Topbar';
 import actions from './actions';
+import ApiDiscovery from './ApiDiscovery';
 import reducers from './reducers';
+import Topbar from './Topbar';
 
 /**
  * A SwaggerUI preset is a list of plugins.

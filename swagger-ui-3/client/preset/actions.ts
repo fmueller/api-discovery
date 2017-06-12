@@ -1,9 +1,9 @@
-import fetch from 'isomorphic-fetch';
+import fetch = require('isomorphic-fetch');
 import log from '../debug';
 
 export const FETCH_API = 'API_DISCOVERY_FETCH_API';
 
-const fetchApi = id => async system => {
+const fetchApi = (id: string) => async (system: any) => {
   system.specActions.updateLoadingStatus('loading');
   log('Fetch API %s', id);
 
