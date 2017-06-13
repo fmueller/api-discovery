@@ -1,7 +1,9 @@
-import fetch = require('isomorphic-fetch');
-import log from '../debug';
+import superagent = require('superagent');
+import log from '../framework/debug';
+import oAuth2Client from '../framework/OAuth2Client';
 
 export const FETCH_API = 'API_DISCOVERY_FETCH_API';
+export const FETCH_TOKEN = 'API_DISCOVERY_FETCH_TOKEN';
 
 const fetchApi = (id: string) => async (system: any) => {
   system.specActions.updateLoadingStatus('loading');
@@ -11,28 +13,32 @@ const fetchApi = (id: string) => async (system: any) => {
   let response;
 
   try {
-    response = await fetch(`/apis/${id}/definition`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`
-      },
-      mode: 'cors'
-    });
+    response = await superagent
+      .get(`/apis/${id}/definition`)
+      .set('Authorization', `Bearer ${token}`);
   } catch (e) {
     log('Error fetching API', e);
     return system.specActions.updateLoadingStatus('failed');
   }
 
   if (!response.ok) {
-    log('Error fetching API: %s %s', response.status, response.statusText);
+    log('Error fetching API: %s %s', response.status, response.text);
     return system.specActions.updateLoadingStatus('failed');
   }
 
-  const json = await response.json();
-
   system.specActions.updateLoadingStatus('success');
-  system.specActions.updateSpec(json.definition);
+  system.specActions.updateSpec(response.body.definition);
   system.specActions.updateUrl(id);
 };
 
-export default { fetchApi };
+const fetchToken = () => async (_: any) => {
+  try {
+    log('Fetch token.');
+    const token = oAuth2Client.getToken();
+    log('Fetched token: %s', token);
+  } catch (e) {
+    log('Fetching token failed.', e);
+  }
+};
+
+export default { fetchApi, fetchToken };

@@ -1,13 +1,13 @@
 import React = require('react');
 import PropTypes = require('prop-types');
-import log from '../debug';
-import Logo from '../img/swagger.png';
+import log from '../framework/debug';
+import Logo = require('../img/swagger.png');
 
 type TopbarProps = {
   specSelectors: any;
   specActions: any;
   getComponent: (name: string, container?: boolean | 'root') => React.ComponentClass<any>;
-  apiDiscoveryActions: any;
+  apiDiscoveryActions: { [name: string]: (...args: any[]) => void };
 };
 
 /**
@@ -94,6 +94,10 @@ class Topbar extends React.Component<TopbarProps, any> {
                 Discover
               </Button>
             </div>
+            &nbsp;
+            <Button className="btn execute" onClick={this.props.apiDiscoveryActions.fetchToken}>
+              Login
+            </Button>
           </div>
         </div>
       </div>
