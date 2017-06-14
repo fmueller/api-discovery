@@ -21,6 +21,7 @@ exports.externals = () => {
   switch (process.env.NODE_ENV) {
     case 'production':
       return {
+        'swagger-ui': 'SwaggerUIBundle',
         react: 'React',
         'react-dom': 'ReactDOM'
       };
@@ -34,13 +35,18 @@ exports.scripts = () => {
     case 'production':
       return [
         {
-          src: 'https://cdnjs.cloudflare.com/ajax/libs/react/15.5.4/react.min.js',
-          integrity: 'sha256-lLTXVU5NHLl101VgD3LswV6ZgI2PjSjZ5dVzhBcq52k=',
+          src: 'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.0.14/swagger-ui-bundle.js',
+          integrity: 'sha256-xU14TvNaRLU+PcUYoi49k21OsdfDzSwSiDoI4h6NDsQ=',
           crossorigin: 'anonymous'
         },
         {
-          src: 'https://cdnjs.cloudflare.com/ajax/libs/react/15.5.4/react-dom.min.js',
-          integrity: 'sha256-4DRNdBX+quo7fRIFuR9yhr157hq/9FcAsHRDNQEXZSM=',
+          src: 'https://cdnjs.cloudflare.com/ajax/libs/react/15.6.0/react.min.js',
+          integrity: 'sha256-mMnqBTPWAOYxp2vj8RYEqx34vhMT4PGvwxm5Ndl5yt8=',
+          crossorigin: 'anonymous'
+        },
+        {
+          src: 'https://cdnjs.cloudflare.com/ajax/libs/react/15.6.0/react-dom.min.js',
+          integrity: 'sha256-eG+W/mO3HZuwuYJjKT9aYbZC/MVN1mmpbjyQhGBihhE=',
           crossorigin: 'anonymous'
         }
       ];
