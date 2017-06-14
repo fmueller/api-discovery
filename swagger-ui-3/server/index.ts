@@ -2,22 +2,24 @@
 
 import Koa = require('koa');
 import koaStatic = require('koa-static');
+import koaMount = require('koa-mount');
 import { Server } from 'http';
 import conf from './framework/conf';
 import createErrorHandler from './framework/error-handler';
 import { log, logger } from './framework/logger';
+import createWebpackDev from './framework/webpack-dev';
 import createRouter from './resource';
 
 export function init(): Koa {
   const app = new Koa();
   app.use(logger());
 
-  if (conf.get('enableWebpackDev')) {
-    app.use(require('./framework/webpack-dev')({ publicPath: '/', index: '/index.html' }));
+  if (conf.getBoolean('enableWebpackDev')) {
+    app.use(createWebpackDev({ publicPath: '/static' }));
     log.info('Using webpack-dev-middleware');
   } else if (conf.getBoolean('serveStatic')) {
-    const staticDir = conf.getString('staticDir') as string;
-    app.use(koaStatic(staticDir, { gzip: true }));
+    const staticDir = conf.getString('staticDir')!;
+    app.use(koaMount('/static', koaStatic(staticDir, { gzip: true })));
     log.info('Serving static files from', staticDir);
   } else {
     log.warn('Not serving any static files.');

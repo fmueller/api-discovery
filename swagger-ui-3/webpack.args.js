@@ -2,6 +2,21 @@
  * Arguments for webpack build.
  */
 
+exports.fileNames = () => {
+  switch (process.env.NODE_ENV) {
+    case 'production':
+      return {
+        mainEntryJs: '[name].[chunkHash].js',
+        stylesCss: '[name].[chunkHash].css'
+      };
+    default:
+      return {
+        mainEntryJs: 'main.js',
+        stylesCss: 'styles.css'
+      };
+  }
+};
+
 exports.externals = () => {
   switch (process.env.NODE_ENV) {
     case 'production':

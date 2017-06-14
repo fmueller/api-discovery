@@ -1,0 +1,13 @@
+# Test configuration file.
+logLevel: warn
+enableWebpackDev: true
+apiStorageConf:
+  scheme: oauth2
+  baseUrl: https://localhost:8080
+  scopes:
+    - uid
+clientAuthConf:
+  authorizationUri: ""
+  clientId: ""
+  redirectUri: ""
+  requestParameters: {}

@@ -14,8 +14,7 @@ ADD yarn.lock /opt/api-discovery-ui/
 WORKDIR /opt/api-discovery-ui
 RUN yarn install --production
 
-ADD dist/client /opt/api-discovery-ui/client
-ADD dist/server /opt/api-discovery-ui/server
+ADD dist /opt/api-discovery-ui/
 
 ENV API_DISCOVERY_CONF /opt/api-discovery-ui/conf.yaml
 ADD $conf $API_DISCOVERY_CONF

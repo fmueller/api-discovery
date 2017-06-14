@@ -1,17 +1,15 @@
 const path = require('path');
 const webpack = require('webpack');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const args = require('./webpack.args');
 
 module.exports = {
   target: 'web',
   entry: {
-    index: './client/index.ts',
-    vendor: ['swagger-ui']
+    index: './client/index.ts'
   },
   output: {
-    filename: '[name].[chunkHash].js',
+    filename: args.fileNames().mainEntryJs,
     path: path.join(__dirname, 'dist', 'client'),
     libraryTarget: 'umd2'
   },
@@ -42,7 +40,10 @@ module.exports = {
       },
       {
         test: /\.(png|jpg)$/,
-        use: 'file-loader'
+        loader: 'file-loader',
+        options: {
+          publicPath: 'static/'
+        }
       }
     ]
   },
@@ -55,16 +56,7 @@ module.exports = {
   },
   plugins: [
     new webpack.DefinePlugin(args.definitions()),
-    new ExtractTextPlugin('[name].[chunkHash].css'),
-    new webpack.optimize.CommonsChunkPlugin({
-      name: 'vendor'
-    }),
-    new HtmlWebpackPlugin({
-      filename: 'index.html',
-      template: './client/index.ejs',
-      inject: false,
-      scripts: args.scripts()
-    })
+    new ExtractTextPlugin(args.fileNames().stylesCss)
   ],
   devtool: 'cheap-module-source-map'
 };

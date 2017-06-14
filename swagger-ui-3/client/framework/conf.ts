@@ -1,32 +1,46 @@
 import log from './debug';
 
-function get(key: string): any {
-  const localValue = window.localStorage.getItem(key);
+/**
+ * Load configuration from configuration meta-tags.
+ * Example: <meta name="configuration" content="eyJhIjo0Mn0=">
+ */
+function getStaticConfiguration() {
+  const elements = document.getElementsByName('configuration');
+  const conf: { [key: string]: string } = {};
 
-  const configTags = document.getElementsByName('configuration');
-  const staticConf: { [key: string]: string } = {};
-
-  for (let i = 0; i < configTags.length; i += 1) {
-    const tag = configTags[i];
-    const content = tag.getAttribute('content') || '{}';
+  for (let i = 0; i < elements.length; i += 1) {
+    const tag = elements[i];
+    const content = tag.getAttribute('content');
+    if (!content) continue;
     try {
-      Object.assign(staticConf, JSON.parse(content));
+      Object.assign(conf, JSON.parse(atob(content)));
     } catch (e) {
       log('Invalid configuration tag', tag);
     }
   }
 
+  return conf;
+}
+
+function get(key: string): any {
+  const localValue = window.localStorage.getItem(key);
+  const staticConf = getStaticConfiguration();
+
   return localValue || staticConf[key];
 }
 
-export function getString(key: string): string {
+export function getString(key: string, fallback?: string): string {
   const value = get(key);
+  if (value === undefined && fallback === undefined) throw new Error(`${key} is undefined.`);
+  if (value === undefined && fallback !== undefined) return fallback;
   if (typeof value === 'string') return value;
-  else return JSON.stringify(value);
+  return JSON.stringify(value);
 }
 
-export function getObject(key: string): any {
+export function getObject(key: string, fallback?: any): any {
   const value = get(key);
-  if (typeof value === 'string') return JSON.parse(value);
-  else return value;
+  if (value === undefined && fallback === undefined) throw new Error(`${key} is undefined.`);
+  if (value === undefined && fallback !== undefined) return fallback;
+  if (typeof value === 'string' && value) return JSON.parse(value);
+  return value;
 }

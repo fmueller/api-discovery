@@ -22,6 +22,7 @@ class OAuth2Client {
   private readonly tokenInfo: TokenInfo;
 
   constructor(options: Options) {
+    log('Create new OAuth2Client %j', options);
     this.authorizationUri = options.authorizationUri;
     this.requestParameters = {
       response_type: 'token',
@@ -66,8 +67,6 @@ class OAuth2Client {
   }
 
   private getUri(state: string): string {
-    if (!this.authorizationUri) throw new Error('Missing authorization URI.');
-
     const params: { [key: string]: string } = { ...this.requestParameters, state };
     const qs = Object.keys(params)
       .filter(key => !!params[key])
