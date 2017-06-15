@@ -1,13 +1,20 @@
 import React = require('react');
 import PropTypes = require('prop-types');
+import Select = require('react-select');
 import log from '../framework/debug';
 import Logo = require('../img/swagger.png');
 
 type TopbarProps = {
   specSelectors: any;
   specActions: any;
+  apiDiscoverySelectors: any;
   getComponent: (name: string, container?: boolean | 'root') => React.ComponentClass<any>;
   apiDiscoveryActions: { [name: string]: (...args: any[]) => void };
+};
+
+type TopbarState = {
+  url: string;
+  apiList: any[];
 };
 
 /**
@@ -32,9 +39,10 @@ export default () => ({
   }
 });
 
-class Topbar extends React.Component<TopbarProps, any> {
+class Topbar extends React.Component<TopbarProps, TopbarState> {
   public static readonly propTypes = {
     specSelectors: PropTypes.object.isRequired,
+    apiDiscoverySelectors: PropTypes.object.isRequired,
     specActions: PropTypes.object.isRequired,
     getComponent: PropTypes.func.isRequired,
     apiDiscoveryActions: PropTypes.object.isRequired
@@ -42,11 +50,17 @@ class Topbar extends React.Component<TopbarProps, any> {
 
   constructor(props: TopbarProps, context: any) {
     super(props, context);
-    this.state = { url: props.specSelectors.url() };
+    this.state = {
+      url: props.specSelectors.url(),
+      apiList: props.apiDiscoverySelectors.apiList()
+    };
   }
 
   public componentWillReceiveProps(nextProps: TopbarProps) {
-    this.setState({ url: nextProps.specSelectors.url() });
+    this.setState({
+      url: nextProps.specSelectors.url(),
+      apiList: nextProps.apiDiscoverySelectors.apiList()
+    });
   }
 
   // private onUrlChange(e: React.FormEvent<HTMLInputElement>) {
@@ -54,12 +68,12 @@ class Topbar extends React.Component<TopbarProps, any> {
   //   this.setState({ url: value });
   // }
 
-  // private downloadUrl() {
-  //   this.props.apiDiscoveryActions.fetchApi(this.state.url);
-  // }
+  private onApiSelected(api: { label: string; value: string }) {
+    this.props.apiDiscoveryActions.fetchApi(api.value);
+  }
 
   public componentDidMount() {
-    log('Topbar did mount.', this.props);
+    log('Topbar did mount.', this.props, this.state);
     this.props.apiDiscoveryActions.fetchApis();
   }
 
@@ -74,6 +88,13 @@ class Topbar extends React.Component<TopbarProps, any> {
     const inputStyle: { color?: string } = {};
     if (isFailed) inputStyle.color = 'red';
     if (isLoading) inputStyle.color = '#aaa';
+
+    const selectApis = this.state.apiList
+      .slice()
+      .filter(api => !!api.id)
+      .sort()
+      .map(api => ({ label: api.id, value: api.id }));
+
     return (
       <div className="topbar">
         <div className="wrapper">
@@ -97,6 +118,14 @@ class Topbar extends React.Component<TopbarProps, any> {
               </Button>
             </div>
             */}
+            <div className="download-url-wrapper">
+              <Select
+                style={{ width: '400px' }}
+                name="select-api"
+                options={selectApis}
+                onChange={this.onApiSelected.bind(this)}
+              />
+            </div>
             &nbsp;
             <Button className="btn execute" onClick={this.props.apiDiscoveryActions.fetchToken}>
               Login

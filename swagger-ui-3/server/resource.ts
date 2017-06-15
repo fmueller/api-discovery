@@ -6,6 +6,8 @@ import { log } from './framework/logger';
 import webpackArgs = require('../webpack.args');
 import ApiService from './domain/ApiService';
 import HealthService from './domain/HealthService';
+import AuthConfFactory from './domain/model/AuthConfFactory';
+import AuthContextFactory from './domain/model/AuthContextFactory';
 import StaticService from './domain/StaticService';
 
 import ClientAuthConfFactory from '../common/domain/model/ClientAuthConfFactory';
@@ -32,7 +34,7 @@ function getStaticOptions() {
   const templateFile = path.resolve(__dirname, '../static/index.ejs');
   const faviconFile = path.resolve(__dirname, '../static/favicon.png');
   const authConfFactory = new ClientAuthConfFactory(validate);
-  const clientAuthConf = conf.get('clientAuthConf', authConfFactory.create.bind(authConfFactory))!;
+  const clientAuthConf = conf.get('clientAuthConf', authConfFactory.bindCreate())!;
   const configuration = { authConf: clientAuthConf };
 
   const options = { files, scripts, templateFile, faviconFile, configuration };
@@ -41,10 +43,17 @@ function getStaticOptions() {
 }
 
 const createRoutes = (router: Router) => {
+  const accessTokens = conf.getString('oauth2AccessTokens');
+  const authConfFactory = new AuthConfFactory({ accessTokens });
+  const authContextFactory = new AuthContextFactory();
+
   const staticOptions = getStaticOptions();
   const staticService = new StaticService(staticOptions);
   const healthService = new HealthService();
-  const apiService = new ApiService();
+
+  const apiStorageConf = conf.get('apiStorageConf', authConfFactory.bindCreate());
+  const apiStorageContext = authContextFactory.create(apiStorageConf);
+  const apiService = new ApiService(apiStorageContext);
 
   router.get('/', staticService.getStaticHandler());
   router.get('/favicon.png', staticService.getFaviconHandler());

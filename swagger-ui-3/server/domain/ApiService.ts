@@ -1,24 +1,20 @@
 import { IMiddleware } from 'koa-router';
-import { createRequest, readAuthConf } from '../framework/request';
+import AuthContext from '../domain/model/AuthContext';
 import ApiStorageGateway from '../gateway/ApiStorageGateway';
 
+/**
+ * Fetches APIs from the remote API Storage service.
+ */
 export default class ApiService {
   private readonly apiStorage: ApiStorageGateway;
 
-  constructor() {
-    this.apiStorage = new ApiStorageGateway(
-      createRequest(
-        readAuthConf({
-          authConfigKey: 'apiStorageConf',
-          accessTokensConfigKey: 'oauth2AccessTokens'
-        })
-      )
-    );
+  constructor(authContext: AuthContext) {
+    this.apiStorage = new ApiStorageGateway(authContext);
   }
 
   public getApisReadHandler(): IMiddleware {
     return async ctx => {
-      ctx.body = await this.apiStorage.getApis({
+      ctx.body = await this.apiStorage.withContext(ctx).getApis({
         lifecycleState: 'ACTIVE'
       });
     };
@@ -26,13 +22,13 @@ export default class ApiService {
 
   public getApiReadHandler(): IMiddleware {
     return async ctx => {
-      ctx.body = await this.apiStorage.getApi(ctx.params.id);
+      ctx.body = await this.apiStorage.withContext(ctx).getApi(ctx.params.id);
     };
   }
 
   public getDefinitionReadHandler(): IMiddleware {
     return async ctx => {
-      ctx.body = await this.apiStorage.getLatestDefinition(ctx.params.id);
+      ctx.body = await this.apiStorage.withContext(ctx).getLatestDefinition(ctx.params.id);
     };
   }
 }

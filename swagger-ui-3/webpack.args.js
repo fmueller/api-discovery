@@ -1,5 +1,6 @@
 /**
- * Arguments for webpack build.
+ * Arguments for the webpack build.
+ * Build environments must set the NODE_ENV environment variable.
  */
 
 exports.fileNames = () => {

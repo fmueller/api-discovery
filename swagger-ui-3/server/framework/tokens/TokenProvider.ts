@@ -1,6 +1,15 @@
 export namespace TokenProvider {
+  /**
+   * A collection of token values by token name.
+   */
   export type TokenSet = { [name: string]: string };
+  /**
+   * A collection of token scopes by token name.
+   */
   export type TokenScopes = { [name: string]: string[] };
+  /**
+   * A function that returns a single authorization token.
+   */
   export type TokenSupplier = () => Promise<string>;
 }
 

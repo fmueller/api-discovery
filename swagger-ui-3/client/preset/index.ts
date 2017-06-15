@@ -1,6 +1,7 @@
 import actions from './actions';
 import ApiDiscovery from './ApiDiscovery';
 import reducers from './reducers';
+import selectors from './selectors';
 import Topbar from './Topbar';
 
 /**
@@ -14,7 +15,8 @@ export default [
       statePlugins: {
         apiDiscovery: {
           actions,
-          reducers
+          reducers,
+          selectors
         }
       },
       components: { ApiDiscovery }

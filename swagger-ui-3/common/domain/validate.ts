@@ -6,6 +6,8 @@ class ValidationError extends Error {
   }
 }
 
+export type Validator = <T>(data: T, schema: tv4.JsonSchema) => T;
+
 export default function validate(data: any, schema: tv4.JsonSchema) {
   const result = tv4.validateResult(data, schema);
   if (!result.valid) throw new ValidationError(result.error);

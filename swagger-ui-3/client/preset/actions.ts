@@ -2,10 +2,29 @@ import superagent = require('superagent');
 import { getAuthorizationHeader } from '../framework/auth';
 import log from '../framework/debug';
 
-export const FETCH_API = 'API_DISCOVERY_FETCH_API';
-export const FETCH_APIS = 'API_DISCOVERY_FETCH_APIS';
+type ApiMetaData = {
+  id: string;
+  lifecycle_state: 'ACTIVE' | 'INACTIVE' | 'DECOMMISSIONED';
+};
 
-const fetchApis = () => async (_: any) => {
+type ApiList = {
+  apis: ApiMetaData[];
+};
+
+export interface Action<P> {
+  type: string;
+  payload: P;
+}
+
+export interface ReceiveApiListAction extends Action<ApiList> {
+  type: 'API_DISCOVERY_RECEIVE_API_LIST';
+}
+
+type ActionCreator<P> = (payload: P) => Action<P>;
+
+export const RECEIVE_API_LIST = 'API_DISCOVERY_RECEIVE_API_LIST';
+
+const fetchApis = () => async (system: any) => {
   log('Fetch APIs');
 
   let response;
@@ -17,9 +36,15 @@ const fetchApis = () => async (_: any) => {
   }
   if (!response.ok) {
     log('Error fetching APIs: %d %s', response.status, response.text);
+    return;
   }
-  log('Got APIs', response.body);
+  system.apiDiscoveryActions.receiveApiList(response.body);
 };
+
+const receiveApiList: ActionCreator<ApiList> = apiList => ({
+  type: RECEIVE_API_LIST,
+  payload: apiList
+});
 
 const fetchApi = (id: string) => async (system: any) => {
   log('Fetch API %s', id);
@@ -44,4 +69,4 @@ const fetchApi = (id: string) => async (system: any) => {
   system.specActions.updateUrl(id);
 };
 
-export default { fetchApis, fetchApi };
+export default { fetchApis, receiveApiList, fetchApi };

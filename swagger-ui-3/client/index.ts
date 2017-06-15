@@ -3,6 +3,7 @@
 import swaggerUI = require('swagger-ui');
 import ApiDiscoveryPreset from './preset';
 
+import 'react-select/dist/react-select.css';
 import 'swagger-ui/dist/swagger-ui.css';
 import './index.css';
 

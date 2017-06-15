@@ -34,6 +34,10 @@ class NotFoundProblem extends Problem {
   }
 }
 
+/**
+ * Create an error handling middleware function that
+ * catches exceptions and maps them to Problem responses.
+ */
 export default function createErrorHandler(): Middleware {
   return async (ctx, next) => {
     try {

@@ -1,10 +1,7 @@
-import { JsonSchema } from 'tv4';
-
+import { Validator } from '../validate';
 import ClientAuthConf from './ClientAuthConf';
 import ClientBasicAuthConf from './ClientBasicAuthConf';
 import ClientOAuth2Conf from './ClientOAuth2Conf';
-
-export type Validator = <T>(data: T, schema: JsonSchema) => T;
 
 export default class ClientAuthConfFactory {
   private readonly validate: Validator;
@@ -21,5 +18,9 @@ export default class ClientAuthConfFactory {
     } else {
       throw new Error(`Unknown ClientAuthConf scheme ${data.scheme}`);
     }
+  }
+
+  public bindCreate(): (data: any) => ClientAuthConf {
+    return this.create.bind(this);
   }
 }

@@ -15,6 +15,9 @@ export type Options = {
   faviconFile: string;
 };
 
+/**
+ * Renders the static HTML page.
+ */
 export default class StaticService {
   private readonly options: ejs.Options;
   private readonly data: ejs.Data;
