@@ -19,7 +19,8 @@
     ]
   },
   "include": [
-    "**/*"
+    "**/*",
+    "../common/**/*"
   ],
   "formatCodeOptions": {
     "indentSize": 2,

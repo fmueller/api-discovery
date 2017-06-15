@@ -1,13 +1,15 @@
 import fs = require('fs');
 import path = require('path');
 import Router = require('koa-router');
-import ClientAuthConf from './domain/model/ClientAuthConf';
 import conf from './framework/conf';
 import { log } from './framework/logger';
 import webpackArgs = require('../webpack.args');
 import ApiService from './domain/ApiService';
 import HealthService from './domain/HealthService';
 import StaticService from './domain/StaticService';
+
+import ClientAuthConfFactory from '../common/domain/model/ClientAuthConfFactory';
+import validate from '../common/domain/validate';
 
 function getStaticOptions() {
   let files: { js: string[]; css: string[] } = { js: [], css: [] };
@@ -29,7 +31,9 @@ function getStaticOptions() {
   const scripts = webpackArgs.scripts();
   const templateFile = path.resolve(__dirname, '../static/index.ejs');
   const faviconFile = path.resolve(__dirname, '../static/favicon.png');
-  const configuration = conf.getType('clientAuthConf', ClientAuthConf)!;
+  const authConfFactory = new ClientAuthConfFactory(validate);
+  const clientAuthConf = conf.get('clientAuthConf', authConfFactory.create.bind(authConfFactory))!;
+  const configuration = { authConf: clientAuthConf };
 
   const options = { files, scripts, templateFile, faviconFile, configuration };
   log.debug('Using static options %j', options);

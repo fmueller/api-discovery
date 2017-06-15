@@ -1,5 +1,11 @@
 import log from './debug';
 
+class MissingConfigurationError extends Error {
+  constructor(key: string) {
+    super(`Configuration value "${key}" is undefined.`);
+  }
+}
+
 /**
  * Load configuration from configuration meta-tags.
  * Example: <meta name="configuration" content="eyJhIjo0Mn0=">
@@ -31,7 +37,7 @@ function get(key: string): any {
 
 export function getString(key: string, fallback?: string): string {
   const value = get(key);
-  if (value === undefined && fallback === undefined) throw new Error(`${key} is undefined.`);
+  if (value === undefined && fallback === undefined) throw new MissingConfigurationError(key);
   if (value === undefined && fallback !== undefined) return fallback;
   if (typeof value === 'string') return value;
   return JSON.stringify(value);
@@ -39,7 +45,7 @@ export function getString(key: string, fallback?: string): string {
 
 export function getObject(key: string, fallback?: any): any {
   const value = get(key);
-  if (value === undefined && fallback === undefined) throw new Error(`${key} is undefined.`);
+  if (value === undefined && fallback === undefined) throw new MissingConfigurationError(key);
   if (value === undefined && fallback !== undefined) return fallback;
   if (typeof value === 'string' && value) return JSON.parse(value);
   return value;

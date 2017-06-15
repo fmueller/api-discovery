@@ -49,17 +49,18 @@ class Topbar extends React.Component<TopbarProps, any> {
     this.setState({ url: nextProps.specSelectors.url() });
   }
 
-  private onUrlChange(e: React.FormEvent<HTMLInputElement>) {
-    const { currentTarget: { value } } = e;
-    this.setState({ url: value });
-  }
+  // private onUrlChange(e: React.FormEvent<HTMLInputElement>) {
+  //   const { currentTarget: { value } } = e;
+  //   this.setState({ url: value });
+  // }
 
-  private downloadUrl() {
-    this.props.apiDiscoveryActions.fetchApi(this.state.url);
-  }
+  // private downloadUrl() {
+  //   this.props.apiDiscoveryActions.fetchApi(this.state.url);
+  // }
 
   public componentDidMount() {
     log('Topbar did mount.', this.props);
+    this.props.apiDiscoveryActions.fetchApis();
   }
 
   public render() {
@@ -81,6 +82,7 @@ class Topbar extends React.Component<TopbarProps, any> {
               <img height="30" width="30" src={Logo} alt="Swagger UX" />
               <span>API Discovery</span>
             </Link>
+            {/*
             <div className="download-url-wrapper">
               <input
                 className="download-url-input"
@@ -94,6 +96,7 @@ class Topbar extends React.Component<TopbarProps, any> {
                 Discover
               </Button>
             </div>
+            */}
             &nbsp;
             <Button className="btn execute" onClick={this.props.apiDiscoveryActions.fetchToken}>
               Login

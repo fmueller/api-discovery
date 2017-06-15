@@ -1,11 +1,10 @@
-import * as conf from './conf';
-import log from './debug';
+import log from '../debug';
 
 type Options = {
   authorizationUri: string;
   clientId: string;
   redirectUri: string;
-  requestParameters?: { [name: string]: string };
+  requestParameters?: object;
 };
 
 type TokenInfo = {
@@ -16,9 +15,9 @@ type TokenInfo = {
 
 const refreshThreshold = 4000; // milliseconds
 
-class OAuth2Client {
+export default class OAuth2Client {
   private readonly authorizationUri: string;
-  private readonly requestParameters: { [name: string]: string };
+  private readonly requestParameters: object;
   private readonly tokenInfo: TokenInfo;
 
   constructor(options: Options) {
@@ -92,10 +91,3 @@ class OAuth2Client {
     else return this.tokenInfo.accessToken;
   }
 }
-
-export default new OAuth2Client({
-  authorizationUri: conf.getString('authorizationUri'),
-  clientId: conf.getString('clientId'),
-  redirectUri: conf.getString('redirectUri'),
-  requestParameters: conf.getObject('requestParameters')
-});

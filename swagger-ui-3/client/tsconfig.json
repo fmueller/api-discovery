@@ -19,7 +19,8 @@
     ]
   },
   "include": [
-    "**/*"
+    "**/*",
+    "../common/**/*"
   ],
   "exclude": [
     "**/yaml-js.js"

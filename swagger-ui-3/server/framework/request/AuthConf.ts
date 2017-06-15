@@ -1,28 +1,17 @@
+import { JsonSchema } from 'tv4';
+import { Validated } from '../../../common/domain/validate';
 import conf from '../conf';
-import tv4 = require('tv4');
-
-class AuthConfError extends Error {
-  constructor(error: tv4.ValidationError) {
-    super(error.message);
-  }
-}
-
-function validate<T>(data: T, schema: tv4.JsonSchema): T {
-  const result = tv4.validateResult(data, schema);
-  if (!result.valid) throw new AuthConfError(result.error);
-  else return data;
-}
 
 export type AuthConf = BasicConf | AbstractOAuth2Conf | NullAuthConf;
 export default AuthConf;
 
-export class BasicConf {
+export class BasicConf extends Validated {
   public readonly scheme: 'basic';
   public readonly baseUrl: string;
   public readonly user: string;
   public readonly pass: string;
 
-  private static readonly schema: tv4.JsonSchema = {
+  private static readonly schema: JsonSchema = {
     type: 'object',
     properties: {
       scheme: {
@@ -44,11 +33,11 @@ export class BasicConf {
   };
 
   constructor(data: any) {
-    Object.assign(this, validate(data, BasicConf.schema));
+    super(data, BasicConf.schema);
   }
 }
 
-export abstract class AbstractOAuth2Conf {
+export abstract class AbstractOAuth2Conf extends Validated {
   public readonly scheme: 'oauth2';
   public readonly baseUrl: string;
   public readonly scopes: string[];
@@ -74,8 +63,8 @@ export abstract class AbstractOAuth2Conf {
     required: ['scheme', 'baseUrl', 'scopes']
   };
 
-  constructor(data: any) {
-    Object.assign(this, validate(data, AbstractOAuth2Conf.schema));
+  constructor(data: any, schema: JsonSchema) {
+    super(data, schema);
   }
 }
 
@@ -87,6 +76,7 @@ export class DynamicOAuth2Conf extends AbstractOAuth2Conf {
 
   protected static readonly schema: tv4.JsonSchema = {
     type: 'object',
+    allOf: [AbstractOAuth2Conf.schema],
     properties: {
       accessTokenUri: {
         type: 'string',
@@ -107,7 +97,7 @@ export class DynamicOAuth2Conf extends AbstractOAuth2Conf {
   };
 
   constructor(data: any) {
-    super(validate(data, DynamicOAuth2Conf.schema));
+    super(data, DynamicOAuth2Conf.schema);
   }
 }
 
@@ -116,6 +106,7 @@ export class StaticOAuth2Conf extends AbstractOAuth2Conf {
 
   protected static readonly schema: tv4.JsonSchema = {
     type: 'object',
+    allOf: [AbstractOAuth2Conf.schema],
     properties: {
       accessTokens: {
         type: 'string',
@@ -126,7 +117,7 @@ export class StaticOAuth2Conf extends AbstractOAuth2Conf {
   };
 
   constructor(data: any) {
-    super(validate(data, StaticOAuth2Conf.schema));
+    super(data, StaticOAuth2Conf.schema);
   }
 }
 

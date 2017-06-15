@@ -1,28 +1,41 @@
 import superagent = require('superagent');
+import { getAuthorizationHeader } from '../framework/auth';
 import log from '../framework/debug';
-import oAuth2Client from '../framework/OAuth2Client';
 
 export const FETCH_API = 'API_DISCOVERY_FETCH_API';
-export const FETCH_TOKEN = 'API_DISCOVERY_FETCH_TOKEN';
+export const FETCH_APIS = 'API_DISCOVERY_FETCH_APIS';
+
+const fetchApis = () => async (_: any) => {
+  log('Fetch APIs');
+
+  let response;
+  try {
+    response = await superagent.get(`/apis`).set('Authorization', getAuthorizationHeader());
+  } catch (e) {
+    log('Error fetching APIs', e);
+    return;
+  }
+  if (!response.ok) {
+    log('Error fetching APIs: %d %s', response.status, response.text);
+  }
+  log('Got APIs', response.body);
+};
 
 const fetchApi = (id: string) => async (system: any) => {
-  system.specActions.updateLoadingStatus('loading');
   log('Fetch API %s', id);
+  system.specActions.updateLoadingStatus('loading');
 
-  const token = localStorage.getItem('API_DISCOVERY_TOKEN');
   let response;
-
   try {
     response = await superagent
       .get(`/apis/${id}/definition`)
-      .set('Authorization', `Bearer ${token}`);
+      .set('Authorization', getAuthorizationHeader());
   } catch (e) {
     log('Error fetching API', e);
     return system.specActions.updateLoadingStatus('failed');
   }
-
   if (!response.ok) {
-    log('Error fetching API: %s %s', response.status, response.text);
+    log('Error fetching API: %d %s', response.status, response.text);
     return system.specActions.updateLoadingStatus('failed');
   }
 
@@ -31,14 +44,4 @@ const fetchApi = (id: string) => async (system: any) => {
   system.specActions.updateUrl(id);
 };
 
-const fetchToken = () => async (_: any) => {
-  try {
-    log('Fetch token.');
-    const token = oAuth2Client.getToken();
-    log('Fetched token: %s', token);
-  } catch (e) {
-    log('Fetching token failed.', e);
-  }
-};
-
-export default { fetchApi, fetchToken };
+export default { fetchApis, fetchApi };
