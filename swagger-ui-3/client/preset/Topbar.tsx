@@ -15,6 +15,7 @@ type TopbarProps = {
 type TopbarState = {
   url: string;
   apiList: any[];
+  selectedApiId?: string;
 };
 
 /**
@@ -69,6 +70,7 @@ class Topbar extends React.Component<TopbarProps, TopbarState> {
   // }
 
   private onApiSelected(api: { label: string; value: string }) {
+    this.setState({ selectedApiId: api.value });
     this.props.apiDiscoveryActions.fetchApi(api.value);
   }
 
@@ -85,15 +87,15 @@ class Topbar extends React.Component<TopbarProps, TopbarState> {
     const isLoading = specSelectors.loadingStatus() === 'loading';
     const isFailed = specSelectors.loadingStatus() === 'failed';
 
-    const inputStyle: { color?: string } = {};
-    if (isFailed) inputStyle.color = 'red';
-    if (isLoading) inputStyle.color = '#aaa';
+    const selectorStyle: any = {};
+    if (isFailed) selectorStyle.color = 'red';
+    if (isLoading) selectorStyle.color = '#aaa';
 
     const selectApis = this.state.apiList
       .slice()
       .filter(api => !!api.id)
       .sort()
-      .map(api => ({ label: api.id, value: api.id }));
+      .map(api => ({ label: api.id, value: api.id, clearableValue: false }));
 
     return (
       <div className="topbar">
@@ -120,9 +122,11 @@ class Topbar extends React.Component<TopbarProps, TopbarState> {
             */}
             <div className="download-url-wrapper">
               <Select
-                style={{ width: '400px' }}
+                style={selectorStyle}
                 name="select-api"
+                value={this.state.selectedApiId}
                 options={selectApis}
+                clearable={false}
                 onChange={this.onApiSelected.bind(this)}
               />
             </div>
