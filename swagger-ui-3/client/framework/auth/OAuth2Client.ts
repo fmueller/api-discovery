@@ -75,14 +75,18 @@ export default class OAuth2Client {
   }
 
   private refreshTokenIfNecessary() {
-    if (this.tokenInfo.expiryTime - new Date().getTime() < refreshThreshold) {
+    if (this.isAuthorised()) {
+      log('Existing token is still valid.');
+    } else {
       log('Requesting new token.');
       const state = Math.random().toString(36).slice(2);
       this.updateTokenInfo({ state, expiryTime: 0 });
       window.location.href = this.getUri(state);
-    } else {
-      log('Existing token is still valid.');
     }
+  }
+
+  public isAuthorised(): boolean {
+    return this.tokenInfo.expiryTime - new Date().getTime() < refreshThreshold;
   }
 
   public getToken(): string {

@@ -11,6 +11,10 @@ export default class OAuth2HeaderProvider implements AuthHeaderProvider {
     this.oauth2client = new OAuth2Client(authConf);
   }
 
+  public isAuthorised(): boolean {
+    return this.oauth2client.isAuthorised();
+  }
+
   public getAuthorizationHeader(): string {
     return `Bearer ${this.oauth2client.getToken()}`;
   }

@@ -1,7 +1,19 @@
-import { RECEIVE_API_LIST, ReceiveApiListAction } from './actions';
+import { Map } from 'immutable';
+import ApiList from '../../common/domain/model/ApiList';
+import ApiVersion from '../../common/domain/model/ApiVersion';
+import ApiVersionList from '../../common/domain/model/ApiVersionList';
+import { RECEIVE_API_VERSIONS, RECEIVE_APIS, SET_SELECTED_API_VERSION } from './actions';
+
+export type State = Map<string, ApiList | ApiVersionList | ApiVersion>;
 
 export default {
-  [RECEIVE_API_LIST]: (state: any, action: ReceiveApiListAction) => {
+  [RECEIVE_APIS]: (state: State, action: { payload: ApiList }) => {
     return state.set('apiList', action.payload);
+  },
+  [RECEIVE_API_VERSIONS]: (state: State, action: { payload: ApiVersionList }) => {
+    return state.set('apiVersionList', action.payload);
+  },
+  [SET_SELECTED_API_VERSION]: (state: State, action: { payload: ApiVersion }) => {
+    return state.set('selectedApiVersion', action.payload);
   }
 };

@@ -27,10 +27,6 @@ body {
 /**
  * Disable swagger-ui elements
  */
-.swagger-ui .scheme-container {
-  display: none;
-}
-
 .swagger-ui .try-out__btn {
   display: none;
 }

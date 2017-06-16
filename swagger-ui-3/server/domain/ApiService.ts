@@ -26,9 +26,9 @@ export default class ApiService {
     };
   }
 
-  public getDefinitionReadHandler(): IMiddleware {
+  public getVersionsReadHandler(): IMiddleware {
     return async ctx => {
-      ctx.body = await this.apiStorage.withContext(ctx).getLatestDefinition(ctx.params.id);
+      ctx.body = await this.apiStorage.withContext(ctx).getVersions(ctx.params.id);
     };
   }
 }

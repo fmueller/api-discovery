@@ -1,5 +1,7 @@
 import actions from './actions';
 import ApiDiscovery from './ApiDiscovery';
+import DefinitionMenu from './DefinitionMenu';
+import DefinitionView from './DefinitionView';
 import reducers from './reducers';
 import selectors from './selectors';
 import Topbar from './Topbar';
@@ -19,7 +21,7 @@ export default [
           selectors
         }
       },
-      components: { ApiDiscovery }
+      components: { ApiDiscovery, DefinitionMenu, DefinitionView }
     };
   }
 ];

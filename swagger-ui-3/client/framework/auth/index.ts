@@ -31,6 +31,10 @@ export function getAuthHeaderProvider(): AuthHeaderProvider {
   return authHeaderProvider;
 }
 
+export function isAuthorised(): boolean {
+  return getAuthHeaderProvider().isAuthorised();
+}
+
 export function getAuthorizationHeader(): string {
   return getAuthHeaderProvider().getAuthorizationHeader();
 }

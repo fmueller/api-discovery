@@ -1,7 +1,7 @@
 import React = require('react');
 import PropTypes = require('prop-types');
 
-type ApiDiscoveryProps = {
+type Props = {
   errSelectors: object;
   errActions: object;
   specActions: object;
@@ -11,13 +11,11 @@ type ApiDiscoveryProps = {
   getComponent: (name: string, container?: boolean | 'root') => React.ComponentClass<any>;
 };
 
-const WelcomeBox = () => <div><h3>Please select an API.</h3></div>;
-
 /**
  * Based on the Standalone preset.
  * See https://github.com/swagger-api/swagger-ui/tree/master/src/standalone
  */
-export default class ApiDiscovery extends React.Component<ApiDiscoveryProps, undefined> {
+export default class ApiDiscovery extends React.Component<Props, undefined> {
   public static readonly propTypes = {
     errSelectors: PropTypes.object.isRequired,
     errActions: PropTypes.object.isRequired,
@@ -33,7 +31,7 @@ export default class ApiDiscovery extends React.Component<ApiDiscoveryProps, und
 
     const Container = getComponent('Container');
     const Topbar = getComponent('Topbar', true);
-    const BaseLayout = getComponent('BaseLayout', true);
+    const DefinitionView = getComponent('DefinitionView', true);
 
     const loadingStatus = specSelectors.loadingStatus();
 
@@ -60,7 +58,7 @@ export default class ApiDiscovery extends React.Component<ApiDiscoveryProps, und
           >
             <h4 className="title">Failed to load config.</h4>
           </div>}
-        {loadingStatus === 'success' ? <BaseLayout /> : <WelcomeBox />}
+        {loadingStatus !== 'loading' ? <DefinitionView /> : null}
       </Container>
     );
   }

@@ -1,4 +1,5 @@
 export interface AuthHeaderProvider {
+  isAuthorised(): boolean;
   getAuthorizationHeader(): string;
 }
 

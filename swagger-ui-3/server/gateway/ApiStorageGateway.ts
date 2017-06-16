@@ -1,9 +1,12 @@
 import superagent = require('superagent');
 import AuthContext from '../domain/model/AuthContext';
 import AbstractGateway from './AbstractGateway';
-import NotFoundError from './NotFoundError';
 
-export type LifecycleState = 'ACTIVE' | 'INACTIVE' | 'DECOMMISSIONED';
+import Api from '../../common/domain/model/Api';
+import ApiList from '../../common/domain/model/ApiList';
+import { ApiLifecycleState } from '../../common/domain/model/ApiMetaData';
+import ApiVersion from '../../common/domain/model/ApiVersion';
+import ApiVersionList from '../../common/domain/model/ApiVersionList';
 
 export default class ApiStorageGateway extends AbstractGateway {
   private readonly baseUrl: string;
@@ -13,7 +16,7 @@ export default class ApiStorageGateway extends AbstractGateway {
     this.baseUrl = authContext.baseUrl;
   }
 
-  public async getApis(options: { lifecycleState?: LifecycleState }): Promise<any> {
+  public async getApis(options: { lifecycleState?: ApiLifecycleState }): Promise<ApiList> {
     const auth = await this.getAuthorizationHeader();
     const response = await superagent
       .get(`${this.baseUrl}/apis`)
@@ -24,25 +27,25 @@ export default class ApiStorageGateway extends AbstractGateway {
     return response.body;
   }
 
-  public async getApi(id: string): Promise<any> {
+  public async getApi(id: string): Promise<Api> {
     const auth = await this.getAuthorizationHeader();
     const response = await superagent.get(`${this.baseUrl}/apis/${id}`).set('Authorization', auth);
     return response.body;
   }
 
-  public async getLatestDefinition(id: string): Promise<any> {
+  public async getVersions(id: string): Promise<ApiVersionList> {
     const auth = await this.getAuthorizationHeader();
     const response = await superagent
       .get(`${this.baseUrl}/apis/${id}/versions`)
       .set('Authorization', auth);
+    return response.body;
+  }
 
-    const versions = response.body.versions.slice().sort((a: any, b: any) => {
-      if (a.api_version < b.api_version) return 1;
-      if (a.api_version > b.api_version) return -1;
-      return 0;
-    });
-
-    if (versions[0]) return versions[0].definitions[0];
-    throw new NotFoundError(`${this.baseUrl}/apis/${id}/versions`);
+  public async getVersion(id: string, version: string): Promise<ApiVersion> {
+    const auth = await this.getAuthorizationHeader();
+    const response = await superagent
+      .get(`${this.baseUrl}/apis/${id}/versions/${version}`)
+      .set('Authorization', auth);
+    return response.body;
   }
 }

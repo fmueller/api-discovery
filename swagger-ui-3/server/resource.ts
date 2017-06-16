@@ -60,7 +60,7 @@ const createRoutes = (router: Router) => {
   router.get('/health', healthService.getHealthHandler());
   router.get('/apis', apiService.getApisReadHandler());
   router.get('/apis/:id', apiService.getApiReadHandler());
-  router.get('/apis/:id/definition', apiService.getDefinitionReadHandler());
+  router.get('/apis/:id/versions', apiService.getVersionsReadHandler());
 
   return router;
 };
