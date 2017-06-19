@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
-import org.zalando.apidiscovery.storage.domain.model.ApiDefinition;
 import org.zalando.apidiscovery.storage.domain.model.Api;
+import org.zalando.apidiscovery.storage.domain.model.ApiDefinition;
 import org.zalando.apidiscovery.storage.domain.model.ApiLifecycleState;
 import org.zalando.apidiscovery.storage.domain.model.Apis;
 import org.zalando.apidiscovery.storage.domain.model.Deployment;
@@ -70,7 +70,7 @@ public class ApiResourceController {
         return lifecycleState == null ? apiService.getVersionsForApi(apiId) : apiService.getVersionsForApi(apiId, lifecycleState);
     }
 
-    @GetMapping("/{api_id}/versions/{version_id}")
+    @GetMapping("/{api_id}/versions/{version_id:.+}")
     public ResponseEntity<Versions> getApiVersion(@PathVariable("api_id") String apiId,
                                                   @PathVariable("version_id") String versionId,
                                                   UriComponentsBuilder builder) {

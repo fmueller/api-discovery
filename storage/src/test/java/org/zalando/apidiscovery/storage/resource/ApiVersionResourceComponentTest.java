@@ -224,6 +224,18 @@ public class ApiVersionResourceComponentTest extends AbstractComponentTest {
             .andExpect(jsonPath("$.definitions[0].applications[0].href", equalTo(exptectedHref)));
     }
 
+    @Test
+    public void shouldNotTruncateVersionWithDots() throws Exception {
+        ApplicationEntity app1 = applicationRepository.save(givenApplication(APP1_NAME));
+        ApiEntity testAPi100 = givenApiEntity(API_NAME, "1.0.0", 1);
+        ApiDeploymentEntity testAPi100OnApp1 = givenApiDeployment(testAPi100, app1);
+        testAPi100.setApiDeploymentEntities(asList(testAPi100OnApp1));
+
+        apiRepository.save(testAPi100);
+
+        mvc.perform(get("/apis/" + API_NAME + "/versions/1.0.0"))
+            .andExpect(status().isOk());
+    }
 
     @Test
     public void shouldReturn404IfNoVersionFound() throws Exception {
