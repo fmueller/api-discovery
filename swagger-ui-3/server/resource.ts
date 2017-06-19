@@ -15,6 +15,17 @@ import ClientAuthConfFactory from '../common/domain/model/ClientAuthConfFactory'
 import validate from '../common/domain/validate';
 
 /**
+ * Resolve URLs in configuration values.
+ */
+function urlResolver(url: string): string {
+  if (url.startsWith('file://')) {
+    const filePath = url.replace('file://', '');
+    return fs.readFileSync(filePath).toString();
+  }
+  return url;
+}
+
+/**
  * Provide options for the StaticService.
  */
 function getStaticOptions() {
@@ -37,7 +48,7 @@ function getStaticOptions() {
   const scripts = webpackArgs.scripts();
   const templateFile = path.resolve(__dirname, '../static/index.ejs');
   const faviconFile = path.resolve(__dirname, '../static/favicon.png');
-  const authConfFactory = new ClientAuthConfFactory(validate);
+  const authConfFactory = new ClientAuthConfFactory(validate, urlResolver);
   const clientAuthConf = conf.get('clientAuthConf', authConfFactory.bindCreate())!;
   const apiServiceUrl = conf.getString('apiServiceUrl', '/api-service');
   const configuration = { authConf: clientAuthConf, apiServiceUrl };

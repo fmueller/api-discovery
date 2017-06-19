@@ -33,13 +33,16 @@ export default class ClientOAuth2Conf implements ClientAuthConf {
     required: ['scheme', 'authorizationUri', 'clientId', 'redirectUri']
   };
 
-  constructor(data: {
-    scheme: 'oauth2';
-    authorizationUri: string;
-    clientId: string;
-    redirectUri: string;
-    requestParameters?: object;
-  }) {
-    Object.assign(this, data);
+  constructor(
+    data: {
+      scheme: 'oauth2';
+      authorizationUri: string;
+      clientId: string;
+      redirectUri: string;
+      requestParameters?: object;
+    },
+    urlResolver: (url: string) => string = _ => _
+  ) {
+    Object.assign(this, { ...data, clientId: urlResolver(data.clientId) });
   }
 }
