@@ -1,34 +1,27 @@
 import { IMiddleware } from 'koa-router';
-import AuthContext from '../domain/model/AuthContext';
 import ApiStorageGateway from '../gateway/ApiStorageGateway';
 
 /**
- * Fetches APIs from the remote API Storage service.
+ * Proxy for the remote API Storage service.
  */
 export default class ApiService {
   private readonly apiStorage: ApiStorageGateway;
 
-  constructor(authContext: AuthContext) {
-    this.apiStorage = new ApiStorageGateway(authContext);
+  /**
+   * @param gateway Gateway instance for accessing the remote API storage service.
+   */
+  constructor(gateway: ApiStorageGateway) {
+    this.apiStorage = gateway;
   }
 
-  public getApisReadHandler(): IMiddleware {
+  /**
+   * Foward any GET request.
+   * @param mount Path under which which this service is mounted on the server.
+   */
+  public getReadHandler(mount: string): IMiddleware {
     return async ctx => {
-      ctx.body = await this.apiStorage.withContext(ctx).getApis({
-        lifecycleState: 'ACTIVE'
-      });
-    };
-  }
-
-  public getApiReadHandler(): IMiddleware {
-    return async ctx => {
-      ctx.body = await this.apiStorage.withContext(ctx).getApi(ctx.params.id);
-    };
-  }
-
-  public getVersionsReadHandler(): IMiddleware {
-    return async ctx => {
-      ctx.body = await this.apiStorage.withContext(ctx).getVersions(ctx.params.id);
+      const path = ctx.request.url.replace(mount, '').replace(/^\/+/, '');
+      ctx.body = await this.apiStorage.withContext(ctx).get(path);
     };
   }
 }

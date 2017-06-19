@@ -42,7 +42,7 @@ module.exports = {
         test: /\.(png|jpg)$/,
         loader: 'file-loader',
         options: {
-          publicPath: 'static/'
+          publicPath: '/static/'
         }
       }
     ]

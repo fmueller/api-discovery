@@ -9,10 +9,14 @@ import HealthService from './domain/HealthService';
 import AuthConfFactory from './domain/model/AuthConfFactory';
 import AuthContextFactory from './domain/model/AuthContextFactory';
 import StaticService from './domain/StaticService';
+import ApiStorageGateway from './gateway/ApiStorageGateway';
 
 import ClientAuthConfFactory from '../common/domain/model/ClientAuthConfFactory';
 import validate from '../common/domain/validate';
 
+/**
+ * Provide options for the StaticService.
+ */
 function getStaticOptions() {
   let files: { js: string[]; css: string[] } = { js: [], css: [] };
 
@@ -35,10 +39,11 @@ function getStaticOptions() {
   const faviconFile = path.resolve(__dirname, '../static/favicon.png');
   const authConfFactory = new ClientAuthConfFactory(validate);
   const clientAuthConf = conf.get('clientAuthConf', authConfFactory.bindCreate())!;
-  const configuration = { authConf: clientAuthConf };
+  const apiServiceUrl = conf.getString('apiServiceUrl', '/api-service');
+  const configuration = { authConf: clientAuthConf, apiServiceUrl };
 
   const options = { files, scripts, templateFile, faviconFile, configuration };
-  log.debug('Using static options %j', options);
+  log.debug('Using static options %s', JSON.stringify(options, null, 2));
   return options;
 }
 
@@ -53,14 +58,13 @@ const createRoutes = (router: Router) => {
 
   const apiStorageConf = conf.get('apiStorageConf', authConfFactory.bindCreate());
   const apiStorageContext = authContextFactory.create(apiStorageConf);
-  const apiService = new ApiService(apiStorageContext);
+  const apiStorageGateway = new ApiStorageGateway(apiStorageContext);
+  const apiService = new ApiService(apiStorageGateway);
 
-  router.get('/', staticService.getStaticHandler());
+  router.get(/^\/(apis\/[^\/\s]+)?$/, staticService.getStaticHandler());
   router.get('/favicon.png', staticService.getFaviconHandler());
   router.get('/health', healthService.getHealthHandler());
-  router.get('/apis', apiService.getApisReadHandler());
-  router.get('/apis/:id', apiService.getApiReadHandler());
-  router.get('/apis/:id/versions', apiService.getVersionsReadHandler());
+  router.get(/^\/api-service\/?/, apiService.getReadHandler('/api-service'));
 
   return router;
 };

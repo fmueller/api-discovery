@@ -1,8 +1,9 @@
 import React = require('react');
 import PropTypes = require('prop-types');
 import Select = require('react-select');
-import log from '../framework/debug';
 import Logo = require('../img/swagger.png');
+import log from '../framework/debug';
+
 import ApiMetaData from '../../common/domain/model/ApiMetaData';
 
 type Props = {
@@ -11,11 +12,6 @@ type Props = {
   getComponent: (name: string, container?: boolean | 'root') => React.ComponentClass<any>;
   apiDiscoveryActions: { [name: string]: (...args: any[]) => void };
   apiDiscoverySelectors: any;
-};
-
-type State = {
-  apis: ApiMetaData[];
-  selectedApiId?: string;
 };
 
 /**
@@ -28,7 +24,7 @@ export default () => ({
   }
 });
 
-class Topbar extends React.Component<Props, State> {
+class Topbar extends React.Component<Props, undefined> {
   public static readonly propTypes = {
     specSelectors: PropTypes.object.isRequired,
     specActions: PropTypes.object.isRequired,
@@ -37,32 +33,22 @@ class Topbar extends React.Component<Props, State> {
     apiDiscoverySelectors: PropTypes.object.isRequired
   };
 
-  constructor(props: Props, context: any) {
-    super(props, context);
-    this.state = {
-      apis: props.apiDiscoverySelectors.apis()
-    };
-  }
-
-  public componentWillReceiveProps(nextProps: Props) {
-    this.setState({
-      apis: nextProps.apiDiscoverySelectors.apis()
-    });
-  }
-
   private onApiSelected(api: { label: string; value: string }) {
-    this.setState({ selectedApiId: api.value });
     this.props.apiDiscoveryActions.selectApi(api.value);
   }
 
-  public componentDidMount() {
-    log('Topbar did mount.', this.props, this.state);
-    this.props.apiDiscoveryActions.fetchApis();
+  public async componentDidMount() {
+    await this.props.apiDiscoveryActions.fetchApis();
+    // Parse possible API id from the url scheme://host/apis/{id}
+    const match = /^https?:\/\/[^\/]+\/apis\/([^\/\s]+)$/.exec(window.location.href);
+    if (match && match[1]) {
+      log('Select API from URL: %s', match[1]);
+      this.props.apiDiscoveryActions.selectApi(match[1]);
+    }
   }
 
   public render() {
-    const { getComponent, specSelectors } = this.props;
-    const Button = getComponent('Button');
+    const { getComponent, specSelectors, apiDiscoverySelectors } = this.props;
     const Link = getComponent('Link');
 
     const isLoading = specSelectors.loadingStatus() === 'loading';
@@ -72,7 +58,9 @@ class Topbar extends React.Component<Props, State> {
     if (isFailed) selectorStyle.color = 'red';
     if (isLoading) selectorStyle.color = '#aaa';
 
-    const selectApis = this.state.apis
+    const selectedApi = apiDiscoverySelectors.selectedApi() as string;
+    const apis = apiDiscoverySelectors.apis() as ApiMetaData[];
+    const selectableApis = apis
       .slice()
       .filter(api => !!api.id)
       .sort()
@@ -82,24 +70,22 @@ class Topbar extends React.Component<Props, State> {
       <div className="topbar">
         <div className="wrapper">
           <div className="topbar-wrapper">
-            <Link href="#" title="API Discovery">
+            <Link href="/" title="API Discovery">
               <img height="30" width="30" src={Logo} alt="Swagger UX" />
               <span>API Discovery</span>
             </Link>
             <div className="download-url-wrapper">
               <Select
+                disabled={isLoading}
                 style={selectorStyle}
                 name="select-api"
-                value={this.state.selectedApiId}
-                options={selectApis}
+                placeholder={isLoading ? 'loading …' : 'select …'}
+                value={isLoading ? '' : selectedApi}
+                options={selectableApis}
                 clearable={false}
                 onChange={this.onApiSelected.bind(this)}
               />
             </div>
-            &nbsp;
-            <Button className="btn execute" onClick={this.props.apiDiscoveryActions.fetchToken}>
-              Login
-            </Button>
           </div>
         </div>
       </div>

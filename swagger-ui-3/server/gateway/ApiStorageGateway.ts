@@ -48,4 +48,12 @@ export default class ApiStorageGateway extends AbstractGateway {
       .set('Authorization', auth);
     return response.body;
   }
+
+  public async get(path: string): Promise<ApiVersion> {
+    const auth = await this.getAuthorizationHeader();
+    const response = await superagent
+      .get(`${this.baseUrl}/${path.replace(/^\//, '')}`)
+      .set('Authorization', auth);
+    return response.body;
+  }
 }

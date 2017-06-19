@@ -10,20 +10,27 @@ Then you can load new API definitions by typing in a valid Api Discovery Storage
 
 ### Development
 
-Run in development mode with automatic reloading:
+**Run in development mode with automatic reloading:**
 
 ```sh
-npm start
+npm run dev
 ```
 
-Run in production mode:
+Configure authentication by setting a valid OAuth token:
 
 ```sh
-npm run start-dist
+export API_DISCOVERY_OAUTH2_ACCESS_TOKENS=api-storage-domain=some-token
 ```
 
-Build a new distribution for production:
+`api-storage-domain` must be the hostname of the API storage backend used in the `apiStorageConf` application configuration (see the [/conf](/conf) directory).
+
+**Run in production mode:**
 
 ```sh
 npm run dist
+npm start
 ```
+
+### Configuration
+
+All configuration is external to the application and can be set with configuration files, environment variables and command line arguments. Check the [/conf](/conf) directory for examples and take a look at [conf.ts](/server/framework/conf.ts) to see the implementation.

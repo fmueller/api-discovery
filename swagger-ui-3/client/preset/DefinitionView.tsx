@@ -1,6 +1,5 @@
 import React = require('react');
 import PropTypes = require('prop-types');
-import ApiVersion from '../../common/domain/model/ApiVersion';
 
 type Props = {
   errSelectors: object;
@@ -14,15 +13,11 @@ type Props = {
   apiDiscoverySelectors: any;
 };
 
-type State = {
-  selectedApiVersion: ApiVersion;
-};
-
 /**
  * Based on the BaseLayout.
  * See https://github.com/swagger-api/swagger-ui/blob/master/src/core/components/layouts/base.jsx
  */
-export default class DefinitionView extends React.Component<Props, State> {
+export default class DefinitionView extends React.Component<Props, undefined> {
   public static readonly propTypes = {
     errSelectors: PropTypes.object.isRequired,
     errActions: PropTypes.object.isRequired,
@@ -36,21 +31,14 @@ export default class DefinitionView extends React.Component<Props, State> {
   };
 
   public render() {
-    const { specSelectors, getComponent, apiDiscoverySelectors } = this.props;
+    const { getComponent, apiDiscoverySelectors } = this.props;
 
-    const info = specSelectors.info();
-    const url = specSelectors.url();
-    const basePath = specSelectors.basePath();
-    const host = specSelectors.host();
-    const externalDocs = specSelectors.externalDocs();
-
-    const Info = getComponent('info');
+    const DefinitionInfo = getComponent('DefinitionInfo', true);
     const Operations = getComponent('operations', true);
     const Models = getComponent('models', true);
     const Row = getComponent('Row');
     const Col = getComponent('Col');
     const Errors = getComponent('errors', true);
-    const DefinitionMenu = getComponent('DefinitionMenu', true);
 
     const apiVersions = apiDiscoverySelectors.apiVersions();
 
@@ -63,20 +51,8 @@ export default class DefinitionView extends React.Component<Props, State> {
         <div>
           <Errors />
           <Row className="information-container">
-            <Col mobile={6} desktop={6}>
-              {info.count()
-                ? <Info
-                    info={info}
-                    url={url}
-                    host={host}
-                    basePath={basePath}
-                    externalDocs={externalDocs}
-                    getComponent={getComponent}
-                  />
-                : null}
-            </Col>
-            <Col mobile={6} desktop={6}>
-              <DefinitionMenu />
+            <Col mobile={12} desktop={12}>
+              <DefinitionInfo />
             </Col>
           </Row>
           <Row>
