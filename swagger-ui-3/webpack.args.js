@@ -36,17 +36,17 @@ exports.scripts = () => {
     case 'production':
       return [
         {
-          src: 'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.0.14/swagger-ui-bundle.js',
+          src: 'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.0.16/swagger-ui-bundle.js',
           integrity: 'sha256-xU14TvNaRLU+PcUYoi49k21OsdfDzSwSiDoI4h6NDsQ=',
           crossorigin: 'anonymous'
         },
         {
-          src: 'https://cdnjs.cloudflare.com/ajax/libs/react/15.6.0/react.min.js',
+          src: 'https://cdnjs.cloudflare.com/ajax/libs/react/15.6.1/react.min.js',
           integrity: 'sha256-mMnqBTPWAOYxp2vj8RYEqx34vhMT4PGvwxm5Ndl5yt8=',
           crossorigin: 'anonymous'
         },
         {
-          src: 'https://cdnjs.cloudflare.com/ajax/libs/react/15.6.0/react-dom.min.js',
+          src: 'https://cdnjs.cloudflare.com/ajax/libs/react/15.6.1/react-dom.min.js',
           integrity: 'sha256-eG+W/mO3HZuwuYJjKT9aYbZC/MVN1mmpbjyQhGBihhE=',
           crossorigin: 'anonymous'
         }

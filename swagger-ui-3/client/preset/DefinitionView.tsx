@@ -8,7 +8,7 @@ type Props = {
   specSelectors: any;
   layoutSelectors: object;
   layoutActions: object;
-  getComponent: (name: string, container?: boolean | 'root') => React.ComponentClass<any>;
+  getComponent: (name: string, container?: boolean | 'root') => React.ComponentType<any>;
   apiDiscoveryActions: object;
   apiDiscoverySelectors: any;
 };

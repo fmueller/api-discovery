@@ -34,7 +34,7 @@ const License = ({ license }: { license: Map<string, string> }) => {
 
 type Props = {
   specSelectors: any;
-  getComponent: (name: string, container?: boolean | 'root') => React.ComponentClass<any>;
+  getComponent: (name: string, container?: boolean | 'root') => React.ComponentType<any>;
   apiDiscoveryActions: any;
   apiDiscoverySelectors: any;
 };

@@ -9,7 +9,7 @@ import ApiMetaData from '../../common/domain/model/ApiMetaData';
 type Props = {
   specSelectors: any;
   specActions: any;
-  getComponent: (name: string, container?: boolean | 'root') => React.ComponentClass<any>;
+  getComponent: (name: string, container?: boolean | 'root') => React.ComponentType<any>;
   apiDiscoveryActions: { [name: string]: (...args: any[]) => void };
   apiDiscoverySelectors: any;
 };
