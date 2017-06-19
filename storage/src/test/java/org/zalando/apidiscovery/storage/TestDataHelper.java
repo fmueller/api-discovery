@@ -14,7 +14,7 @@ public class TestDataHelper {
 
     public static DiscoveredApiDefinition discoveredMetaApi(String version, String definitionDiff) {
         return DiscoveredApiDefinition.builder()
-            .applicationName("Meta Application")
+            .appName("Meta Application")
             .apiName("meta-api")
             .type("swagger")
             .version(version)

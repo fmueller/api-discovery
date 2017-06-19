@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
-import org.zalando.apidiscovery.storage.domain.model.ApiDefinition;
 import org.zalando.apidiscovery.storage.domain.model.Api;
+import org.zalando.apidiscovery.storage.domain.model.ApiDefinition;
 import org.zalando.apidiscovery.storage.domain.model.ApiLifecycleState;
-import org.zalando.apidiscovery.storage.domain.model.ApiList;
+import org.zalando.apidiscovery.storage.domain.model.Apis;
 import org.zalando.apidiscovery.storage.domain.model.Deployment;
 import org.zalando.apidiscovery.storage.domain.model.Deployments;
 import org.zalando.apidiscovery.storage.domain.model.VersionList;
@@ -39,11 +39,12 @@ public class ApiResourceController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiList> getApis(@RequestParam(value = "lifecycle_state", required = false) ApiLifecycleState lifecycleState) {
-        List<Api> apiList = loadApis(lifecycleState).stream()
-            .sorted(comparing(api -> api.getApiMetaData().getName()))
+    public ResponseEntity<Apis> getApis(@RequestParam(value = "lifecycle_state", required = false) ApiLifecycleState lifecycleState) {
+        List<Api.ApiMetaData> apiList = loadApis(lifecycleState).stream()
+            .map(Api::getApiMetaData)
+            .sorted(comparing(Api.ApiMetaData::getId))
             .collect(toList());
-        return ResponseEntity.ok(new ApiList(apiList));
+        return ResponseEntity.ok(new Apis(apiList));
     }
 
     private List<Api> loadApis(ApiLifecycleState lifecycleState) {
@@ -69,7 +70,7 @@ public class ApiResourceController {
         return lifecycleState == null ? apiService.getVersionsForApi(apiId) : apiService.getVersionsForApi(apiId, lifecycleState);
     }
 
-    @GetMapping("/{api_id}/versions/{version_id}")
+    @GetMapping("/{api_id}/versions/{version_id:.+}")
     public ResponseEntity<Versions> getApiVersion(@PathVariable("api_id") String apiId,
                                                   @PathVariable("version_id") String versionId,
                                                   UriComponentsBuilder builder) {

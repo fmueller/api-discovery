@@ -19,8 +19,7 @@ public class LegacyApiDefinition {
     private String status;
     @Builder.Default
     private String type = ApiDefinition.UNDEFINED_SCHEMA_TYPE;
-    @Builder.Default
-    private String name = ApiDefinition.UNDEFINED_TITLE;
+    private String name;
     @Builder.Default
     private String version = ApiDefinition.UNDEFINED_VERSION;
     private String serviceUrl;

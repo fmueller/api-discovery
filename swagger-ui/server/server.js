@@ -24,8 +24,10 @@ function generateEnv() {
     }
     // read client configuration from mint
     if (process.env.CREDENTIALS_DIR) {
-        var clientConfig = JSON.parse(fs.readFileSync(path.join(process.env.CREDENTIALS_DIR, 'client.json')));
-        env += 'SUIENV_OAUTH_CLIENT_ID="' + clientConfig.client_id + '";\n';
+        var clientId = String(fs.readFileSync(path.join(process.env.CREDENTIALS_DIR, 'app-client-id')));
+        env += 'SUIENV_OAUTH_CLIENT_ID="' + clientId + '";\n';
+    } else {
+        winston.info("CREDENTIALS_DIR not provided!");
     }
     return env;
 }

@@ -11,8 +11,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ApiList {
+public class Apis {
 
-    private List<Api> apis;
+    private List<Api.ApiMetaData> apis;
 
 }

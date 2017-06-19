@@ -67,14 +67,13 @@ public class ApiResourceIntegrationTest extends AbstractResourceIntegrationTest 
 
         apiRepository.save(asList(testAPi100, testAPi200, anotherAPi100));
 
-        ResponseEntity<String> responseEntity = restTemplate.getForEntity(
-            "/apis", String.class);
+        ResponseEntity<String> responseEntity = restTemplate.getForEntity("/apis", String.class);
 
         final String response = responseEntity.getBody();
-        assertThat(response, hasJsonPath("$.apis[0].api_meta_data.name", equalTo(ANOTHER_API)));
-        assertThat(response, hasJsonPath("$.apis[0].api_meta_data.lifecycle_state", equalTo(INACTIVE)));
-        assertThat(response, hasJsonPath("$.apis[1].api_meta_data.name", equalTo(TEST_API)));
-        assertThat(response, hasJsonPath("$.apis[1].api_meta_data.lifecycle_state", equalTo(ACTIVE)));
+        assertThat(response, hasJsonPath("$.apis[0].id", equalTo(ANOTHER_API)));
+        assertThat(response, hasJsonPath("$.apis[0].lifecycle_state", equalTo(INACTIVE)));
+        assertThat(response, hasJsonPath("$.apis[1].id", equalTo(TEST_API)));
+        assertThat(response, hasJsonPath("$.apis[1].lifecycle_state", equalTo(ACTIVE)));
     }
 
     @Test
@@ -107,8 +106,8 @@ public class ApiResourceIntegrationTest extends AbstractResourceIntegrationTest 
 
         final String response = responseEntity.getBody();
         assertThat(response, hasJsonPath("$.apis", hasSize(1)));
-        assertThat(response, hasJsonPath("$.apis[0].api_meta_data.name", equalTo(TEST_API)));
-        assertThat(response, hasJsonPath("$.apis[0].api_meta_data.lifecycle_state", equalTo(ACTIVE)));
+        assertThat(response, hasJsonPath("$.apis[0].id", equalTo(TEST_API)));
+        assertThat(response, hasJsonPath("$.apis[0].lifecycle_state", equalTo(ACTIVE)));
     }
 
     @Test
@@ -149,8 +148,8 @@ public class ApiResourceIntegrationTest extends AbstractResourceIntegrationTest 
 
         final String response = responseEntity.getBody();
         assertThat(response, hasJsonPath("$.apis", hasSize(1)));
-        assertThat(response, hasJsonPath("$.apis[0].api_meta_data.name", equalTo(ANOTHER_API)));
-        assertThat(response, hasJsonPath("$.apis[0].api_meta_data.lifecycle_state", equalTo(INACTIVE)));
+        assertThat(response, hasJsonPath("$.apis[0].id", equalTo(ANOTHER_API)));
+        assertThat(response, hasJsonPath("$.apis[0].lifecycle_state", equalTo(INACTIVE)));
     }
 
 
@@ -184,8 +183,8 @@ public class ApiResourceIntegrationTest extends AbstractResourceIntegrationTest 
 
         final String response = responseEntity.getBody();
         assertThat(response, hasJsonPath("$.apis", hasSize(1)));
-        assertThat(response, hasJsonPath("$.apis[0].api_meta_data.name", equalTo(ANOTHER_API)));
-        assertThat(response, hasJsonPath("$.apis[0].api_meta_data.lifecycle_state", equalTo(DECOMMISSIONED)));
+        assertThat(response, hasJsonPath("$.apis[0].id", equalTo(ANOTHER_API)));
+        assertThat(response, hasJsonPath("$.apis[0].lifecycle_state", equalTo(DECOMMISSIONED)));
     }
 
 
@@ -211,7 +210,7 @@ public class ApiResourceIntegrationTest extends AbstractResourceIntegrationTest 
         final String response = responseEntity.getBody();
 
         assertThat(response, isJson(allOf(
-            withJsonPath("$.api_meta_data.name", equalTo(TEST_API)),
+            withJsonPath("$.api_meta_data.id", equalTo(TEST_API)),
             withJsonPath("$.api_meta_data.lifecycle_state", equalTo(ACTIVE)),
             withJsonPath("$.versions[*].api_version", hasItems(V1, V2)),
             withJsonPath("$.applications[*].name", hasItems(APP1, APP1)))));
