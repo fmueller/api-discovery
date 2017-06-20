@@ -59,7 +59,7 @@ function getStaticOptions() {
   const configuration = { authConf: clientAuthConf, apiServiceUrl };
 
   const options = { files, scripts, templateFile, faviconFile, configuration };
-  log.debug('Using static options %s', JSON.stringify(options, null, 2));
+  log.debug('Using static options %j', options);
   return options;
 }
 

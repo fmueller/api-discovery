@@ -86,7 +86,7 @@ export default class OAuth2Client {
   }
 
   public isAuthorised(): boolean {
-    return this.tokenInfo.expiryTime - new Date().getTime() < refreshThreshold;
+    return this.tokenInfo.expiryTime - new Date().getTime() > refreshThreshold;
   }
 
   public getToken(): string {
