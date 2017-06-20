@@ -15,6 +15,7 @@ WORKDIR /opt/api-discovery-ui
 RUN yarn install --production
 
 ADD dist /opt/api-discovery-ui/
+RUN mv /opt/api-discovery-ui/scm-source.json /
 
 ENV API_DISCOVERY_CONF /opt/api-discovery-ui/conf.yaml
 ADD $conf $API_DISCOVERY_CONF

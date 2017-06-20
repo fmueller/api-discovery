@@ -37,17 +37,17 @@ exports.scripts = () => {
       return [
         {
           src: 'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.0.16/swagger-ui-bundle.js',
-          integrity: 'sha256-xU14TvNaRLU+PcUYoi49k21OsdfDzSwSiDoI4h6NDsQ=',
+          integrity: 'sha256-lZyFcMoDTftDTAMgebAnAYnVIvrwYEoJwT8PmpoF5qc=',
           crossorigin: 'anonymous'
         },
         {
           src: 'https://cdnjs.cloudflare.com/ajax/libs/react/15.6.1/react.min.js',
-          integrity: 'sha256-mMnqBTPWAOYxp2vj8RYEqx34vhMT4PGvwxm5Ndl5yt8=',
+          integrity: 'sha256-ivdPAn5h6U67z6OPgwfiLM9ug6levxmYFqWNxNCV0YE=',
           crossorigin: 'anonymous'
         },
         {
           src: 'https://cdnjs.cloudflare.com/ajax/libs/react/15.6.1/react-dom.min.js',
-          integrity: 'sha256-eG+W/mO3HZuwuYJjKT9aYbZC/MVN1mmpbjyQhGBihhE=',
+          integrity: 'sha256-UEqn5+tyzezD6A5HBMNTlc5mXkmt+ohTfCBPtXMaGb0=',
           crossorigin: 'anonymous'
         }
       ];

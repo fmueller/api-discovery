@@ -1,3 +1,14 @@
 # Development configuration file.
 logLevel: debug
 enableWebpackDev: true
+checkClientAuthorisation: false
+apiStorageConf:
+  scheme: oauth2
+  baseUrl: https://localhost:8080
+  scopes:
+    - uid
+  forwardClientAuthorization: false
+clientAuthConf:
+  scheme: basic
+  username: user
+  password: secret
