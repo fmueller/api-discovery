@@ -1,0 +1,59 @@
+/**
+ * Global layout.
+ */
+body {
+  font-family: sans-serif;
+}
+
+/**
+ * Fix swagger-ui styles.
+ */
+#swagger-ui {
+  padding: 0px 10px;
+}
+
+.swagger-ui .wrapper {
+  padding: 0px !important;
+}
+
+#swagger-ui .container {
+  padding: 0 20px !important;
+}
+
+.swagger-ui .scheme-container {
+  padding: 20px 10px 10px 10px !important;
+}
+
+.swagger-ui .title small {
+  color: #FAFAFA !important;
+  background: #BDBDBD !important;
+}
+
+.swagger-ui .title small:hover {
+  cursor: pointer;
+  background: #BBDEFB !important;
+}
+
+.swagger-ui .title small.selected {
+  color: #FFFFFF !important;
+  background: #5091E6 !important;
+}
+
+.swagger-ui .title .version {
+  font-size: 1.6em !important;
+  padding: 2px !important;
+}
+
+/**
+ * Disable swagger-ui elements
+ */
+.swagger-ui .try-out__btn {
+  display: none;
+}
+
+/**
+ * Selector box.
+ */
+.topbar .Select {
+  width: 100%;
+}

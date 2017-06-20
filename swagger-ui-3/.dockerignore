@@ -1,0 +1,6 @@
+client/
+coverage/
+node_modules/
+server/
+static/
+test/

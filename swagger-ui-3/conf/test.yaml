@@ -1,0 +1,11 @@
+# Test configuration file.
+logLevel: warn
+apiStorageConf:
+  scheme: oauth2
+  baseUrl: https://localhost:8080
+  scopes:
+    - uid
+clientAuthConf:
+  scheme: basic
+  username: user
+  password: secret

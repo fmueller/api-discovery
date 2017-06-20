@@ -1,0 +1,13 @@
+# Production configuration file (example)
+logLevel: info
+checkClientAuthorisation: false
+apiStorageConf:
+  scheme: oauth2
+  baseUrl: https://localhost:8080
+  scopes:
+    - uid
+  forwardClientAuthorization: false
+clientAuthConf:
+  scheme: basic
+  username: user
+  password: secret

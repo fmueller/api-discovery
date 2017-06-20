@@ -1,0 +1,9 @@
+{
+  "execMap": {
+     "ts": "ts-node -P server",
+     "js": "babel-node"
+  },
+  "watch": [
+    "server/"
+  ]
+}
