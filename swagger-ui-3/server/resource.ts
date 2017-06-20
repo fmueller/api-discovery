@@ -20,7 +20,12 @@ import validate from '../common/domain/validate';
 function urlResolver(url: string): string {
   if (url.startsWith('file://')) {
     const filePath = url.replace('file://', '');
-    return fs.readFileSync(filePath).toString();
+    try {
+      return fs.readFileSync(filePath).toString();
+    } catch (e) {
+      log.error(e.message);
+      return '';
+    }
   }
   return url;
 }
