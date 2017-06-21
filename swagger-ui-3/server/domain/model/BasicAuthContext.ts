@@ -29,13 +29,13 @@ export default class BasicAuthContext implements AuthContext {
    */
   public async getAuthorizationHeader(ctx?: Context): Promise<string> {
     if (ctx && this.forwardAuthorization) {
-      log.debug('Request headers: %j', ctx.headers);
       const auth: string = ctx.headers['authorization'];
       if (auth && /^Basic (\S+)$/.test(auth)) {
         log.debug('Forwarding client-side Basic authorization.');
         return auth;
       }
       log.warn('AuthContext should forward Basic authorization but cannot.');
+      log.debug('Request headers: %j', ctx.headers);
       return '';
     }
     log.debug('Using server-side Basic authorization.');
