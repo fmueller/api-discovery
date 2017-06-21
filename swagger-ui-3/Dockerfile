@@ -1,23 +1,27 @@
 FROM registry.opensource.zalan.do/stups/node:7.10-cd52
 
-RUN apt-get update && apt-get install -y apt-transport-https \
+MAINTAINER Zalando SE
+
+RUN apt-get update && apt-get install --no-install-recommends -y \
+        apt-transport-https=1.2.20 \
     && curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
     && echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
-    && apt-get update && apt-get install -y yarn \
+    && apt-get update && apt-get install --no-install-recommends -y \
+        yarn=0.24.6-1 \
     && rm -rf /var/lib/apt/lists/*
 
-ADD package.json /opt/api-discovery-ui/
-ADD yarn.lock /opt/api-discovery-ui/
+COPY package.json /opt/api-discovery-ui/
+COPY yarn.lock /opt/api-discovery-ui/
 
 WORKDIR /opt/api-discovery-ui
-RUN yarn install --production
+RUN yarn install --production && yarn cache clean
 
-ADD dist /opt/api-discovery-ui/
+COPY dist /opt/api-discovery-ui/
 RUN mv /opt/api-discovery-ui/scm-source.json /
 
 ARG conf=conf/production.yaml
 ENV API_DISCOVERY_CONF /opt/api-discovery-ui/conf.yaml
-ADD $conf $API_DISCOVERY_CONF
+COPY $conf $API_DISCOVERY_CONF
 
 ENV NODE_ENV production
 
