@@ -1,5 +1,6 @@
 /// <reference path="./typings/index.d.ts" />
 
+import 'source-map-support/register';
 import Koa = require('koa');
 import koaStatic = require('koa-static');
 import koaMount = require('koa-mount');
