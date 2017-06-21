@@ -16,21 +16,13 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.jsx?$/,
-        exclude: /node_modules/,
-        loader: 'babel-loader',
-        options: {
-          presets: ['es2015', 'react', 'stage-2'],
-          babelrc: false
-        }
-      },
-      {
         test: /\.tsx?$/,
         loader: 'awesome-typescript-loader',
         options: {
           configFileName: path.resolve(__dirname, './client/tsconfig.json')
         }
       },
+      { enforce: 'pre', test: /\.js$/, loader: 'source-map-loader' },
       {
         test: /\.css$/,
         use: ExtractTextPlugin.extract({
@@ -58,5 +50,5 @@ module.exports = {
     new webpack.DefinePlugin(args.definitions()),
     new ExtractTextPlugin(args.fileNames().stylesCss)
   ],
-  devtool: 'cheap-module-source-map'
+  devtool: 'source-map'
 };
