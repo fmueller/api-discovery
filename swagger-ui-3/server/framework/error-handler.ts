@@ -81,6 +81,15 @@ export default function createErrorHandler(): Middleware {
           url
         });
         log.error(`${req.method} ${url} ${error.response.text}`);
+      } else if (e.code === 'ECONNREFUSED') {
+        ctx.status = 502;
+        ctx.body = new RemoteAccessProblem({
+          title: 'Remote Access Error',
+          status: 502,
+          detail: e.message,
+          url: e.address
+        });
+        log.error(e.message);
       } else {
         throw e;
       }
