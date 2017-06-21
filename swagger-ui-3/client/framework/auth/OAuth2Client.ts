@@ -43,13 +43,16 @@ export default class OAuth2Client {
   }
 
   private static parseUrl(): TokenInfo {
-    const match = /https?:[^\?]+\?(\S+)/.exec(window.location.href);
+    const match = /https?:\/\/[^\/]+\/[?#](\S+)/.exec(window.location.href);
     if (match) {
       const pairs = match[1].split('&');
       const params = pairs.reduce((obj, pair) => {
         const [key, value] = pair.split('=');
         return Object.assign(obj, { [key]: decodeURIComponent(value) });
       }, {} as { [name: string]: string });
+
+      // Reset the URL to a clean state.
+      history.replaceState(null, '/', '/');
 
       return {
         state: params['state'],
