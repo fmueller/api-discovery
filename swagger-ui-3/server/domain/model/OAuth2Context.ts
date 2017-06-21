@@ -34,12 +34,14 @@ export default class OAuth2Context implements AuthContext {
    */
   public async getAuthorizationHeader(ctx?: Context): Promise<string> {
     if (ctx && this.forwardAuthorization) {
-      const auth: string = ctx.headers['Authorization'];
+      log.debug('Request headers: %j', ctx.headers);
+      const auth: string = ctx.headers['authorization'];
       if (auth && /^Bearer (\S+)$/.test(auth)) {
         log.debug('Forwarding client-side Bearer authorization.');
         return auth;
       }
       log.warn('AuthContext should forward Bearer authorization but cannot.');
+      return '';
     }
     log.debug('Using server-side Bearer authorization.');
     const token = await this.tokenSupplier();
