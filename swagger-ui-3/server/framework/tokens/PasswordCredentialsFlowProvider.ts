@@ -1,6 +1,6 @@
 import path = require('path');
 import fs = require('mz/fs');
-import request = require('request-promise-native');
+import superagent = require('superagent');
 import TokenProvider from './TokenProvider';
 
 export type UserCredentials = {
@@ -115,20 +115,17 @@ export default class PasswordCredentialsFlowProvider implements TokenProvider {
     const clientCredentials = await this.clientCredentialsProvider();
     const userCredentials = await this.userCredentialsProvider();
 
-    const response = await request.post(this.accessTokenUri, {
-      form: {
+    const response = await superagent
+      .post(this.accessTokenUri)
+      .type('form')
+      .send({
         realm: this.realm,
         grant_type: 'password',
         username: userCredentials.username,
         pasword: userCredentials.password,
         scope: scopes.join(' ')
-      },
-      auth: {
-        user: clientCredentials.id,
-        pass: clientCredentials.secret
-      },
-      json: true
-    });
+      })
+      .auth(clientCredentials.id, clientCredentials.secret);
 
     return this.tokenResponseParser(response);
   }
