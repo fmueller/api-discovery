@@ -1,6 +1,4 @@
 import { Middleware } from 'koa';
-import { OptionsWithUrl } from 'request-promise-native';
-import errors = require('request-promise-native/errors');
 import NotFoundError from '../gateway/NotFoundError';
 import { log } from './logger';
 
@@ -34,6 +32,26 @@ class NotFoundProblem extends Problem {
   }
 }
 
+interface SuperagentError extends Error {
+  readonly status: number;
+  readonly response: {
+    readonly text: string;
+    readonly req: any;
+    readonly body: any;
+    readonly header: { [name: string]: string };
+    readonly type: string;
+    readonly status: number;
+  };
+}
+
+function parseUrl(req: any): string {
+  try {
+    return req.connection._host + req.path;
+  } catch (e) {
+    return '';
+  }
+}
+
 /**
  * Create an error handling middleware function that
  * catches exceptions and maps them to Problem responses.
@@ -43,17 +61,7 @@ export default function createErrorHandler(): Middleware {
     try {
       await next();
     } catch (e) {
-      if (e instanceof errors.StatusCodeError) {
-        const url = (e.options as OptionsWithUrl).url.toString();
-        ctx.status = e.statusCode;
-        ctx.body = new RemoteAccessProblem({
-          title: 'Remote Access Error',
-          status: e.statusCode,
-          detail: e.message,
-          url
-        });
-        log.error(`${url} ${e.message}`);
-      } else if (e instanceof NotFoundError) {
+      if (e instanceof NotFoundError) {
         ctx.status = 404;
         ctx.body = new NotFoundProblem({
           title: 'Not Found',
@@ -61,6 +69,27 @@ export default function createErrorHandler(): Middleware {
           url: e.url
         });
         log.info(`Not found: ${e.url}`);
+      } else if (e.status && e.response) {
+        const error = e as SuperagentError;
+        const req = error.response.req || {};
+        const url = parseUrl(error.response.req);
+        ctx.status = error.status;
+        ctx.body = new RemoteAccessProblem({
+          title: 'Remote Access Error',
+          status: error.status,
+          detail: error.response.text,
+          url
+        });
+        log.error(`${req.method} ${url} ${error.response.text}`);
+      } else if (e.code === 'ECONNREFUSED') {
+        ctx.status = 502;
+        ctx.body = new RemoteAccessProblem({
+          title: 'Remote Access Error',
+          status: 502,
+          detail: e.message,
+          url: e.address
+        });
+        log.error(e.message);
       } else {
         throw e;
       }
