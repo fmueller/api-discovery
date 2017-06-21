@@ -1,7 +1,6 @@
 import { createSelector } from 'reselect';
 import { State } from './reducers';
 
-import ApiDeploymentLink from '../../common/domain/model/ApiDeploymentLink';
 import ApiList from '../../common/domain/model/ApiList';
 import { ApiLifecycleState } from '../../common/domain/model/ApiMetaData';
 import ApiVersion from '../../common/domain/model/ApiVersion';
@@ -11,7 +10,7 @@ export interface SelectedApiVersion {
   version: string;
   lifecycleState: ApiLifecycleState;
   definition: string;
-  applications: ApiDeploymentLink[];
+  applications: string[];
 }
 
 function id<T>(_: T) {
@@ -39,11 +38,16 @@ export default {
   selectedApiVersion: createSelector(id, (state: State) => {
     const apiVersion = state.get('selectedApiVersion') as ApiVersion;
     if (!apiVersion) return;
+    const { api_version, lifecycle_state, definitions } = apiVersion;
+    // TODO: order by created_at and select latest.
+    const definition = definitions[definitions.length - 1];
+    // Deduplicate application links.
+    const applications = Array.from(new Set(definition.applications.map(app => app.href)));
     return {
-      version: apiVersion.api_version,
-      lifecycleState: apiVersion.lifecycle_state,
-      definition: apiVersion.definitions[0].definition, // TODO: order by created_at and select latest
-      applications: apiVersion.definitions[0].applications
+      version: api_version,
+      lifecycleState: lifecycle_state,
+      definition: definition.definition,
+      applications
     } as SelectedApiVersion;
   })
 };

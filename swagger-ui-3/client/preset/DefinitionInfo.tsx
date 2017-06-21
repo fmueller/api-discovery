@@ -32,6 +32,11 @@ const License = ({ license }: { license: Map<string, string> }) => {
   );
 };
 
+const Version = (props: { version: string; selected: boolean; onClick: () => any }) =>
+  <small className={props.selected ? 'selected' : undefined} onClick={props.onClick}>
+    <pre className="version">{props.version}</pre>
+  </small>;
+
 type Props = {
   specSelectors: any;
   getComponent: (name: string, container?: boolean | 'root') => React.ComponentType<any>;
@@ -63,12 +68,13 @@ export default class Info extends React.Component<Props, undefined> {
 
     const info = specSelectors.info();
     const url = specSelectors.url();
+    const basePath = specSelectors.basePath();
+    const host = specSelectors.host();
     const externalDocs = specSelectors.externalDocs();
 
     const apiVersions = apiDiscoverySelectors.apiVersions() as ApiVersion[];
     const selectedApiVersion = apiDiscoverySelectors.selectedApiVersion() as SelectedApiVersion;
     if (!selectedApiVersion) return null;
-    const application = selectedApiVersion.applications[0];
 
     const version = info.get('version');
     const description = info.get('description');
@@ -91,21 +97,24 @@ export default class Info extends React.Component<Props, undefined> {
         <hgroup className="main">
           <h2 className="title">
             {title}
-            {apiVersions.map((apiVersion, i) =>
-              <small
-                key={i}
-                className={apiVersion.api_version === version ? 'selected' : undefined}
-                onClick={this.onSelectApiVersion.bind(this, apiVersion)}
-              >
-                <pre className="version">{apiVersion.api_version}</pre>
-              </small>
-            )}
+            <span className="line-break-768" />
+            {apiVersions
+              .slice()
+              .sort((a, b) => (a.api_version < b.api_version ? 1 : -1))
+              .map((api, i) =>
+                <Version
+                  key={i}
+                  version={api.api_version}
+                  selected={api.api_version === version}
+                  onClick={this.onSelectApiVersion.bind(this, api)}
+                />
+              )}
           </h2>
-          <p>
-            <a target="_blank" href={application.href}>
-              <span className="url">{application.href}</span>
-            </a>
-          </p>
+          {host && basePath
+            ? <pre className="base-url">
+                [ Base url: {host}{basePath}]
+              </pre>
+            : null}
           {url &&
             <p>
               <a target="_blank" href={url}>
@@ -115,26 +124,6 @@ export default class Info extends React.Component<Props, undefined> {
         </hgroup>
 
         <div className="description">
-          <div>
-            <table style={{ textAlign: 'left', maxWidth: '400px' }}>
-              <thead>
-                <tr>
-                  <th style={{ padding: '8px 0px', minWidth: '200px' }}>created at</th>
-                  <th style={{ padding: '8px 0px' }}>updated at</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td style={{ padding: '8px 0px' }}>
-                    {new Date(application.created).toLocaleString()}
-                  </td>
-                  <td style={{ padding: '8px 0px' }}>
-                    {new Date(application.last_updated).toLocaleString()}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
           <Markdown source={description} />
         </div>
 
