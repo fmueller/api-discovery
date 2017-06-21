@@ -4608,9 +4608,9 @@ node-pre-gyp@^0.6.29:
     tar "^2.2.1"
     tar-pack "^3.4.0"
 
-node-scm-source@0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/node-scm-source/-/node-scm-source-0.2.0.tgz#5614051a4aef267f5a416411595de72028cd610f"
+node-scm-source@mfellner/node-scm-source:
+  version "0.2.2"
+  resolved "https://codeload.github.com/mfellner/node-scm-source/tar.gz/6bcaaa60a6d6a83649c1e2599481d1265bc73e1a"
   dependencies:
     q "^1.4.1"
 
