@@ -15,7 +15,7 @@
     "dist": "npm run clean && npm run dist-cpy && npm run dist-scm && npm run build-server && npm run dist-client",
     "dev": "API_DISCOVERY_CONF=conf/development.yaml nodemon server/index.ts",
     "start": "NODE_ENV=production API_DISCOVERY_CONF=conf/production.yaml node dist/server/index.js",
-    "lint-client": "eslint client && tslint --type-check --project client/tsconfig.json",
+    "lint-client": "tslint --type-check --project client/tsconfig.json",
     "lint-server": "tslint --type-check -e *.js -e webpack.config.js --project server/tsconfig.json",
     "lint": "npm run lint-client && npm run lint-server",
     "test": "npm run lint && API_DISCOVERY_CONF=conf/test.yaml jest --coverage",
