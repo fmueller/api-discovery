@@ -72,7 +72,7 @@ class Topbar extends React.Component<Props, undefined> {
           <div className="topbar-wrapper">
             <Link href="/" title="API Discovery">
               <img height="30" width="30" src={Logo} alt="Swagger UX" />
-              <span>API Discovery</span>
+              <span className="topbarTitle">API Discovery</span>
             </Link>
             <div className="download-url-wrapper">
               <Select
