@@ -13,6 +13,8 @@ SUBPROJECT_COMMANDS = {
     'crawler': './.delivery/build-crawler.sh',
     'storage': './.delivery/build-storage.sh',
     'swagger-ui-3': './.delivery/build-swagger-ui-3.sh',
+    '.delivery': './.delivery/root.sh',
+    'delivery.yaml': './.delivery/root.sh',
 }
 
 
@@ -59,7 +61,7 @@ def get_root_dirname(filename):
     if len(segments) > 1:
         return segments[0]
     else:
-        return '/'
+        return filename
 
 
 def get_directories(filenames):

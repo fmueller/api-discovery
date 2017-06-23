@@ -17,4 +17,3 @@ if [ "$IS_PR_BUILD" = true ]; then
 fi
 
 echo "Nothing to do."
-exit 1

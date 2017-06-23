@@ -8,6 +8,7 @@ readonly DOCKER_NAME="api-portal"
 readonly DOCKER_VERSION="$CDP_BUILD_VERSION"
 readonly DOCKER_IMAGE="$DOCKER_HOST/$DOCKER_TEAM/$DOCKER_NAME:$DOCKER_VERSION"
 readonly IS_PR_BUILD=${CDP_PULL_REQUEST_NUMBER+true}
+readonly NODE_VERSION="8.1.2"
 
 echo "Build api-portal."
 
@@ -24,7 +25,8 @@ echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.lis
 apt-get update
 apt-get install --no-install-recommends -y yarn
 curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.2/install.sh | bash
-nvm install 8.1.2
+nvm install ${NODE_VERSION}
+nvm use ${NODE_VERSION}
 
 echo "Build project..."
 cd swagger-ui-3/
