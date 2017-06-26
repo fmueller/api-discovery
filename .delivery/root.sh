@@ -12,6 +12,6 @@ if [ "$IS_PR_BUILD" = true ]; then
 fi
 
 echo "Build all sub-projects."
-./build-crawler.sh
-./build-storage.sh
-./build-swagger-ui-3.sh
+./.delivery/build-crawler.sh
+./.delivery/build-storage.sh
+./.delivery/build-swagger-ui-3.sh
