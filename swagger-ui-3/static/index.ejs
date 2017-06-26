@@ -11,15 +11,17 @@
   <% locals.files.css.forEach(css => { %>
   <link rel="stylesheet" href="/static/<%= css %>">
   <% }) %>
+
+  <% locals.scripts.forEach(script => { %>
+  <script <%- Object.keys(script).map(key => `${key}="${script[key]}"`).join(' ') %> defer></script>
+  <% }) %>
+
+  <% locals.files.js.slice().sort().forEach(js => { %>
+  <script src="/static/<%= js %>" defer></script>
+  <% }) %>
 </head>
 <body>
 <main id="swagger-ui">
 </main>
-<% locals.scripts.forEach(script => { %>
-<script <%- Object.keys(script).map(key => `${key}="${script[key]}"`).join(' ') %> defer></script>
-<% }) %>
-<% locals.files.js.slice().sort().forEach(js => { %>
-<script src="/static/<%= js %>" defer></script>
-<% }) %>
 </body>
 </html>

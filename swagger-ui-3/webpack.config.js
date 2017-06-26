@@ -10,8 +10,7 @@ module.exports = {
   },
   output: {
     filename: args.fileNames().mainEntryJs,
-    path: path.join(__dirname, 'dist', 'client'),
-    libraryTarget: 'umd2'
+    path: path.join(__dirname, 'dist', 'client')
   },
   module: {
     rules: [
