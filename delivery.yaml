@@ -6,7 +6,7 @@ build_steps:
         bash \
         python3.5 \
         python3-pip
-      pip install -r .delivery/requirements.txt
+      pip3 install -r .delivery/requirements.txt
       curl -sSL https://delivery.cloud.zalando.com/utils/ensure-docker | bash
   - desc: "Delegate to monorepo script."
     cmd: "python .delivery/build.py"
