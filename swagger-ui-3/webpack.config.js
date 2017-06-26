@@ -2,7 +2,6 @@ const path = require('path');
 const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const args = require('./webpack.args');
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 module.exports = {
   target: 'web',
@@ -47,7 +46,6 @@ module.exports = {
     }
   },
   plugins: [
-    new BundleAnalyzerPlugin(),
     new webpack.DefinePlugin(args.definitions()),
     new ExtractTextPlugin(args.fileNames().stylesCss)
   ],

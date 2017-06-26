@@ -69,7 +69,6 @@
     "tslint": "5.4.3",
     "typescript": "2.4.0",
     "webpack": "3.0.0",
-    "webpack-bundle-analyzer": "2.8.2",
     "webpack-koa2-middleware": "1.0.3",
     "yaml-js": "0.1.5"
   },
