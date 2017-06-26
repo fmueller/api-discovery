@@ -17,7 +17,6 @@ WORKDIR /opt/api-discovery-ui
 RUN yarn install --production && yarn cache clean
 
 COPY dist /opt/api-discovery-ui/
-RUN mv /opt/api-discovery-ui/scm-source.json /
 
 ARG conf=conf/production.yaml
 ENV API_DISCOVERY_CONF /opt/api-discovery-ui/conf.yaml
