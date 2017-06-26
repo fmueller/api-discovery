@@ -35,7 +35,7 @@ yarn run dist
 
 echo "Build docker image..."
 # TODO: externalize all configuration into environment variables.
-curl -o configuration.yaml curl -o configuration.yaml https://raw.github.bus.zalan.do/team-architecture/overarching-deploy/master/api-portal/configuration.yaml\?token\=AAAAc2BkexlLbFZCUVMybfdbXKEesMT-ks5ZWh6DwA%3D%3D
+curl -o configuration.yaml https://raw.github.bus.zalan.do/team-architecture/overarching-deploy/master/api-portal/configuration.yaml\?token\=AAAAc2BkexlLbFZCUVMybfdbXKEesMT-ks5ZWh6DwA%3D%3D
 docker build -t ${DOCKER_IMAGE} --build-arg conf=./configuration.yaml .
 
 echo "Push docker image..."
