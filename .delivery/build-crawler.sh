@@ -16,4 +16,4 @@ if [ "$IS_PR_BUILD" = true ]; then
   exit 1
 fi
 
-echo "Nothing to do."
+echo "Nothing to do for api-discovery."
