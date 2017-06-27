@@ -151,23 +151,23 @@
   dependencies:
     "@types/node" "*"
 
-"@types/node@*", "@types/node@8.0.2":
-  version "8.0.2"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.2.tgz#8ab9456efb87d57f11d04f313d3da1041948fb4d"
+"@types/node@*", "@types/node@8.0.3":
+  version "8.0.3"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.3.tgz#fca61c26f83e5f453166114f57d53a47feb36d45"
 
 "@types/prop-types@15.5.1":
   version "15.5.1"
   resolved "https://registry.yarnpkg.com/@types/prop-types/-/prop-types-15.5.1.tgz#1ecf52621299e65b855374337fb11fd2d1066fc1"
 
-"@types/react-select@1.0.47":
-  version "1.0.47"
-  resolved "https://registry.yarnpkg.com/@types/react-select/-/react-select-1.0.47.tgz#95fad6b502e2f0a839ea0d320ca6cbb809e73ab4"
+"@types/react-select@1.0.48":
+  version "1.0.48"
+  resolved "https://registry.yarnpkg.com/@types/react-select/-/react-select-1.0.48.tgz#5016665a6b1394c2f7ad8dde0bb528b27c891db2"
   dependencies:
     "@types/react" "*"
 
-"@types/react@*", "@types/react@15.0.27":
-  version "15.0.27"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-15.0.27.tgz#d64ad424aa24a101fd50cdeae6eab3d53e65513d"
+"@types/react@*", "@types/react@15.0.32":
+  version "15.0.32"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-15.0.32.tgz#a1d5291cc930a578435d9f17db77414ad4ce0f8c"
 
 "@types/relateurl@*":
   version "0.2.28"
@@ -216,9 +216,9 @@
   dependencies:
     "@types/source-map" "*"
 
-"@types/webpack@*", "@types/webpack@2.2.16":
-  version "2.2.16"
-  resolved "https://registry.yarnpkg.com/@types/webpack/-/webpack-2.2.16.tgz#9ca93f468ab3a8eb4b6f45f589acf58c8133aa9b"
+"@types/webpack@*", "@types/webpack@3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@types/webpack/-/webpack-3.0.0.tgz#2c5c383e0ba192340856f5e5cceb655cc195d0fa"
   dependencies:
     "@types/node" "*"
     "@types/tapable" "*"
@@ -586,14 +586,6 @@ babel-plugin-transform-strict-mode@^6.24.1:
   dependencies:
     babel-runtime "^6.22.0"
     babel-types "^6.24.1"
-
-babel-polyfill@^6.23.0:
-  version "6.23.0"
-  resolved "https://registry.yarnpkg.com/babel-polyfill/-/babel-polyfill-6.23.0.tgz#8364ca62df8eafb830499f699177466c3b03499d"
-  dependencies:
-    babel-runtime "^6.22.0"
-    core-js "^2.4.0"
-    regenerator-runtime "^0.10.0"
 
 babel-preset-jest@^20.0.3:
   version "20.0.3"
@@ -5269,9 +5261,9 @@ svgo@^0.7.0:
     sax "~1.2.1"
     whet.extend "~0.9.9"
 
-swagger-client@~3.0.15:
-  version "3.0.15"
-  resolved "https://registry.yarnpkg.com/swagger-client/-/swagger-client-3.0.15.tgz#e64f4b91e6298ec8280a59ce0a2d2c4973993e3e"
+swagger-client@3.0.16:
+  version "3.0.16"
+  resolved "https://registry.yarnpkg.com/swagger-client/-/swagger-client-3.0.16.tgz#6f9c491a954761fc4677d05e1830e556b3d716e2"
   dependencies:
     babel-runtime "^6.23.0"
     btoa "1.1.2"
@@ -5284,11 +5276,10 @@ swagger-client@~3.0.15:
     qs "^6.3.0"
     url "^0.11.0"
 
-swagger-ui@3.0.16:
-  version "3.0.16"
-  resolved "https://registry.yarnpkg.com/swagger-ui/-/swagger-ui-3.0.16.tgz#3538d62845263d99fcc943ea958d5f05682f34cd"
+swagger-ui@3.0.17:
+  version "3.0.17"
+  resolved "https://registry.yarnpkg.com/swagger-ui/-/swagger-ui-3.0.17.tgz#c0cabffc1600f8deb5be366c69ea277b5086f9c8"
   dependencies:
-    babel-polyfill "^6.23.0"
     base64-js "^1.2.0"
     brace "0.7.0"
     deep-extend "0.4.1"
@@ -5323,12 +5314,12 @@ swagger-ui@3.0.16:
     sanitize-html "^1.14.1"
     serialize-error "2.0.0"
     shallowequal "0.2.2"
-    swagger-client "~3.0.15"
+    swagger-client "3.0.16"
     url-parse "^1.1.8"
     whatwg-fetch "0.11.1"
     worker-loader "^0.7.1"
     xml "1.0.1"
-    yaml-js "^0.1.3"
+    yaml-js "0.2.0"
   optionalDependencies:
     webpack-dev-server "1.14.0"
 
@@ -5968,9 +5959,9 @@ yallist@^2.0.0:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/yallist/-/yallist-2.1.2.tgz#1c11f9218f076089a47dd512f93c6699a6a81d52"
 
-yaml-js@0.1.5, yaml-js@^0.1.3:
-  version "0.1.5"
-  resolved "https://registry.yarnpkg.com/yaml-js/-/yaml-js-0.1.5.tgz#a01369010b3558d8aaed2394615dfd0780fd8fac"
+yaml-js@0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/yaml-js/-/yaml-js-0.2.0.tgz#30cdcc7bf678fdd00695ec34eb17b13aa8961632"
 
 yargs-parser@^4.2.0:
   version "4.2.1"

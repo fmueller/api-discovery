@@ -10,8 +10,6 @@
     "sourceMap": true,
     "pretty": true,
     "removeComments": true,
-    "allowJs": true,
-    "checkJs": true,
     "jsx": "react",
     "lib": [
       "dom",
@@ -21,9 +19,6 @@
   "include": [
     "**/*",
     "../common/**/*"
-  ],
-  "exclude": [
-    "**/yaml-js.js"
   ],
   "formatCodeOptions": {
     "indentSize": 2,

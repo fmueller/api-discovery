@@ -55,10 +55,18 @@ exports.externals = () => {
             'babel-core': 'babel-core',
             'babel-runtime': 'babel-runtime',
             'babel-polyfill': 'Babel',
+            'babel-runtime/regenerator': 'regeneratorRuntime',
+            'babel-runtime/core-js/object/keys': 'core.Object.keys',
+            'babel-runtime/core-js/object/assign': 'core.Object.assign',
+            'babel-runtime/core-js/json/stringify': 'core.JSON.stringify',
+            'babel-runtime/core-js/promise': 'core.Promise',
+            'babel-runtime/core-js/object/create': 'core.Object.create',
+            'babel-runtime/core-js/weak-map': 'core.WeakMap',
             'core-js/library/fn/object/define-property': 'core.Object.defineProperty',
             'core-js/library/fn/weak-map': 'core.WeakMap',
             'core-js/library/fn/promise': 'core.Promise',
             'core-js/library/fn/symbol': 'core.Symbol',
+            'core-js/library/fn/symbol/iterator': 'core.Symbol.iterator',
             'core-js': 'core',
             lodash: '_',
             'js-yaml': 'jsyaml',
@@ -124,7 +132,7 @@ exports.scripts = () => {
           crossorigin: 'anonymous'
         },
         {
-          src: 'https://unpkg.com/yaml-js@0.1.5/yaml.min.js'
+          src: 'https://unpkg.com/yaml-js@0.2.0/yaml.min.js'
         }
       ];
     default:
