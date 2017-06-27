@@ -1,12 +1,6 @@
 # API Discovery UI
 
-Based on [swagger-ui 3](https://github.com/swagger-api/swagger-ui).
-
-### Configuration
-
-In your browser, set an OAUTH token for the local storage value `API_DISCOVERY_TOKEN`.
-
-Then you can load new API definitions by typing in a valid Api Discovery Storage service app-endpoint URL and pressing 'Discover'. E.g. `https://apidisco.zalando.com/apps/awesome-app`.
+A frontend for the API portal based on [swagger-ui 3](https://github.com/swagger-api/swagger-ui).
 
 ### Development
 
@@ -16,13 +10,12 @@ Then you can load new API definitions by typing in a valid Api Discovery Storage
 npm run dev
 ```
 
-Configure authentication by setting a valid OAuth token:
+Set the base URL of the api-storage service and provide a valid OAuth token by exporting these environment variables:
 
 ```sh
-export API_DISCOVERY_OAUTH2_ACCESS_TOKENS=api-storage-domain=some-token
+export API_DISCOVERY_OAUTH2_ACCESS_TOKENS="apistorage.com=some-token"
+export API_DISCOVERY_API_STORAGE_CONF__BASE_URL="https://apistorage.com"
 ```
-
-`api-storage-domain` must be the hostname of the API storage backend used in the `apiStorageConf` application configuration (see the [/conf](/conf) directory).
 
 **Run in production mode:**
 
@@ -33,4 +26,40 @@ npm start
 
 ### Configuration
 
-All configuration is external to the application and can be set with configuration files, environment variables and command line arguments. Check the [/conf](/conf) directory for examples and take a look at [conf.ts](/server/framework/conf.ts) to see the implementation.
+All configuration is managed by [TypeConf](https://github.com/mfellner/typeconf) and can be provided through configuration files, environment variables and command line arguments. Here is a list of the supported options:
+
+* port (number) – ⚙️ which local port to start the server on (defaults to 3001)
+* logLevel (string) – ⚙️ level of detail for log output(uses [winston logging levels](https://github.com/winstonjs/winston#logging-levels))
+* staticDir (string) – ⚙️ directory to serve static files from (defaults to dist/client/)
+* serveStatic (boolean) – ⚙️ serve static files from the static directory
+* enableWebpackDev (boolean) – 🛠️ render static content with webpack
+* checkClientAuthorisation (boolean) – 🔒 validate client credentials (on the browser client side)
+* apiStorageConf (object) – 📡 configuration for the remote api-storage service
+    * apiStorageConf (basic)
+        * scheme (string) – 🔒 `basic` (required)
+        * baseUrl (string) – ⚙️ URL of the api-storage service (required)
+        * forwardClientAuthorization (boolean) – 🔒 use `Authorization` header of the browser client
+        * user (string) – 🔒 username for api-storage (required)
+        * pass (string) – 🔒 password for api-storage (required)
+    * apiStorageConf (oauth2)
+        * scheme (string) – 🔒 `oauth2` (required)
+        * baseUrl (string) – ⚙️ URL of the api-storage service (required)
+        * forwardClientAuthorization (boolean) – 🔒 use `Authorization` header of the browser client
+        * scopes (array) – 🔒 OAuth2 scopes for api-storage
+        * accessTokenUri (string) – 🔒 OAuth2 access token endpoint (requires [DynamicOAuth2Conf](server/domain/model/DynamicOAuth2Conf.ts))
+        * accessTokens (string) – 🔒 static OAuth2 access tokens (requires [StaticOAuth2Conf](server/domain/model/StaticOAuth2Conf.ts))
+* clientAuthConf (object) – 🔒 configuration for browser client authentication
+    * clientAuthConf (basic)
+        * scheme (string) – 🔒 `basic` (required)
+        * username (string) – 🔒 username for api-storage (required)
+        * password (string) – 🔒 password for api-storage (required)
+    * clientAuthConf (oauth2)
+        * scheme (string) – 🔒 `oauth2` (required)
+        * authorizationUri – 🔒 OAuth2 implicit flow authorization URI
+        * clientId (string) – 🔒 OAuth2 implicit flow client ID
+        * redirectUri (string) – 🔒 OAuth2 implicit flow redirect URI
+        * requestParameters (object) – 🔒 additional request parameters
+
+All configuration values can be set (or overridden) with environment variables. Variable names must start with `API_DISCOVERY_` followed by the configuration value name in CONSTANT_CASE. Nested object properties can be defined using double underscores (`__`), for example, `API_DISCOVERY_API_STORAGE_CONF__BASE_URL`.
+
+For examples take a look at the [conf](conf) directory or dive into [conf.ts](server/framework/conf.ts) to see the implementation.

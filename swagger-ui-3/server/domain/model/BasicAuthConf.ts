@@ -13,18 +13,6 @@ export default class BasicConf extends AuthConf {
     type: 'object',
     allOf: [AuthConf.schema],
     properties: {
-      scheme: {
-        type: 'string',
-        enum: ['basic']
-      },
-      baseUrl: {
-        type: 'string',
-        format: 'uri'
-      },
-      forwardClientAuthorization: {
-        type: 'boolean',
-        default: false
-      },
       user: {
         type: 'string'
       },
@@ -32,7 +20,7 @@ export default class BasicConf extends AuthConf {
         type: 'string'
       }
     },
-    required: ['scheme', 'baseUrl', 'user', 'pass']
+    required: ['user', 'pass']
   };
 
   constructor(data: any) {

@@ -3354,6 +3354,10 @@ lodash.memoize@^4.1.2:
   version "4.1.2"
   resolved "https://registry.yarnpkg.com/lodash.memoize/-/lodash.memoize-4.1.2.tgz#bcc6c49a42a2840ed997f323eada5ecd182e0bfe"
 
+lodash.merge@4.6.0:
+  version "4.6.0"
+  resolved "https://registry.yarnpkg.com/lodash.merge/-/lodash.merge-4.6.0.tgz#69884ba144ac33fe699737a6086deffadd0f89c5"
+
 lodash.restparam@^3.0.0:
   version "3.6.1"
   resolved "https://registry.yarnpkg.com/lodash.restparam/-/lodash.restparam-3.6.1.tgz#936a4e309ef330a7645ed4145986c85ae5b20805"
@@ -5550,11 +5554,12 @@ type-is@^1.5.5, type-is@~1.6.14:
     media-typer "0.3.0"
     mime-types "~2.1.15"
 
-typeconf@0.3.0:
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/typeconf/-/typeconf-0.3.0.tgz#f1702b86a59739623497cf21e5c0c587b73485cd"
+typeconf@0.4.1:
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/typeconf/-/typeconf-0.4.1.tgz#f1ae7dca026bc21bdf9a2a03c447e8e04b428e50"
   dependencies:
     change-case "3.0.1"
+    lodash.merge "4.6.0"
   optionalDependencies:
     js-yaml "3.8.4"
     minimist "1.2.0"

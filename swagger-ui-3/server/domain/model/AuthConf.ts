@@ -14,7 +14,7 @@ export default abstract class AuthConf extends Validated {
     properties: {
       scheme: {
         type: 'string',
-        enum: ['oauth2']
+        enum: ['basic', 'oauth2']
       },
       baseUrl: {
         type: 'string',

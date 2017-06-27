@@ -21,14 +21,12 @@ const defaultConf = {
 
 const configFile = process.env['API_DISCOVERY_CONF'];
 
-if (!configFile) {
-  log.warn('No config file found. Consider setting API_DISCOVERY_CONF');
-} else {
-  log.info('Using configuration from %s', configFile);
+if (configFile) {
+  log.info('Using configuration file %s', configFile);
 }
 
 export default new TypeConf()
-  .withArgv()
-  .withEnv('API_DISCOVERY')
+  .withStore(defaultConf)
   .withFile(configFile)
-  .withStore(defaultConf);
+  .withEnv('API_DISCOVERY')
+  .withArgv();

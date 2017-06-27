@@ -12,18 +12,6 @@ export default abstract class AbstractOAuth2Conf extends AuthConf {
     type: 'object',
     allOf: [AuthConf.schema],
     properties: {
-      scheme: {
-        type: 'string',
-        enum: ['oauth2']
-      },
-      baseUrl: {
-        type: 'string',
-        format: 'uri'
-      },
-      forwardClientAuthorization: {
-        type: 'boolean',
-        default: false
-      },
       scopes: {
         type: 'array',
         items: {
@@ -31,7 +19,7 @@ export default abstract class AbstractOAuth2Conf extends AuthConf {
         }
       }
     },
-    required: ['scheme', 'baseUrl', 'scopes']
+    required: ['scopes']
   };
 
   constructor(data: any, schema: JsonSchema) {

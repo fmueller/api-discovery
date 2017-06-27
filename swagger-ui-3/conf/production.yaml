@@ -4,8 +4,7 @@ checkClientAuthorisation: false
 apiStorageConf:
   scheme: oauth2
   baseUrl: https://localhost:8080
-  scopes:
-    - uid
+  scopes: []
   forwardClientAuthorization: false
 clientAuthConf:
   scheme: basic
