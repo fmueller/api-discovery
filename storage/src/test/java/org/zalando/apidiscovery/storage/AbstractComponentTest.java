@@ -56,12 +56,6 @@ public abstract class AbstractComponentTest {
         }
     }
 
-    protected ResultActions postApiDefinition(Resource apiDefinition) throws Exception {
-        return mvc.perform(post("/api-definitions")
-            .contentType(APPLICATION_JSON_UTF8_VALUE)
-            .content(TestDataHelper.readResource(apiDefinition)));
-    }
-
     protected UriComponentsBuilder localUriBuilder() {
         return UriComponentsBuilder.newInstance()
             .scheme("http")
