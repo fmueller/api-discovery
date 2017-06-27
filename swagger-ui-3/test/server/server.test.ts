@@ -15,7 +15,16 @@ describe('server', () => {
 
   afterEach(() => (server ? server.close() : null));
 
-  it('returns health', async () => {
+  test('/health', async () => {
     await request.get('/health').expect('OK');
+  });
+
+  test('/favicon.png', async () => {
+    const { body } = await request.get('/favicon.png').expect(200);
+    expect(body).toBeInstanceOf(Buffer);
+  });
+
+  test('/apis', async () => {
+    await request.get('/apis/example').expect(200).expect('Content-Type', /text\/html/);
   });
 });
