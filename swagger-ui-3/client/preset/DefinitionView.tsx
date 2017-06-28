@@ -43,7 +43,11 @@ export default class DefinitionView extends React.Component<Props, undefined> {
     const apiVersions = apiDiscoverySelectors.apiVersions();
 
     if (!apiVersions.length) {
-      return <div className="info"><h4>No API selected.</h4></div>;
+      return (
+        <div className="info">
+          <h4>No API selected.</h4>
+        </div>
+      );
     }
 
     return (

@@ -12,7 +12,12 @@ const Contact = ({ data }: { data: Map<string, string> }) => {
 
   return (
     <div>
-      {url && <div><a href={url} target="_blank">{name} - Website</a></div>}
+      {url &&
+        <div>
+          <a href={url} target="_blank">
+            {name} - Website
+          </a>
+        </div>}
       {email &&
         <a href={`mailto:${email}`}>
           {url ? `Send email to ${name}` : `Contact ${name}`}
@@ -27,14 +32,22 @@ const License = ({ license }: { license: Map<string, string> }) => {
 
   return (
     <div>
-      {url ? <a target="_blank" href={url}>{name}</a> : <span>{name}</span>}
+      {url
+        ? <a target="_blank" href={url}>
+            {name}
+          </a>
+        : <span>
+            {name}
+          </span>}
     </div>
   );
 };
 
 const Version = (props: { version: string; selected: boolean; onClick: () => any }) =>
   <small className={props.selected ? 'selected' : undefined} onClick={props.onClick}>
-    <pre className="version">{props.version}</pre>
+    <pre className="version">
+      {props.version}
+    </pre>
   </small>;
 
 type Props = {
@@ -112,13 +125,16 @@ export default class Info extends React.Component<Props, undefined> {
           </h2>
           {host && basePath
             ? <pre className="base-url">
-                [ Base url: {host}{basePath}]
+                [ Base url: {host}
+                {basePath}]
               </pre>
             : null}
           {url &&
             <p>
               <a target="_blank" href={url}>
-                <span className="url">{url}</span>
+                <span className="url">
+                  {url}
+                </span>
               </a>
             </p>}
         </hgroup>
@@ -129,7 +145,9 @@ export default class Info extends React.Component<Props, undefined> {
 
         {termsOfService &&
           <div>
-            <a target="_blank" href={termsOfService}>Terms of service</a>
+            <a target="_blank" href={termsOfService}>
+              Terms of service
+            </a>
           </div>}
 
         {contact && contact.size ? <Contact data={contact} /> : null}
@@ -139,7 +157,6 @@ export default class Info extends React.Component<Props, undefined> {
               {externalDocsDescription || externalDocsUrl}
             </a>
           : null}
-
       </div>
     );
   }
