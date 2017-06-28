@@ -19,7 +19,7 @@ const defaultConf = {
   serveStatic: process.env['NODE_ENV'] !== 'development'
 };
 
-const configFile = process.env['API_DISCOVERY_CONF'];
+const configFile = process.env['API_DISCOVERY_CONF'] || '';
 
 if (configFile) {
   log.info('Using configuration file %s', configFile);
