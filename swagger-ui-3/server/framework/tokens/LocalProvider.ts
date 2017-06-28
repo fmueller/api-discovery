@@ -26,12 +26,10 @@ export default class LocalProvider implements TokenProvider {
    *
    * "token1=abc,token2=xyz"
    *
-   * @param oauth2AccessTokens A set of tokens as a string or as an object.
+   * @param tokens A set of OAuth2 access okens as a string or as an object.
    */
-  constructor(oauth2AccessTokens: string | TokenProvider.TokenSet) {
-    this.oauth2AccessTokens = typeof oauth2AccessTokens === 'string'
-      ? parseTokens(oauth2AccessTokens)
-      : oauth2AccessTokens;
+  constructor(tokens: string | TokenProvider.TokenSet) {
+    this.oauth2AccessTokens = typeof tokens === 'string' ? parseTokens(tokens) : tokens;
   }
 
   public getTokens(): Promise<TokenProvider.TokenSet> {

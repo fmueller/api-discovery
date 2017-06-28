@@ -12,7 +12,12 @@ const Contact = ({ data }: { data: Map<string, string> }) => {
 
   return (
     <div>
-      {url && <div><a href={url} target="_blank">{name} - Website</a></div>}
+      {url &&
+        <div>
+          <a href={url} target="_blank">
+            {name} - Website
+          </a>
+        </div>}
       {email &&
         <a href={`mailto:${email}`}>
           {url ? `Send email to ${name}` : `Contact ${name}`}
@@ -27,21 +32,29 @@ const License = ({ license }: { license: Map<string, string> }) => {
 
   return (
     <div>
-      {url ? <a target="_blank" href={url}>{name}</a> : <span>{name}</span>}
+      {url
+        ? <a target="_blank" href={url}>
+            {name}
+          </a>
+        : <span>
+            {name}
+          </span>}
     </div>
   );
 };
 
 const Version = (props: { version: string; selected: boolean; onClick: () => any }) =>
   <small className={props.selected ? 'selected' : undefined} onClick={props.onClick}>
-    <pre className="version">{props.version}</pre>
+    <pre className="version">
+      {props.version}
+    </pre>
   </small>;
 
 type Props = {
   specSelectors: any;
   getComponent: (name: string, container?: boolean | 'root') => React.ComponentType<any>;
-  apiDiscoveryActions: any;
-  apiDiscoverySelectors: any;
+  apiPortalActions: any;
+  apiPortalSelectors: any;
 };
 
 /**
@@ -51,20 +64,20 @@ export default class Info extends React.Component<Props, undefined> {
   public static readonly propTypes = {
     specSelectors: PropTypes.object.isRequired,
     getComponent: PropTypes.func.isRequired,
-    apiDiscoveryActions: PropTypes.object.isRequired,
-    apiDiscoverySelectors: PropTypes.object.isRequired
+    apiPortalActions: PropTypes.object.isRequired,
+    apiPortalSelectors: PropTypes.object.isRequired
   };
 
   public shouldComponentUpdate(nextProps: Props) {
-    return !!nextProps.apiDiscoverySelectors.selectedApiVersion();
+    return !!nextProps.apiPortalSelectors.selectedApiVersion();
   }
 
   private onSelectApiVersion(apiVersion: ApiVersion) {
-    this.props.apiDiscoveryActions.selectApiVersion(apiVersion);
+    this.props.apiPortalActions.selectApiVersion(apiVersion);
   }
 
   public render() {
-    const { specSelectors, apiDiscoverySelectors, getComponent } = this.props;
+    const { specSelectors, apiPortalSelectors, getComponent } = this.props;
 
     const info = specSelectors.info();
     const url = specSelectors.url();
@@ -72,8 +85,8 @@ export default class Info extends React.Component<Props, undefined> {
     const host = specSelectors.host();
     const externalDocs = specSelectors.externalDocs();
 
-    const apiVersions = apiDiscoverySelectors.apiVersions() as ApiVersion[];
-    const selectedApiVersion = apiDiscoverySelectors.selectedApiVersion() as SelectedApiVersion;
+    const apiVersions = apiPortalSelectors.apiVersions() as ApiVersion[];
+    const selectedApiVersion = apiPortalSelectors.selectedApiVersion() as SelectedApiVersion;
     if (!selectedApiVersion) return null;
 
     const version = info.get('version');
@@ -112,13 +125,16 @@ export default class Info extends React.Component<Props, undefined> {
           </h2>
           {host && basePath
             ? <pre className="base-url">
-                [ Base url: {host}{basePath}]
+                [ Base url: {host}
+                {basePath}]
               </pre>
             : null}
           {url &&
             <p>
               <a target="_blank" href={url}>
-                <span className="url">{url}</span>
+                <span className="url">
+                  {url}
+                </span>
               </a>
             </p>}
         </hgroup>
@@ -129,7 +145,9 @@ export default class Info extends React.Component<Props, undefined> {
 
         {termsOfService &&
           <div>
-            <a target="_blank" href={termsOfService}>Terms of service</a>
+            <a target="_blank" href={termsOfService}>
+              Terms of service
+            </a>
           </div>}
 
         {contact && contact.size ? <Contact data={contact} /> : null}
@@ -139,7 +157,6 @@ export default class Info extends React.Component<Props, undefined> {
               {externalDocsDescription || externalDocsUrl}
             </a>
           : null}
-
       </div>
     );
   }

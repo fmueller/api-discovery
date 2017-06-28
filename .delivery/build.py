@@ -36,6 +36,11 @@ def get_pr_number(user, repo, sha):
     Get the pull request number.
     See https://developer.github.com/v3/git/commits/#get-a-commit
     """
+    # Use the CDP pull request number if possible.
+    if 'CDP_PULL_REQUEST_NUMBER' in environ:
+        return int(environ['CDP_PULL_REQUEST_NUMBER'])
+
+    # Look for a pull request number in the commit message.
     r = requests.get('%s/repos/%s/%s/git/commits/%s' %
                      (GH_URL, user, repo, sha))
     commit_message = r.json()['message']

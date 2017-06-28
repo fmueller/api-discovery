@@ -15,7 +15,7 @@ type Props = {
  * Based on the Standalone preset.
  * See https://github.com/swagger-api/swagger-ui/tree/master/src/standalone
  */
-export default class ApiDiscovery extends React.Component<Props, undefined> {
+export default class ApiPortal extends React.Component<Props, undefined> {
   public static readonly propTypes = {
     errSelectors: PropTypes.object.isRequired,
     errActions: PropTypes.object.isRequired,

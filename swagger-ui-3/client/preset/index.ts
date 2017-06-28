@@ -1,5 +1,5 @@
 import actions from './actions';
-import ApiDiscovery from './ApiDiscovery';
+import ApiPortal from './ApiPortal';
 import DefinitionInfo from './DefinitionInfo';
 import DefinitionView from './DefinitionView';
 import reducers from './reducers';
@@ -15,13 +15,13 @@ export default [
   () => {
     return {
       statePlugins: {
-        apiDiscovery: {
+        apiPortal: {
           actions,
           reducers,
           selectors
         }
       },
-      components: { ApiDiscovery, DefinitionInfo, DefinitionView }
+      components: { ApiPortal, DefinitionInfo, DefinitionView }
     };
   }
 ];

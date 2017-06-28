@@ -1,7 +1,8 @@
 import { JsonSchema } from 'tv4';
+import { Validated } from '../validate';
 import ClientAuthConf from './ClientAuthConf';
 
-export default class ClientOAuth2Conf implements ClientAuthConf {
+export default class ClientOAuth2Conf extends Validated implements ClientAuthConf {
   public readonly scheme: 'oauth2';
   public readonly authorizationUri: string;
   public readonly clientId: string;
@@ -41,8 +42,16 @@ export default class ClientOAuth2Conf implements ClientAuthConf {
       redirectUri: string;
       requestParameters?: object;
     },
-    urlResolver: (url: string) => string = _ => _
+    urlResolver: (url: string) => string = _ => _,
+    objectParser = (s?: any) => (typeof s === 'string' ? JSON.parse(s || '{}') : s)
   ) {
-    Object.assign(this, { ...data, clientId: urlResolver(data.clientId) });
+    super(
+      {
+        ...data,
+        clientId: urlResolver(data.clientId),
+        requestParameters: objectParser(data.requestParameters)
+      },
+      ClientOAuth2Conf.schema
+    );
   }
 }

@@ -1,4 +1,4 @@
-FROM registry.opensource.zalan.do/stups/node:7.10-cd52
+FROM registry.opensource.zalan.do/stups/node:7.10.0-23
 
 MAINTAINER Zalando SE
 
@@ -10,18 +10,11 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
         yarn=0.24.6-1 \
     && rm -rf /var/lib/apt/lists/*
 
-COPY package.json /opt/api-discovery-ui/
-COPY yarn.lock /opt/api-discovery-ui/
-
-WORKDIR /opt/api-discovery-ui
+WORKDIR /opt/api-portal
+COPY package.json yarn.lock conf/production.yaml dist ./
 RUN yarn install --production && yarn cache clean
 
-COPY dist /opt/api-discovery-ui/
-
-ARG conf=conf/production.yaml
-ENV API_DISCOVERY_CONF /opt/api-discovery-ui/conf.yaml
-COPY $conf $API_DISCOVERY_CONF
-
+ENV API_PORTAL_CONF /opt/api-portal/production.yaml
 ENV NODE_ENV production
 
 CMD ["node", "server/index.js"]

@@ -13,7 +13,7 @@ echo "Build api-portal."
 
 if [ "$IS_PR_BUILD" = true ]; then
   echo "We're in a pull request, aborting."
-  exit 1
+  exit 0
 fi
 
 echo "Install dependencies..."
@@ -34,9 +34,7 @@ yarn install
 yarn run dist
 
 echo "Build docker image..."
-# TODO: externalize all configuration into environment variables.
-curl -o configuration.yaml https://raw.github.bus.zalan.do/team-architecture/overarching-deploy/master/api-portal/configuration.yaml\?token\=AAAAc2BkexlLbFZCUVMybfdbXKEesMT-ks5ZWh6DwA%3D%3D
-docker build -t ${DOCKER_IMAGE} --build-arg conf=./configuration.yaml .
+docker build -t ${DOCKER_IMAGE} .
 
 echo "Push docker image..."
 docker push ${DOCKER_IMAGE}

@@ -12,7 +12,6 @@ import StaticService from './domain/StaticService';
 import ApiStorageGateway from './gateway/ApiStorageGateway';
 
 import ClientAuthConfFactory from '../common/domain/model/ClientAuthConfFactory';
-import validate from '../common/domain/validate';
 
 /**
  * Resolve URLs in configuration values.
@@ -53,7 +52,7 @@ function getStaticOptions() {
   const scripts = webpackArgs.scripts();
   const templateFile = path.resolve(__dirname, '../static/index.ejs');
   const faviconFile = path.resolve(__dirname, '../static/favicon.png');
-  const authConfFactory = new ClientAuthConfFactory(validate, urlResolver);
+  const authConfFactory = new ClientAuthConfFactory(urlResolver);
   const clientAuthConf = conf.get('clientAuthConf', authConfFactory.bindCreate())!;
   const apiServiceUrl = conf.getString('apiServiceUrl', '/api-service');
   const configuration = { authConf: clientAuthConf, apiServiceUrl };

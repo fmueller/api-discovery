@@ -10,8 +10,8 @@ type Props = {
   specSelectors: any;
   specActions: any;
   getComponent: (name: string, container?: boolean | 'root') => React.ComponentType<any>;
-  apiDiscoveryActions: { [name: string]: (...args: any[]) => void };
-  apiDiscoverySelectors: any;
+  apiPortalActions: { [name: string]: (...args: any[]) => void };
+  apiPortalSelectors: any;
 };
 
 /**
@@ -29,26 +29,26 @@ class Topbar extends React.Component<Props, undefined> {
     specSelectors: PropTypes.object.isRequired,
     specActions: PropTypes.object.isRequired,
     getComponent: PropTypes.func.isRequired,
-    apiDiscoveryActions: PropTypes.object.isRequired,
-    apiDiscoverySelectors: PropTypes.object.isRequired
+    apiPortalActions: PropTypes.object.isRequired,
+    apiPortalSelectors: PropTypes.object.isRequired
   };
 
   private onApiSelected(api: { label: string; value: string }) {
-    this.props.apiDiscoveryActions.selectApi(api.value);
+    this.props.apiPortalActions.selectApi(api.value);
   }
 
   public async componentDidMount() {
-    await this.props.apiDiscoveryActions.fetchApis();
+    await this.props.apiPortalActions.fetchApis();
     // Parse possible API id from the url scheme://host/apis/{id}
     const match = /^https?:\/\/[^\/]+\/apis\/([^\/\s]+)$/.exec(window.location.href);
     if (match && match[1]) {
       log('Select API from URL: %s', match[1]);
-      this.props.apiDiscoveryActions.selectApi(match[1]);
+      this.props.apiPortalActions.selectApi(match[1]);
     }
   }
 
   public render() {
-    const { getComponent, specSelectors, apiDiscoverySelectors } = this.props;
+    const { getComponent, specSelectors, apiPortalSelectors } = this.props;
     const Link = getComponent('Link');
 
     const isLoading = specSelectors.loadingStatus() === 'loading';
@@ -58,8 +58,8 @@ class Topbar extends React.Component<Props, undefined> {
     if (isFailed) selectorStyle.color = 'red';
     if (isLoading) selectorStyle.color = '#aaa';
 
-    const selectedApi = apiDiscoverySelectors.selectedApi() as string;
-    const apis = apiDiscoverySelectors.apis() as ApiMetaData[];
+    const selectedApi = apiPortalSelectors.selectedApi() as string;
+    const apis = apiPortalSelectors.apis() as ApiMetaData[];
     const selectableApis = apis
       .slice()
       .filter(api => !!api.id)
@@ -70,9 +70,9 @@ class Topbar extends React.Component<Props, undefined> {
       <div className="topbar">
         <div className="wrapper">
           <div className="topbar-wrapper">
-            <Link href="/" title="API Discovery">
+            <Link href="/" title="API Portal">
               <img height="30" width="30" src={Logo} alt="Swagger UX" />
-              <span className="topbarTitle">API Discovery</span>
+              <span className="topbarTitle">API Portal</span>
             </Link>
             <div className="download-url-wrapper">
               <Select

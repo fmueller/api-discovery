@@ -1,7 +1,8 @@
 import { JsonSchema } from 'tv4';
+import { Validated } from '../validate';
 import ClientAuthConf from './ClientAuthConf';
 
-export default class ClientBasicAuthConf implements ClientAuthConf {
+export default class ClientBasicAuthConf extends Validated implements ClientAuthConf {
   public readonly scheme: 'basic';
   public readonly username: string;
   public readonly password: string;
@@ -24,6 +25,6 @@ export default class ClientBasicAuthConf implements ClientAuthConf {
   };
 
   constructor(data: { scheme: 'basic'; username: string; password: string }) {
-    Object.assign(this, data);
+    super(data, ClientBasicAuthConf.schema);
   }
 }

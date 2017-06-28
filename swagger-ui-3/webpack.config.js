@@ -40,10 +40,7 @@ module.exports = {
   },
   externals: args.externals(),
   resolve: {
-    extensions: ['.ts', '.tsx', '.js', '.json', '.png', '.jpg', '.css'],
-    alias: {
-      'yaml-js$': path.resolve(__dirname, './client/yaml-js.js')
-    }
+    extensions: ['.ts', '.tsx', '.js', '.json', '.png', '.jpg', '.css']
   },
   plugins: [
     new webpack.DefinePlugin(args.definitions()),

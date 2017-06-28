@@ -1,7 +1,7 @@
 /// <reference path="./typings/index.d.ts" />
 
 import swaggerUI = require('swagger-ui');
-import ApiDiscoveryPreset from './preset';
+import ApiPortalPreset from './preset';
 
 import 'react-select/dist/react-select.css';
 import 'swagger-ui/dist/swagger-ui.css';
@@ -9,8 +9,8 @@ import './index.css';
 
 swaggerUI({
   dom_id: '#swagger-ui',
-  presets: [swaggerUI.presets.apis, ApiDiscoveryPreset],
+  presets: [swaggerUI.presets.apis, ApiPortalPreset],
   plugins: [swaggerUI.plugins.DownloadUrl],
-  layout: 'ApiDiscovery',
+  layout: 'ApiPortal',
   validatorUrl: null
 });
