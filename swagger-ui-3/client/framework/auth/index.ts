@@ -7,14 +7,13 @@ import OAuth2HeaderProvider from './OAuth2HeaderProvider';
 import ClientAuthConfFactory from '../../../common/domain/model/ClientAuthConfFactory';
 import ClientBasicAuthConf from '../../../common/domain/model/ClientBasicAuthConf';
 import ClientOAuth2Conf from '../../../common/domain/model/ClientOAuth2Conf';
-import validate from '../../../common/domain/validate';
 
 let authHeaderProvider: AuthHeaderProvider;
 
 export function getAuthHeaderProvider(): AuthHeaderProvider {
   if (authHeaderProvider) return authHeaderProvider;
 
-  const authConfFactory = new ClientAuthConfFactory(validate);
+  const authConfFactory = new ClientAuthConfFactory();
   const authConfData = conf.getObject('authConf');
   const authConf = authConfFactory.create(authConfData);
 
