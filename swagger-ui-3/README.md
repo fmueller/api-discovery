@@ -13,8 +13,8 @@ npm run dev
 Set the base URL of the api-storage service and provide a valid OAuth token by exporting these environment variables:
 
 ```sh
-export API_DISCOVERY_OAUTH2_ACCESS_TOKENS="apistorage.com=some-token"
-export API_DISCOVERY_API_STORAGE_CONF__BASE_URL="https://apistorage.com"
+export API_PORTAL_OAUTH2_ACCESS_TOKENS="apistorage.com=some-token"
+export API_PORTAL_API_STORAGE_CONF__BASE_URL="https://apistorage.com"
 ```
 
 **Run in production mode:**
@@ -60,6 +60,6 @@ All configuration is managed by [TypeConf](https://github.com/mfellner/typeconf)
         * redirectUri (string) – 🔒 OAuth2 implicit flow redirect URI
         * requestParameters (object) – 🔒 additional request parameters
 
-All configuration values can be set (or overridden) with environment variables. Variable names must start with `API_DISCOVERY_` followed by the configuration value name in CONSTANT_CASE. Nested object properties can be defined using double underscores (`__`), for example, `API_DISCOVERY_API_STORAGE_CONF__BASE_URL`.
+All configuration values can be set (or overridden) with environment variables. Variable names must start with `API_PORTAL_` followed by the configuration value name in CONSTANT_CASE. Nested object properties can be defined using double underscores (`__`), for example, `API_PORTAL_API_STORAGE_CONF__BASE_URL`.
 
 For examples take a look at the [conf](conf) directory or dive into [conf.ts](server/framework/conf.ts) to see the implementation.

@@ -9,7 +9,7 @@ import { Logger, transports } from 'winston';
 const log = new Logger({
   transports: [
     new transports.Console({
-      level: process.env['API_DISCOVERY_LOG_LEVEL']
+      level: process.env['API_PORTAL_LOG_LEVEL']
     })
   ]
 });
@@ -19,7 +19,7 @@ const defaultConf = {
   serveStatic: process.env['NODE_ENV'] !== 'development'
 };
 
-const configFile = process.env['API_DISCOVERY_CONF'] || '';
+const configFile = process.env['API_PORTAL_CONF'] || '';
 
 if (configFile) {
   log.info('Using configuration file %s', configFile);
@@ -28,5 +28,5 @@ if (configFile) {
 export default new TypeConf()
   .withStore(defaultConf)
   .withFile(configFile)
-  .withEnv('API_DISCOVERY')
+  .withEnv('API_PORTAL')
   .withArgv();

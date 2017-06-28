@@ -9,8 +9,8 @@ type Props = {
   layoutSelectors: object;
   layoutActions: object;
   getComponent: (name: string, container?: boolean | 'root') => React.ComponentType<any>;
-  apiDiscoveryActions: object;
-  apiDiscoverySelectors: any;
+  apiPortalActions: object;
+  apiPortalSelectors: any;
 };
 
 /**
@@ -26,12 +26,12 @@ export default class DefinitionView extends React.Component<Props, undefined> {
     layoutSelectors: PropTypes.object.isRequired,
     layoutActions: PropTypes.object.isRequired,
     getComponent: PropTypes.func.isRequired,
-    apiDiscoveryActions: PropTypes.object.isRequired,
-    apiDiscoverySelectors: PropTypes.object.isRequired
+    apiPortalActions: PropTypes.object.isRequired,
+    apiPortalSelectors: PropTypes.object.isRequired
   };
 
   public render() {
-    const { getComponent, apiDiscoverySelectors } = this.props;
+    const { getComponent, apiPortalSelectors } = this.props;
 
     const DefinitionInfo = getComponent('DefinitionInfo', true);
     const Operations = getComponent('operations', true);
@@ -40,7 +40,7 @@ export default class DefinitionView extends React.Component<Props, undefined> {
     const Col = getComponent('Col');
     const Errors = getComponent('errors', true);
 
-    const apiVersions = apiDiscoverySelectors.apiVersions();
+    const apiVersions = apiPortalSelectors.apiVersions();
 
     if (!apiVersions.length) {
       return (

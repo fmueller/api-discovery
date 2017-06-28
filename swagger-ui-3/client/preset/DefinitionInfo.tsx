@@ -53,8 +53,8 @@ const Version = (props: { version: string; selected: boolean; onClick: () => any
 type Props = {
   specSelectors: any;
   getComponent: (name: string, container?: boolean | 'root') => React.ComponentType<any>;
-  apiDiscoveryActions: any;
-  apiDiscoverySelectors: any;
+  apiPortalActions: any;
+  apiPortalSelectors: any;
 };
 
 /**
@@ -64,20 +64,20 @@ export default class Info extends React.Component<Props, undefined> {
   public static readonly propTypes = {
     specSelectors: PropTypes.object.isRequired,
     getComponent: PropTypes.func.isRequired,
-    apiDiscoveryActions: PropTypes.object.isRequired,
-    apiDiscoverySelectors: PropTypes.object.isRequired
+    apiPortalActions: PropTypes.object.isRequired,
+    apiPortalSelectors: PropTypes.object.isRequired
   };
 
   public shouldComponentUpdate(nextProps: Props) {
-    return !!nextProps.apiDiscoverySelectors.selectedApiVersion();
+    return !!nextProps.apiPortalSelectors.selectedApiVersion();
   }
 
   private onSelectApiVersion(apiVersion: ApiVersion) {
-    this.props.apiDiscoveryActions.selectApiVersion(apiVersion);
+    this.props.apiPortalActions.selectApiVersion(apiVersion);
   }
 
   public render() {
-    const { specSelectors, apiDiscoverySelectors, getComponent } = this.props;
+    const { specSelectors, apiPortalSelectors, getComponent } = this.props;
 
     const info = specSelectors.info();
     const url = specSelectors.url();
@@ -85,8 +85,8 @@ export default class Info extends React.Component<Props, undefined> {
     const host = specSelectors.host();
     const externalDocs = specSelectors.externalDocs();
 
-    const apiVersions = apiDiscoverySelectors.apiVersions() as ApiVersion[];
-    const selectedApiVersion = apiDiscoverySelectors.selectedApiVersion() as SelectedApiVersion;
+    const apiVersions = apiPortalSelectors.apiVersions() as ApiVersion[];
+    const selectedApiVersion = apiPortalSelectors.selectedApiVersion() as SelectedApiVersion;
     if (!selectedApiVersion) return null;
 
     const version = info.get('version');

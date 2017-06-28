@@ -13,10 +13,10 @@ interface Action<P> {
 type ActionCreator<P> = (payload: P) => Action<P>;
 
 export const UPDATE_APIS_LOADING_STATUS = 'UPDATE_APIS_LOADING_STATUS';
-export const RECEIVE_APIS = 'API_DISCOVERY_RECEIVE_APIS';
-export const SET_SELECTED_API = 'API_DISCOVERY_SET_SELECTED_API';
-export const RECEIVE_API_VERSIONS = 'API_DISCOVERY_RECEIVE_API_VERSIONS';
-export const SET_SELECTED_API_VERSION = 'API_DISCOVERY_SET_SELECTED_API_VERSION';
+export const RECEIVE_APIS = 'API_PORTAL_RECEIVE_APIS';
+export const SET_SELECTED_API = 'API_PORTAL_SET_SELECTED_API';
+export const RECEIVE_API_VERSIONS = 'API_PORTAL_RECEIVE_API_VERSIONS';
+export const SET_SELECTED_API_VERSION = 'API_PORTAL_SET_SELECTED_API_VERSION';
 export type LoadingStatus = 'loading' | 'success' | 'failed';
 
 const apiServiceClient = new ApiServiceClient({ baseUrl: conf.getString('apiServiceUrl') });
@@ -28,15 +28,15 @@ const updateApisLoadingStatus: ActionCreator<LoadingStatus> = status => ({
 
 const fetchApis = () => async (system: any) => {
   log('Action: fetch APIs');
-  system.apiDiscoveryActions.updateApisLoadingStatus('loading');
+  system.apiPortalActions.updateApisLoadingStatus('loading');
 
   try {
     const apiList = await apiServiceClient.getApis();
-    system.apiDiscoveryActions.updateApisLoadingStatus('success');
-    return system.apiDiscoveryActions.receiveApis(apiList);
+    system.apiPortalActions.updateApisLoadingStatus('success');
+    return system.apiPortalActions.receiveApis(apiList);
   } catch (e) {
     log('Error fetching APIs', e);
-    return system.apiDiscoveryActions.updateApisLoadingStatus('failed');
+    return system.apiPortalActions.updateApisLoadingStatus('failed');
   }
 };
 
@@ -58,9 +58,9 @@ const selectApi = (id: string) => async (system: any) => {
       return 0;
     })[0];
     system.specActions.updateLoadingStatus('success');
-    system.apiDiscoveryActions.setSelectedApi(id);
-    system.apiDiscoveryActions.receiveApiVersions(versionList);
-    await system.apiDiscoveryActions.selectApiVersion(latestVersion);
+    system.apiPortalActions.setSelectedApi(id);
+    system.apiPortalActions.receiveApiVersions(versionList);
+    await system.apiPortalActions.selectApiVersion(latestVersion);
     window.history.replaceState(null, id, `/apis/${id}`);
   } catch (e) {
     log('Error fetching API', e);
@@ -80,7 +80,7 @@ const receiveApiVersions: ActionCreator<ApiVersionList> = versionList => ({
 
 const selectApiVersion = (apiVersion: ApiVersion) => async (system: any) => {
   const definition = apiVersion.definitions[0]; // TODO: sort by created_at
-  system.apiDiscoveryActions.setSelectedApiVersion(apiVersion);
+  system.apiPortalActions.setSelectedApiVersion(apiVersion);
   system.specActions.updateSpec(definition.definition);
 };
 

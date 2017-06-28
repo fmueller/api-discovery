@@ -10,17 +10,17 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
         yarn=0.24.6-1 \
     && rm -rf /var/lib/apt/lists/*
 
-COPY package.json /opt/api-discovery-ui/
-COPY yarn.lock /opt/api-discovery-ui/
+COPY package.json /opt/api-portal-ui/
+COPY yarn.lock /opt/api-portal-ui/
 
-WORKDIR /opt/api-discovery-ui
+WORKDIR /opt/api-portal-ui
 RUN yarn install --production && yarn cache clean
 
-COPY dist /opt/api-discovery-ui/
+COPY dist /opt/api-portal-ui/
 
 ARG conf=conf/production.yaml
-ENV API_DISCOVERY_CONF /opt/api-discovery-ui/conf.yaml
-COPY $conf $API_DISCOVERY_CONF
+ENV API_PORTAL_CONF /opt/api-portal-ui/conf.yaml
+COPY $conf $API_PORTAL_CONF
 
 ENV NODE_ENV production
 
