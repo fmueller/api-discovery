@@ -4,7 +4,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.test.web.servlet.ResultActions;
-import org.zalando.apidiscovery.storage.AbstractComponentTest;
+import org.zalando.apidiscovery.storage.AbstractResourceComponentTest;
 import org.zalando.apidiscovery.storage.TestDataHelper;
 import org.zalando.apidiscovery.storage.repository.ApiDeploymentEntity;
 import org.zalando.apidiscovery.storage.repository.ApiEntity;
@@ -27,7 +27,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.zalando.apidiscovery.storage.domain.model.ApiLifecycleState.ACTIVE;
 import static org.zalando.apidiscovery.storage.DomainObjectGen.API_NAME;
 import static org.zalando.apidiscovery.storage.DomainObjectGen.API_UI;
 import static org.zalando.apidiscovery.storage.DomainObjectGen.API_URL;
@@ -39,8 +38,9 @@ import static org.zalando.apidiscovery.storage.DomainObjectGen.DEFINITION_TYPE;
 import static org.zalando.apidiscovery.storage.DomainObjectGen.givenApiDeployment;
 import static org.zalando.apidiscovery.storage.DomainObjectGen.givenApiEntity;
 import static org.zalando.apidiscovery.storage.DomainObjectGen.givenApplication;
+import static org.zalando.apidiscovery.storage.domain.model.ApiLifecycleState.ACTIVE;
 
-public class ApiDefinitionResourceComponentTest extends AbstractComponentTest {
+public class ApiDefinitionResourceResourceComponentTest extends AbstractResourceComponentTest {
 
     @Value("classpath:uber.json")
     private Resource discoveredUberApiJson;

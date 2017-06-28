@@ -1,7 +1,7 @@
 package org.zalando.apidiscovery.storage.resource;
 
 import org.junit.Test;
-import org.zalando.apidiscovery.storage.AbstractComponentTest;
+import org.zalando.apidiscovery.storage.AbstractResourceComponentTest;
 import org.zalando.apidiscovery.storage.domain.model.ApiLifecycleState;
 import org.zalando.apidiscovery.storage.repository.ApiDeploymentEntity;
 import org.zalando.apidiscovery.storage.repository.ApiEntity;
@@ -21,7 +21,7 @@ import static org.zalando.apidiscovery.storage.legacy.ApiLifecycleManager.ACTIVE
 import static org.zalando.apidiscovery.storage.legacy.ApiLifecycleManager.DECOMMISSIONED;
 import static org.zalando.apidiscovery.storage.legacy.ApiLifecycleManager.INACTIVE;
 
-public class ApiResourceComponentTest extends AbstractComponentTest {
+public class ApiResourceResourceComponentTest extends AbstractResourceComponentTest {
 
     private final static String TEST_API = "testAPI";
     private final static String ANOTHER_API = "anotherAPI";

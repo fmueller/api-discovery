@@ -2,17 +2,14 @@ package org.zalando.apidiscovery.storage.resource;
 
 
 import org.junit.Test;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.RequestEntity;
 import org.springframework.test.context.ActiveProfiles;
-import org.zalando.apidiscovery.storage.AbstractComponentTest;
+import org.zalando.apidiscovery.storage.AbstractResourceComponentTest;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ActiveProfiles("production")
-public class CorsWithOAuthTest extends AbstractComponentTest {
+public class CorsWithOAuthTestResource extends AbstractResourceComponentTest {
 
     @Test
     public void shouldSupportCorsWhenOAuthIsEnabledOnAllResources() throws Exception {
