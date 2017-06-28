@@ -1,21 +1,46 @@
 package org.zalando.apidiscovery.storage.domain.service;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.zalando.apidiscovery.storage.AbstractResourceIntegrationTest;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.zalando.apidiscovery.storage.domain.model.DiscoveredApiDefinition;
 import org.zalando.apidiscovery.storage.repository.ApiEntity;
+import org.zalando.apidiscovery.storage.repository.ApiRepository;
+import org.zalando.apidiscovery.storage.repository.ApplicationRepository;
 
+import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.zalando.apidiscovery.storage.TestDataHelper.discoveredMetaApi;
 
-public class ApiDefinitionProcessingServiceIntegrationTest extends AbstractResourceIntegrationTest {
+@RunWith(SpringRunner.class)
+@DataJpaTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:cleanDatabase.sql")
+public class ApiDefinitionProcessingServiceComponentTest {
 
     @Autowired
+    protected ApplicationRepository applicationRepository;
+
+    @Autowired
+    protected ApiRepository apiRepository;
+
+    @Autowired
+    protected EntityManager entityManager;
+
     private ApiDefinitionProcessingService apiService;
+
+    @Before
+    public void setUp() throws Exception {
+        apiService = new ApiDefinitionProcessingService(applicationRepository, apiRepository, entityManager);
+    }
 
     @Test
     public void shouldBeAbleToAddFirstDefinition() throws Exception {
