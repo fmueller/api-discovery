@@ -3,6 +3,7 @@ package org.zalando.apidiscovery.storage;
 
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -11,6 +12,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.zalando.apidiscovery.storage.domain.service.ApiDefinitionProcessingService;
+import org.zalando.apidiscovery.storage.domain.service.ApiLifecycleService;
 import org.zalando.apidiscovery.storage.repository.ApiRepository;
 import org.zalando.apidiscovery.storage.repository.ApplicationRepository;
 
@@ -65,6 +67,13 @@ public abstract class AbstractServiceComponentTest {
                                                                    ApiRepository apiRepository,
                                                                    EntityManager entityManager) throws NoSuchAlgorithmException {
             return new ApiDefinitionProcessingService(applicationRepository, apiRepository, entityManager);
+        }
+
+        @Bean
+        public ApiLifecycleService apiLifecycleService(ApiRepository apiRepository,
+                                                       @Value("${inactive.time}") int markAsInactiveTime,
+                                                       @Value("${decommissioned.time}") int markAsDecommissionedTime) {
+            return new ApiLifecycleService(apiRepository, markAsInactiveTime, markAsDecommissionedTime);
         }
     }
 }
