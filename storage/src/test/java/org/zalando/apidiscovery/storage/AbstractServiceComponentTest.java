@@ -3,7 +3,6 @@ package org.zalando.apidiscovery.storage;
 
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -70,10 +69,8 @@ public abstract class AbstractServiceComponentTest {
         }
 
         @Bean
-        public ApiLifecycleService apiLifecycleService(ApiRepository apiRepository,
-                                                       @Value("${inactive.time}") int markAsInactiveTime,
-                                                       @Value("${decommissioned.time}") int markAsDecommissionedTime) {
-            return new ApiLifecycleService(apiRepository, markAsInactiveTime, markAsDecommissionedTime);
+        public ApiLifecycleService apiLifecycleService(ApiRepository apiRepository) {
+            return new ApiLifecycleService(apiRepository, 1, 1);
         }
     }
 }
