@@ -24,10 +24,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ApiRepositoryTest {
 
     @Autowired
-    ApplicationRepository applicationRepository;
+    private ApplicationRepository applicationRepository;
 
     @Autowired
-    ApiRepository apiRepository;
+    private ApiRepository apiRepository;
 
     @Test
     public void shouldReturnAllApis() throws Exception {
