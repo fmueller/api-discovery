@@ -13,7 +13,7 @@ echo "Build api-repository."
 
 if [ "$IS_PR_BUILD" = true ]; then
   echo "We're in a pull request, aborting."
-  exit 1
+  exit 0
 fi
 
 echo "Nothing to do for api-repository."
