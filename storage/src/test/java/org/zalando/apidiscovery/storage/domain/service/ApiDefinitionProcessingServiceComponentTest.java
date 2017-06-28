@@ -27,13 +27,13 @@ import static org.zalando.apidiscovery.storage.TestDataHelper.discoveredMetaApi;
 public class ApiDefinitionProcessingServiceComponentTest {
 
     @Autowired
-    protected ApplicationRepository applicationRepository;
+    private ApplicationRepository applicationRepository;
 
     @Autowired
-    protected ApiRepository apiRepository;
+    private ApiRepository apiRepository;
 
     @Autowired
-    protected EntityManager entityManager;
+    private EntityManager entityManager;
 
     private ApiDefinitionProcessingService apiService;
 
