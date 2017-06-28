@@ -22,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
     ApiDefinitionResourceController.class,
     ApiResourceController.class,
     ApplicationResourceController.class})
-public class CorsWithOAuthTestResource {
+public class CorsWithOAuthTest {
 
     @Autowired
     private MockMvc mvc;
