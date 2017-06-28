@@ -1,7 +1,6 @@
 package org.zalando.apidiscovery.storage.domain.service;
 
 import org.apache.commons.lang3.RandomStringUtils;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,11 +23,6 @@ public class ApiLifecycleServiceComponentTest extends AbstractServiceComponentTe
 
     @Autowired
     private ApiLifecycleService lifecycleService;
-
-    @Before
-    public void setUp() {
-        lifecycleService = new ApiLifecycleService(apiRepository, 1, 1);
-    }
 
     @Test
     public void shouldMarkApiDeploymentsInactiveWhenTheyAreTooOld() {

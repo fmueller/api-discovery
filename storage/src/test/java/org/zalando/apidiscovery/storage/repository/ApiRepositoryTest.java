@@ -1,7 +1,6 @@
 package org.zalando.apidiscovery.storage.repository;
 
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.zalando.apidiscovery.storage.AbstractDatabaseComponentTest;
 import org.zalando.apidiscovery.storage.domain.model.ApiLifecycleState;
 
@@ -13,12 +12,6 @@ import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ApiRepositoryTest extends AbstractDatabaseComponentTest {
-
-    @Autowired
-    private ApplicationRepository applicationRepository;
-
-    @Autowired
-    private ApiRepository apiRepository;
 
     @Test
     public void shouldReturnAllApis() throws Exception {
