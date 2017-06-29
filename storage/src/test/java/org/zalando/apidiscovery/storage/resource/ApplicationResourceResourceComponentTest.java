@@ -1,10 +1,10 @@
 package org.zalando.apidiscovery.storage.resource;
 
 import org.junit.Test;
-import org.zalando.apidiscovery.storage.AbstractComponentTest;
+import org.zalando.apidiscovery.storage.AbstractResourceComponentTest;
+import org.zalando.apidiscovery.storage.domain.model.ApiLifecycleState;
 import org.zalando.apidiscovery.storage.repository.ApiDeploymentEntity;
 import org.zalando.apidiscovery.storage.repository.ApiEntity;
-import org.zalando.apidiscovery.storage.domain.model.ApiLifecycleState;
 import org.zalando.apidiscovery.storage.repository.ApplicationEntity;
 
 import static java.time.OffsetDateTime.now;
@@ -18,7 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.zalando.apidiscovery.storage.legacy.ApiLifecycleManager.ACTIVE;
 
-public class ApplicationResourceComponentTest extends AbstractComponentTest {
+public class ApplicationResourceResourceComponentTest extends AbstractResourceComponentTest {
 
     @Test
     public void shouldReturnAllApplications() throws Exception {

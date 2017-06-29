@@ -1,7 +1,7 @@
 package org.zalando.apidiscovery.storage.repository;
 
 import org.junit.Test;
-import org.zalando.apidiscovery.storage.AbstractComponentTest;
+import org.zalando.apidiscovery.storage.AbstractDatabaseComponentTest;
 import org.zalando.apidiscovery.storage.domain.model.ApiLifecycleState;
 
 import java.util.List;
@@ -11,7 +11,7 @@ import static java.time.ZoneOffset.UTC;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ApiRepositoryTest extends AbstractComponentTest {
+public class ApiRepositoryTest extends AbstractDatabaseComponentTest {
 
     @Test
     public void shouldReturnAllApis() throws Exception {

@@ -24,16 +24,16 @@ import static java.time.ZoneOffset.UTC;
  */
 @Component
 @Slf4j
-class ApiLifecycleService {
+public class ApiLifecycleService {
 
     private final ApiRepository apiRepository;
     private final int markAsInactiveTime;
     private final int markAsDecommissionedTime;
 
     @Autowired
-    ApiLifecycleService(ApiRepository apiRepository,
-                        @Value("${inactive.time}") int markAsInactiveTime,
-                        @Value("${decommissioned.time}") int markAsDecommissionedTime) {
+    public ApiLifecycleService(ApiRepository apiRepository,
+                               @Value("${inactive.time}") int markAsInactiveTime,
+                               @Value("${decommissioned.time}") int markAsDecommissionedTime) {
         this.apiRepository = apiRepository;
         this.markAsInactiveTime = markAsInactiveTime;
         this.markAsDecommissionedTime = markAsDecommissionedTime;

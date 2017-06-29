@@ -1,10 +1,10 @@
 package org.zalando.apidiscovery.storage.resource;
 
 import org.junit.Test;
-import org.zalando.apidiscovery.storage.AbstractComponentTest;
+import org.zalando.apidiscovery.storage.AbstractResourceComponentTest;
+import org.zalando.apidiscovery.storage.domain.model.ApiLifecycleState;
 import org.zalando.apidiscovery.storage.repository.ApiDeploymentEntity;
 import org.zalando.apidiscovery.storage.repository.ApiEntity;
-import org.zalando.apidiscovery.storage.domain.model.ApiLifecycleState;
 import org.zalando.apidiscovery.storage.repository.ApplicationEntity;
 
 import java.util.ArrayList;
@@ -21,7 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.web.util.UriComponentsBuilder.newInstance;
 
-public class ApiDeploymentResourceComponentTest extends AbstractComponentTest {
+public class ApiDeploymentResourceResourceComponentTest extends AbstractResourceComponentTest {
 
     @Test
     public void shouldReturnAllDeployments() throws Exception {

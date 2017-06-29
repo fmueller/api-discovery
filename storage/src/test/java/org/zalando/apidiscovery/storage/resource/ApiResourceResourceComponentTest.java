@@ -1,31 +1,27 @@
 package org.zalando.apidiscovery.storage.resource;
 
 import org.junit.Test;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.zalando.apidiscovery.storage.AbstractResourceIntegrationTest;
+import org.zalando.apidiscovery.storage.AbstractResourceComponentTest;
+import org.zalando.apidiscovery.storage.domain.model.ApiLifecycleState;
 import org.zalando.apidiscovery.storage.repository.ApiDeploymentEntity;
 import org.zalando.apidiscovery.storage.repository.ApiEntity;
-import org.zalando.apidiscovery.storage.domain.model.ApiLifecycleState;
 import org.zalando.apidiscovery.storage.repository.ApplicationEntity;
 
-import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
-import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
-import static com.jayway.jsonpath.matchers.JsonPathMatchers.withJsonPath;
 import static java.lang.String.valueOf;
 import static java.time.OffsetDateTime.now;
 import static java.time.ZoneOffset.UTC;
 import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItems;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.hasSize;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.zalando.apidiscovery.storage.legacy.ApiLifecycleManager.ACTIVE;
 import static org.zalando.apidiscovery.storage.legacy.ApiLifecycleManager.DECOMMISSIONED;
 import static org.zalando.apidiscovery.storage.legacy.ApiLifecycleManager.INACTIVE;
 
-public class ApiResourceIntegrationTest extends AbstractResourceIntegrationTest {
+public class ApiResourceResourceComponentTest extends AbstractResourceComponentTest {
 
     private final static String TEST_API = "testAPI";
     private final static String ANOTHER_API = "anotherAPI";
@@ -67,13 +63,12 @@ public class ApiResourceIntegrationTest extends AbstractResourceIntegrationTest 
 
         apiRepository.save(asList(testAPi100, testAPi200, anotherAPi100));
 
-        ResponseEntity<String> responseEntity = restTemplate.getForEntity("/apis", String.class);
-
-        final String response = responseEntity.getBody();
-        assertThat(response, hasJsonPath("$.apis[0].id", equalTo(ANOTHER_API)));
-        assertThat(response, hasJsonPath("$.apis[0].lifecycle_state", equalTo(INACTIVE)));
-        assertThat(response, hasJsonPath("$.apis[1].id", equalTo(TEST_API)));
-        assertThat(response, hasJsonPath("$.apis[1].lifecycle_state", equalTo(ACTIVE)));
+        mvc.perform(get("/apis"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.apis[0].id", equalTo(ANOTHER_API)))
+            .andExpect(jsonPath("$.apis[0].lifecycle_state", equalTo(INACTIVE)))
+            .andExpect(jsonPath("$.apis[1].id", equalTo(TEST_API)))
+            .andExpect(jsonPath("$.apis[1].lifecycle_state", equalTo(ACTIVE)));
     }
 
     @Test
@@ -101,13 +96,11 @@ public class ApiResourceIntegrationTest extends AbstractResourceIntegrationTest 
 
         apiRepository.save(asList(testAPi100, anotherAPi100));
 
-        ResponseEntity<String> responseEntity = restTemplate.getForEntity(
-            "/apis?lifecycle_state=ACTIVE", String.class);
-
-        final String response = responseEntity.getBody();
-        assertThat(response, hasJsonPath("$.apis", hasSize(1)));
-        assertThat(response, hasJsonPath("$.apis[0].id", equalTo(TEST_API)));
-        assertThat(response, hasJsonPath("$.apis[0].lifecycle_state", equalTo(ACTIVE)));
+        mvc.perform(get("/apis?lifecycle_state=ACTIVE"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.apis", hasSize(1)))
+            .andExpect(jsonPath("$.apis[0].id", equalTo(TEST_API)))
+            .andExpect(jsonPath("$.apis[0].lifecycle_state", equalTo(ACTIVE)));
     }
 
     @Test
@@ -143,15 +136,12 @@ public class ApiResourceIntegrationTest extends AbstractResourceIntegrationTest 
 
         apiRepository.save(asList(testAPi100, testAPi200, anotherAPi100));
 
-        ResponseEntity<String> responseEntity = restTemplate.getForEntity(
-            "/apis?lifecycle_state=INACTIVE", String.class);
-
-        final String response = responseEntity.getBody();
-        assertThat(response, hasJsonPath("$.apis", hasSize(1)));
-        assertThat(response, hasJsonPath("$.apis[0].id", equalTo(ANOTHER_API)));
-        assertThat(response, hasJsonPath("$.apis[0].lifecycle_state", equalTo(INACTIVE)));
+        mvc.perform(get("/apis?lifecycle_state=INACTIVE"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.apis", hasSize(1)))
+            .andExpect(jsonPath("$.apis[0].id", equalTo(ANOTHER_API)))
+            .andExpect(jsonPath("$.apis[0].lifecycle_state", equalTo(INACTIVE)));
     }
-
 
     @Test
     public void shouldReturnAllDecommissionedApis() throws Exception {
@@ -178,15 +168,12 @@ public class ApiResourceIntegrationTest extends AbstractResourceIntegrationTest 
 
         apiRepository.save(asList(testAPi100, anotherAPi100));
 
-        ResponseEntity<String> responseEntity = restTemplate.getForEntity(
-            "/apis?lifecycle_state=DECOMMISSIONED", String.class);
-
-        final String response = responseEntity.getBody();
-        assertThat(response, hasJsonPath("$.apis", hasSize(1)));
-        assertThat(response, hasJsonPath("$.apis[0].id", equalTo(ANOTHER_API)));
-        assertThat(response, hasJsonPath("$.apis[0].lifecycle_state", equalTo(DECOMMISSIONED)));
+        mvc.perform(get("/apis?lifecycle_state=DECOMMISSIONED"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.apis", hasSize(1)))
+            .andExpect(jsonPath("$.apis[0].id", equalTo(ANOTHER_API)))
+            .andExpect(jsonPath("$.apis[0].lifecycle_state", equalTo(DECOMMISSIONED)));
     }
-
 
     @Test
     public void shouldReturnOneApi() throws Exception {
@@ -202,37 +189,32 @@ public class ApiResourceIntegrationTest extends AbstractResourceIntegrationTest 
 
         apiRepository.save(asList(testAPi100, testAPi200));
 
-        ResponseEntity<String> responseEntity = restTemplate.getForEntity(
-            "/apis/" + TEST_API, String.class);
-
-        assertThat(responseEntity.getStatusCode(), equalTo(HttpStatus.OK));
-
-        final String response = responseEntity.getBody();
-
-        assertThat(response, isJson(allOf(
-            withJsonPath("$.api_meta_data.id", equalTo(TEST_API)),
-            withJsonPath("$.api_meta_data.lifecycle_state", equalTo(ACTIVE)),
-            withJsonPath("$.versions[*].api_version", hasItems(V1, V2)),
-            withJsonPath("$.applications[*].name", hasItems(APP1, APP1)))));
-
-        assertThat(response,
-            hasJsonPath("$.versions..applications[*].href",
+        mvc.perform(get("/apis/" + TEST_API))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.api_meta_data.id", equalTo(TEST_API)))
+            .andExpect(jsonPath("$.api_meta_data.lifecycle_state", equalTo(ACTIVE)))
+            .andExpect(jsonPath("$.versions[*].api_version", hasItems(V1, V2)))
+            .andExpect(jsonPath("$.applications[*].name", hasItems(APP1, APP1)))
+            .andExpect(jsonPath("$.versions..applications[*].href",
                 hasItems(localUriBuilder()
                         .path("applications/app1")
                         .toUriString(),
                     localUriBuilder()
                         .path("applications/app2")
-                        .toUriString())));
-
-        assertThat(response,
-            hasJsonPath("$.applications..definitions[*].href",
+                        .toUriString())))
+            .andExpect(jsonPath("$.applications..definitions[*].href",
                 hasItems(localUriBuilder()
                         .path("apis/testAPI/versions/1.0.0/definitions/" + valueOf(testAPi100.getDefinitionId()))
                         .toUriString(),
                     localUriBuilder()
                         .path("apis/testAPI/versions/2.0.0/definitions/" + valueOf(testAPi200.getDefinitionId()))
                         .toUriString())));
+    }
 
+    @Test
+    public void shouldReturn400IfNoApiFound() throws Exception {
+        mvc.perform(get("/apis/" + TEST_API))
+            .andExpect(status().isNotFound());
     }
 
     private ApiDeploymentEntity givenApiDeployment(ApiEntity apiEntity, ApplicationEntity applicationEntity) {
@@ -266,12 +248,4 @@ public class ApiResourceIntegrationTest extends AbstractResourceIntegrationTest 
                 .created(now(UTC))
                 .build());
     }
-
-    @Test
-    public void shouldReturn400IfNoApiFound() throws Exception {
-        ResponseEntity<String> responseEntity = restTemplate.getForEntity(
-            "/apis/" + TEST_API, String.class);
-        assertThat(responseEntity.getStatusCode(), equalTo(HttpStatus.NOT_FOUND));
-    }
-
 }

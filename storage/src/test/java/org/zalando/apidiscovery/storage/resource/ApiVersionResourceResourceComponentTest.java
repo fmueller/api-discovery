@@ -1,7 +1,7 @@
 package org.zalando.apidiscovery.storage.resource;
 
 import org.junit.Test;
-import org.zalando.apidiscovery.storage.AbstractComponentTest;
+import org.zalando.apidiscovery.storage.AbstractResourceComponentTest;
 import org.zalando.apidiscovery.storage.repository.ApiDeploymentEntity;
 import org.zalando.apidiscovery.storage.repository.ApiEntity;
 import org.zalando.apidiscovery.storage.repository.ApplicationEntity;
@@ -29,7 +29,7 @@ import static org.zalando.apidiscovery.storage.domain.model.ApiLifecycleState.AC
 import static org.zalando.apidiscovery.storage.domain.model.ApiLifecycleState.DECOMMISSIONED;
 import static org.zalando.apidiscovery.storage.domain.model.ApiLifecycleState.INACTIVE;
 
-public class ApiVersionResourceComponentTest extends AbstractComponentTest {
+public class ApiVersionResourceResourceComponentTest extends AbstractResourceComponentTest {
 
     @Test
     public void shouldGroupVersionOfGivenApi() throws Exception {

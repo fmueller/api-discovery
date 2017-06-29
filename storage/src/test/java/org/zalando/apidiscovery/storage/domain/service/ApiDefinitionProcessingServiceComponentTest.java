@@ -2,7 +2,7 @@ package org.zalando.apidiscovery.storage.domain.service;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.zalando.apidiscovery.storage.AbstractResourceIntegrationTest;
+import org.zalando.apidiscovery.storage.AbstractServiceComponentTest;
 import org.zalando.apidiscovery.storage.domain.model.DiscoveredApiDefinition;
 import org.zalando.apidiscovery.storage.repository.ApiEntity;
 
@@ -12,7 +12,8 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.zalando.apidiscovery.storage.TestDataHelper.discoveredMetaApi;
 
-public class ApiDefinitionProcessingServiceIntegrationTest extends AbstractResourceIntegrationTest {
+
+public class ApiDefinitionProcessingServiceComponentTest extends AbstractServiceComponentTest {
 
     @Autowired
     private ApiDefinitionProcessingService apiService;

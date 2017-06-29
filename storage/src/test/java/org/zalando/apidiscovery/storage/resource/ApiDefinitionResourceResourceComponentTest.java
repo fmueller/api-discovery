@@ -3,7 +3,9 @@ package org.zalando.apidiscovery.storage.resource;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
-import org.zalando.apidiscovery.storage.AbstractComponentTest;
+import org.springframework.test.web.servlet.ResultActions;
+import org.zalando.apidiscovery.storage.AbstractResourceComponentTest;
+import org.zalando.apidiscovery.storage.TestDataHelper;
 import org.zalando.apidiscovery.storage.repository.ApiDeploymentEntity;
 import org.zalando.apidiscovery.storage.repository.ApiEntity;
 import org.zalando.apidiscovery.storage.repository.ApplicationEntity;
@@ -19,11 +21,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
+import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.zalando.apidiscovery.storage.domain.model.ApiLifecycleState.ACTIVE;
 import static org.zalando.apidiscovery.storage.DomainObjectGen.API_NAME;
 import static org.zalando.apidiscovery.storage.DomainObjectGen.API_UI;
 import static org.zalando.apidiscovery.storage.DomainObjectGen.API_URL;
@@ -35,8 +38,9 @@ import static org.zalando.apidiscovery.storage.DomainObjectGen.DEFINITION_TYPE;
 import static org.zalando.apidiscovery.storage.DomainObjectGen.givenApiDeployment;
 import static org.zalando.apidiscovery.storage.DomainObjectGen.givenApiEntity;
 import static org.zalando.apidiscovery.storage.DomainObjectGen.givenApplication;
+import static org.zalando.apidiscovery.storage.domain.model.ApiLifecycleState.ACTIVE;
 
-public class ApiDefinitionResourceComponentTest extends AbstractComponentTest {
+public class ApiDefinitionResourceResourceComponentTest extends AbstractResourceComponentTest {
 
     @Value("classpath:uber.json")
     private Resource discoveredUberApiJson;
@@ -195,5 +199,11 @@ public class ApiDefinitionResourceComponentTest extends AbstractComponentTest {
     public void shouldReturn404IfNoDefinitionFound() throws Exception {
         mvc.perform(get("/apis/" + API_NAME + "/versions/" + API_VERSION_1 + "/definitions/XYZ"))
             .andExpect(status().isNotFound());
+    }
+
+    private ResultActions postApiDefinition(Resource apiDefinition) throws Exception {
+        return mvc.perform(post("/api-definitions")
+            .contentType(APPLICATION_JSON_UTF8_VALUE)
+            .content(TestDataHelper.readResource(apiDefinition)));
     }
 }
